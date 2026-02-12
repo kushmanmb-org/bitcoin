@@ -25,7 +25,8 @@ on:
     paths:
       - '.github/workflows/etherscan-apiv2.yml'
 
-# Explicitly grant write permissions for the workflow to commit back to the repository
+# Explicitly grant write permissions for the workflow
+# to commit back to the repository
 permissions:
   contents: write
   pull-requests: write
@@ -39,7 +40,7 @@ jobs:
   fetch-etherscan-data:
     name: 'Fetch data from Etherscan API v2'
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
@@ -56,70 +57,88 @@ jobs:
         run: |
           echo "Fetching data from Etherscan API v2..."
           mkdir -p data/etherscan
-          
+
           # Check if API key is configured
           if [ -z "${{ secrets.ETHERSCAN_API_KEY }}" ]; then
-            echo "⚠️ ETHERSCAN_API_KEY not configured in repository secrets"
-            echo "Please configure it at: https://github.com/${{ github.repository }}/settings/secrets/actions"
-            echo "Get your API key from: https://etherscan.io/myapikey"
-            echo "{\"status\":\"0\",\"message\":\"API key not configured\",\"result\":null}" > data/etherscan/latest.json
+            echo "⚠️ ETHERSCAN_API_KEY not configured"
+            repo_url="https://github.com/${{ github.repository }}"
+            echo "Configure at: ${repo_url}/settings/secrets/actions"
+            echo "Get API key: https://etherscan.io/myapikey"
+            msg="{\"status\":\"0\",\"message\":\"API key not configured\""
+            msg="${msg},\"result\":null}"
+            echo "${msg}" > data/etherscan/latest.json
           else
             # Example API call to Etherscan v2
-            # This is a placeholder - adjust based on actual API v2 endpoints needed
+            # Adjust based on actual API v2 endpoints needed
             ENDPOINT="${{ github.event.inputs.api_endpoint || 'account' }}"
-            API_URL="https://api.etherscan.io/v2/api?module=${ENDPOINT}&action=balance"
-            
+            BASE_URL="https://api.etherscan.io/v2/api"
+            API_URL="${BASE_URL}?module=${ENDPOINT}&action=balance"
+
             echo "Querying Etherscan API v2 endpoint: ${ENDPOINT}"
+            api_key="${{ secrets.ETHERSCAN_API_KEY }}"
             curl -H "Accept: application/json" \
-                 -s "${API_URL}&apikey=${{ secrets.ETHERSCAN_API_KEY }}" \
-                 -o data/etherscan/latest.json || echo "{\"status\":\"0\",\"message\":\"API request failed\",\"result\":null}" > data/etherscan/latest.json
+                 -s "${API_URL}&apikey=${api_key}" \
+                 -o data/etherscan/latest.json || {
+              msg="{\"status\":\"0\",\"message\":\"API request failed\""
+              msg="${msg},\"result\":null}"
+              echo "${msg}" > data/etherscan/latest.json
+            }
           fi
-          
+
           # Add timestamp
-          echo "{\"timestamp\":\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\",\"data\":$(cat data/etherscan/latest.json)}" > data/etherscan/latest.json
-          
+          timestamp="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          data_content="$(cat data/etherscan/latest.json)"
+          echo "{\"timestamp\":\"${timestamp}\",\"data\":${data_content}}" \
+            > data/etherscan/latest.json
+
           echo "✓ Data fetched successfully"
           cat data/etherscan/latest.json
 
       - name: Archive data with timestamp
         run: |
           # Keep historical record
-          if [ -f data/etherscan/latest.json ]; then
-            cp data/etherscan/latest.json "data/etherscan/data-${WORKFLOW_RUN_TIME}.json"
+          src="data/etherscan/latest.json"
+          if [ -f "${src}" ]; then
+            cp "${src}" "data/etherscan/data-${WORKFLOW_RUN_TIME}.json"
           fi
 
       - name: Commit and push changes
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          
+
           git add data/etherscan/
-          
+
           if git diff --staged --quiet; then
             echo "No changes to commit"
           else
+            endpoint="${{ github.event.inputs.api_endpoint || 'account' }}"
+            run_id="${{ github.run_id }}"
             git commit -m "chore: update Etherscan API v2 data [automated]
-            
+
             - Fetched at: ${WORKFLOW_RUN_TIME}
-            - Endpoint: ${{ github.event.inputs.api_endpoint || 'account' }}
-            - Workflow run: ${{ github.run_id }}"
-            
+            - Endpoint: ${endpoint}
+            - Workflow run: ${run_id}"
+
             git push origin ${{ github.ref_name }}
             echo "✓ Changes committed and pushed"
           fi
 
       - name: Create summary
         run: |
-          echo "## Etherscan API v2 Integration Summary" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "- **Timestamp**: ${WORKFLOW_RUN_TIME}" >> $GITHUB_STEP_SUMMARY
-          echo "- **Endpoint**: ${{ github.event.inputs.api_endpoint || 'account' }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **Status**: ✓ Completed" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### Data Preview" >> $GITHUB_STEP_SUMMARY
-          echo "\`\`\`json" >> $GITHUB_STEP_SUMMARY
-          head -20 data/etherscan/latest.json >> $GITHUB_STEP_SUMMARY || echo "No data available" >> $GITHUB_STEP_SUMMARY
-          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          endpoint="${{ github.event.inputs.api_endpoint || 'account' }}"
+          summary="${GITHUB_STEP_SUMMARY}"
+          echo "## Etherscan API v2 Integration Summary" >> "${summary}"
+          echo "" >> "${summary}"
+          echo "- **Timestamp**: ${WORKFLOW_RUN_TIME}" >> "${summary}"
+          echo "- **Endpoint**: ${endpoint}" >> "${summary}"
+          echo "- **Status**: ✓ Completed" >> "${summary}"
+          echo "" >> "${summary}"
+          echo "### Data Preview" >> "${summary}"
+          echo "\`\`\`json" >> "${summary}"
+          head -20 data/etherscan/latest.json >> "${summary}" || \
+            echo "No data available" >> "${summary}"
+          echo "\`\`\`" >> "${summary}"
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
