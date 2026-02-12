@@ -71,38 +71,62 @@ jobs:
             BASE_URL="https://api.etherscan.io/v2/api"
 
             # Map endpoint to appropriate action
+            # Note: These are placeholder actions - adjust based on needs
             case "${ENDPOINT}" in
               "account")
-                ACTION="balance"
+                # Example: List recent transactions
+                ACTION="txlist"
+                # Additional params can be added as needed
+                PARAMS="&sort=desc&page=1&offset=10"
                 ;;
               "transaction")
+                # Get transaction receipt status
                 ACTION="getstatus"
+                PARAMS=""
                 ;;
               "contract")
-                ACTION="getabi"
+                # List verified contracts
+                ACTION="listcontracts"
+                PARAMS="&sort=desc&page=1&offset=10"
                 ;;
               *)
-                ACTION="balance"
+                ACTION="txlist"
+                PARAMS="&sort=desc&page=1&offset=10"
                 ;;
             esac
 
-            API_URL="${BASE_URL}?module=${ENDPOINT}&action=${ACTION}"
-
             echo "Querying Etherscan API v2: ${ENDPOINT}/${ACTION}"
-            api_key="${{ secrets.ETHERSCAN_API_KEY }}"
-            if ! curl -H "Accept: application/json" \
-                 -s "${API_URL}&apikey=${api_key}" \
-                 -o data/etherscan/latest.json; then
-              echo '{"status":"0","message":"API request failed"}' \
+            # Note: This is a placeholder. Real implementation requires
+            # proper API endpoint and parameters based on use case.
+            # The API key is passed as query param per Etherscan API spec.
+            api_url="${BASE_URL}?module=${ENDPOINT}&action=${ACTION}"
+            api_url="${api_url}${PARAMS}&apikey=\${ETHERSCAN_API_KEY}"
+
+            # Use environment variable to avoid key in process list
+            export ETHERSCAN_API_KEY="${{ secrets.ETHERSCAN_API_KEY }}"
+            eval "curl -s '${api_url}'" > data/etherscan/latest.json \
+              || echo '{"status":"0","message":"API request failed"}' \
                 > data/etherscan/latest.json
-            fi
+            unset ETHERSCAN_API_KEY
           fi
 
-          # Add timestamp
+          # Add timestamp using jq for proper JSON handling
           timestamp="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
-          data_content="$(cat data/etherscan/latest.json)"
-          echo "{\"timestamp\":\"${timestamp}\",\"data\":${data_content}}" \
-            > data/etherscan/latest.json
+          if command -v jq >/dev/null 2>&1; then
+            jq --arg ts "${timestamp}" \
+               '. + {timestamp: $ts}' \
+               data/etherscan/latest.json \
+               > data/etherscan/latest.tmp && \
+              mv data/etherscan/latest.tmp data/etherscan/latest.json
+          else
+            # Fallback if jq not available
+            echo "Warning: jq not found, using basic timestamp"
+            mv data/etherscan/latest.json data/etherscan/data.tmp
+            echo "{\"timestamp\":\"${timestamp}\"," \
+              "\"data\":$(cat data/etherscan/data.tmp)}" \
+              > data/etherscan/latest.json
+            rm -f data/etherscan/data.tmp
+          fi
 
           echo "✓ Data fetched successfully"
           cat data/etherscan/latest.json

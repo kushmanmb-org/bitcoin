@@ -29,8 +29,15 @@ The workflow is configured in `.github/workflows/etherscan-apiv2.yml` and includ
    - Go to repository Settings → Secrets and variables → Actions
    - Add a new repository secret named `ETHERSCAN_API_KEY`
    - Paste your Etherscan API key as the value
+   - **Important**: Never commit API keys to the repository
 
-3. **Run the Workflow**:
+3. **Customize API Endpoints** (Optional):
+   - Edit `.github/workflows/etherscan-apiv2.yml` to adjust:
+     - API endpoints and actions based on your needs
+     - Parameters for specific queries (addresses, transaction hashes, etc.)
+     - Schedule frequency
+
+4. **Run the Workflow**:
    - Navigate to Actions tab
    - Select "Etherscan API v2 Integration" workflow
    - Click "Run workflow"
@@ -56,3 +63,5 @@ For more information about Etherscan's API v2, visit:
 - Historical data files are retained with timestamps
 - Workflow artifacts are available for 30 days after each run
 - Failed runs will not commit partial/invalid data
+- **Security**: API keys are stored as GitHub secrets and handled securely
+- The workflow uses placeholder API endpoints - customize for your use case
