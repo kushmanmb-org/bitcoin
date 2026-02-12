@@ -19,16 +19,16 @@ def fetch_website(url):
         with urllib.request.urlopen(url, timeout=10) as response:
             content = response.read()
             print(f"Successfully fetched {len(content)} bytes")
-            
+
             # Decode and print the content
             decoded_content = content.decode('utf-8')
             print("\n" + "="*80)
             print("Website Content:")
             print("="*80)
             print(decoded_content)
-            
+
             return 0
-            
+
     except urllib.error.URLError as e:
         print(f"Error fetching URL: {e}", file=sys.stderr)
         if hasattr(e, 'code'):
