@@ -57,6 +57,10 @@ jobs:
           echo "Fetching data from Etherscan API..."
           mkdir -p data/etherscan
 
+          # Placeholder values - CUSTOMIZE THESE FOR YOUR USE CASE
+          PLACEHOLDER_ADDRESS="0x0000000000000000000000000000000000000000"
+          PLACEHOLDER_TXHASH="0x0000000000000000000000000000000000000000000000000000000000000000"
+
           # Example API call to Etherscan
           # Note: This is a placeholder implementation
           # Customize the endpoint, action, and parameters for your use case
@@ -68,25 +72,22 @@ jobs:
           case "${ENDPOINT}" in
             "account")
               # Example: Get ETH balance
-              # Replace with actual address parameter
               ACTION="balance"
-              PARAMS="&address=0x0000000000000000000000000000000000000000&tag=latest"
+              PARAMS="&address=${PLACEHOLDER_ADDRESS}&tag=latest"
               ;;
             "transaction")
               # Example: Get transaction status
-              # Replace with actual txhash parameter
               ACTION="getstatus"
-              PARAMS="&txhash=0x0000000000000000000000000000000000000000000000000000000000000000"
+              PARAMS="&txhash=${PLACEHOLDER_TXHASH}"
               ;;
             "contract")
               # Example: Get contract ABI
-              # Replace with actual contract address
               ACTION="getabi"
-              PARAMS="&address=0x0000000000000000000000000000000000000000"
+              PARAMS="&address=${PLACEHOLDER_ADDRESS}"
               ;;
             *)
               ACTION="balance"
-              PARAMS="&address=0x0000000000000000000000000000000000000000&tag=latest"
+              PARAMS="&address=${PLACEHOLDER_ADDRESS}&tag=latest"
               ;;
           esac
 
