@@ -6,6 +6,7 @@
 """Script to fetch content from kushmanmb.ghost.io website."""
 
 import sys
+import urllib.error
 import urllib.request
 
 URL = 'https://kushmanmb.ghost.io/'
@@ -16,9 +17,6 @@ def fetch_website(url):
     try:
         print(f"Fetching content from {url}...")
         with urllib.request.urlopen(url, timeout=10) as response:
-            if response.status != 200:
-                raise RuntimeError(f"HTTP request failed with status code: {response.status}")
-            
             content = response.read()
             print(f"Successfully fetched {len(content)} bytes")
             
