@@ -40,3 +40,8 @@ wallet.dat
 # Logs
 *.log
 logs/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
