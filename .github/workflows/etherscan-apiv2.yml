@@ -52,43 +52,46 @@ jobs:
 
       - name: Fetch Etherscan API data
         # Only run if API key is configured
-        if: secrets.ETHERSCAN_API_KEY != ''
+        if: ${{ secrets.ETHERSCAN_API_KEY != '' }}
         run: |
           echo "Fetching data from Etherscan API..."
           mkdir -p data/etherscan
 
           # Example API call to Etherscan
-          # Note: Standard Etherscan API uses /api endpoint (not /v2)
-          # This is a placeholder - adjust based on actual API requirements
+          # Note: This is a placeholder implementation
+          # Customize the endpoint, action, and parameters for your use case
           ENDPOINT="${{ github.event.inputs.api_endpoint || 'account' }}"
           BASE_URL="https://api.etherscan.io/api"
 
           # Map endpoint to appropriate action
-          # Note: These are placeholder actions - adjust based on needs
+          # These are examples - customize based on actual requirements
           case "${ENDPOINT}" in
             "account")
-              # Example: List recent transactions
-              ACTION="txlist"
-              # Additional params can be added as needed
-              PARAMS="&sort=desc&page=1&offset=10"
+              # Example: Get ETH balance
+              # Replace with actual address parameter
+              ACTION="balance"
+              PARAMS="&address=0x0000000000000000000000000000000000000000&tag=latest"
               ;;
             "transaction")
-              # Get transaction receipt status
+              # Example: Get transaction status
+              # Replace with actual txhash parameter
               ACTION="getstatus"
-              PARAMS=""
+              PARAMS="&txhash=0x0000000000000000000000000000000000000000000000000000000000000000"
               ;;
             "contract")
-              # List verified contracts
-              ACTION="listcontracts"
-              PARAMS="&sort=desc&page=1&offset=10"
+              # Example: Get contract ABI
+              # Replace with actual contract address
+              ACTION="getabi"
+              PARAMS="&address=0x0000000000000000000000000000000000000000"
               ;;
             *)
-              ACTION="txlist"
-              PARAMS="&sort=desc&page=1&offset=10"
+              ACTION="balance"
+              PARAMS="&address=0x0000000000000000000000000000000000000000&tag=latest"
               ;;
           esac
 
           echo "Querying Etherscan API: ${ENDPOINT}/${ACTION}"
+          echo "Note: Using placeholder parameters - customize for your use case"
 
           # Build API URL without the key
           api_url="${BASE_URL}?module=${ENDPOINT}&action=${ACTION}${PARAMS}"
@@ -113,7 +116,7 @@ jobs:
 
       - name: Handle missing API key
         # Run this step if API key is not configured
-        if: secrets.ETHERSCAN_API_KEY == ''
+        if: ${{ secrets.ETHERSCAN_API_KEY == '' }}
         run: |
           echo "⚠️ ETHERSCAN_API_KEY not configured"
           mkdir -p data/etherscan

@@ -34,8 +34,11 @@ The workflow is configured in `.github/workflows/etherscan-apiv2.yml` and includ
 3. **Customize API Endpoints** (Optional):
    - Edit `.github/workflows/etherscan-apiv2.yml` to adjust:
      - API endpoints and actions based on your needs
-     - Parameters for specific queries (addresses, transaction hashes, etc.)
-     - Schedule frequency
+     - **Important**: Replace placeholder addresses/hashes with actual values:
+       - Account endpoint: Replace `0x0000...` with actual Ethereum address
+       - Transaction endpoint: Replace `0x0000...` with actual transaction hash
+       - Contract endpoint: Replace `0x0000...` with actual contract address
+     - Schedule frequency (daily by default)
 
 4. **Run the Workflow**:
    - Navigate to Actions tab
