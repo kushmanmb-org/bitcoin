@@ -1,0 +1,190 @@
+# Copyright (c) 2026 The Bitcoin Core developers
+# Distributed under the MIT software license, see the accompanying
+# file COPYING or https://opensource.org/license/mit.
+
+name: Etherscan API Integration
+
+on:
+  workflow_dispatch:
+    inputs:
+      api_endpoint:
+        description: 'Etherscan API endpoint to query'
+        required: false
+        default: 'account'
+        type: choice
+        options:
+          - account
+          - transaction
+          - contract
+  schedule:
+    # Run daily at 00:00 UTC
+    - cron: '0 0 * * *'
+  push:
+    branches:
+      - master
+    paths:
+      - '.github/workflows/etherscan-apiv2.yml'
+
+# Explicitly grant write permissions for the workflow
+# to commit back to the repository
+permissions:
+  contents: write
+
+concurrency:
+  group: etherscan-apiv2-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  fetch-etherscan-data:
+    name: 'Fetch data from Etherscan API'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Setup environment
+        run: |
+          echo "WORKFLOW_RUN_TIME=$(date -u +%Y-%m-%d-%H-%M-%S)" >> $GITHUB_ENV
+
+      - name: Fetch Etherscan API data
+        # Only run if API key is configured
+        if: ${{ secrets.ETHERSCAN_API_KEY != '' }}
+        run: |
+          echo "Fetching data from Etherscan API..."
+          mkdir -p data/etherscan
+
+          # Placeholder values - CUSTOMIZE THESE FOR YOUR USE CASE
+          PLACEHOLDER_ADDRESS="0x0000000000000000000000000000000000000000"
+          PLACEHOLDER_TXHASH="0x0000000000000000000000000000000000000000000000000000000000000000"
+
+          # Example API call to Etherscan
+          # Note: This is a placeholder implementation
+          # Customize the endpoint, action, and parameters for your use case
+          ENDPOINT="${{ github.event.inputs.api_endpoint || 'account' }}"
+          BASE_URL="https://api.etherscan.io/api"
+
+          # Map endpoint to appropriate action
+          # These are examples - customize based on actual requirements
+          case "${ENDPOINT}" in
+            "account")
+              # Example: Get ETH balance
+              ACTION="balance"
+              PARAMS="&address=${PLACEHOLDER_ADDRESS}&tag=latest"
+              ;;
+            "transaction")
+              # Example: Get transaction status
+              ACTION="getstatus"
+              PARAMS="&txhash=${PLACEHOLDER_TXHASH}"
+              ;;
+            "contract")
+              # Example: Get contract ABI
+              ACTION="getabi"
+              PARAMS="&address=${PLACEHOLDER_ADDRESS}"
+              ;;
+            *)
+              ACTION="balance"
+              PARAMS="&address=${PLACEHOLDER_ADDRESS}&tag=latest"
+              ;;
+          esac
+
+          echo "Querying Etherscan API: ${ENDPOINT}/${ACTION}"
+          echo "Note: Using placeholder parameters - customize for your use case"
+
+          # Build API URL without the key
+          api_url="${BASE_URL}?module=${ENDPOINT}&action=${ACTION}${PARAMS}"
+
+          # Make request with API key from secret
+          # Key is only exposed during curl execution, not in logs
+          curl -s "${api_url}&apikey=${{ secrets.ETHERSCAN_API_KEY }}" \
+            -o data/etherscan/latest.json || {
+            echo '{"status":"0","message":"API request failed"}' \
+              > data/etherscan/latest.json
+          }
+
+          # Add timestamp using jq for proper JSON handling
+          timestamp="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          jq --arg ts "${timestamp}" '. + {timestamp: $ts}' \
+             data/etherscan/latest.json \
+             > data/etherscan/latest.tmp && \
+            mv data/etherscan/latest.tmp data/etherscan/latest.json
+
+          echo "✓ Data fetched successfully"
+          cat data/etherscan/latest.json
+
+      - name: Handle missing API key
+        # Run this step if API key is not configured
+        if: ${{ secrets.ETHERSCAN_API_KEY == '' }}
+        run: |
+          echo "⚠️ ETHERSCAN_API_KEY not configured"
+          mkdir -p data/etherscan
+          repo_url="https://github.com/${{ github.repository }}"
+          echo "Configure at: ${repo_url}/settings/secrets/actions"
+          echo "Get API key: https://etherscan.io/myapikey"
+          echo '{"status":"0","message":"API key not configured"}' \
+            > data/etherscan/latest.json
+
+      - name: Archive data with timestamp
+        run: |
+          # Keep historical record
+          src="data/etherscan/latest.json"
+          if [ -f "${src}" ]; then
+            cp "${src}" "data/etherscan/data-${WORKFLOW_RUN_TIME}.json"
+          fi
+
+      - name: Commit and push changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git add data/etherscan/
+
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            endpoint="${{ github.event.inputs.api_endpoint || 'account' }}"
+            run_id="${{ github.run_id }}"
+            git commit -m "chore: update Etherscan API data [automated]
+
+            - Fetched at: ${WORKFLOW_RUN_TIME}
+            - Endpoint: ${endpoint}
+            - Workflow run: ${run_id}"
+
+            git push origin ${{ github.ref_name }}
+            echo "✓ Changes committed and pushed"
+          fi
+
+      - name: Create summary
+        if: always()
+        run: |
+          endpoint="${{ github.event.inputs.api_endpoint || 'account' }}"
+          summary="${GITHUB_STEP_SUMMARY}"
+          echo "## Etherscan API Integration Summary" >> "${summary}"
+          echo "" >> "${summary}"
+          echo "- **Timestamp**: ${WORKFLOW_RUN_TIME}" >> "${summary}"
+          echo "- **Endpoint**: ${endpoint}" >> "${summary}"
+          if [ -f data/etherscan/latest.json ]; then
+            if grep -q '"status":"0"' data/etherscan/latest.json; then
+              echo "- **Status**: ❌ Failed" >> "${summary}"
+            else
+              echo "- **Status**: ✓ Completed" >> "${summary}"
+            fi
+            echo "" >> "${summary}"
+            echo "### Data Preview" >> "${summary}"
+            echo "\`\`\`json" >> "${summary}"
+            head -20 data/etherscan/latest.json >> "${summary}"
+            echo "\`\`\`" >> "${summary}"
+          else
+            echo "- **Status**: ⚠️ No data file created" >> "${summary}"
+          fi
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: etherscan-data-${{ env.WORKFLOW_RUN_TIME }}
+          path: data/etherscan/
+          retention-days: 30
