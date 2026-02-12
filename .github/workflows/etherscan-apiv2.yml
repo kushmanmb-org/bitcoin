@@ -2,13 +2,13 @@
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or https://opensource.org/license/mit.
 
-name: Etherscan API v2 Integration
+name: Etherscan API Integration
 
 on:
   workflow_dispatch:
     inputs:
       api_endpoint:
-        description: 'Etherscan API v2 endpoint to query'
+        description: 'Etherscan API endpoint to query'
         required: false
         default: 'account'
         type: choice
@@ -36,7 +36,7 @@ concurrency:
 
 jobs:
   fetch-etherscan-data:
-    name: 'Fetch data from Etherscan API v2'
+    name: 'Fetch data from Etherscan API'
     runs-on: ubuntu-latest
 
     steps:
@@ -48,88 +48,80 @@ jobs:
 
       - name: Setup environment
         run: |
-          echo "ETHERSCAN_API_KEY=${{ secrets.ETHERSCAN_API_KEY }}" >> $GITHUB_ENV
           echo "WORKFLOW_RUN_TIME=$(date -u +%Y-%m-%d-%H-%M-%S)" >> $GITHUB_ENV
 
-      - name: Fetch Etherscan API v2 data
+      - name: Fetch Etherscan API data
+        # Only run if API key is configured
+        if: secrets.ETHERSCAN_API_KEY != ''
         run: |
-          echo "Fetching data from Etherscan API v2..."
+          echo "Fetching data from Etherscan API..."
           mkdir -p data/etherscan
 
-          # Check if API key is configured
-          if [ -z "${{ secrets.ETHERSCAN_API_KEY }}" ]; then
-            echo "⚠️ ETHERSCAN_API_KEY not configured"
-            repo_url="https://github.com/${{ github.repository }}"
-            echo "Configure at: ${repo_url}/settings/secrets/actions"
-            echo "Get API key: https://etherscan.io/myapikey"
-            echo '{"status":"0","message":"API key not configured"}' \
+          # Example API call to Etherscan
+          # Note: Standard Etherscan API uses /api endpoint (not /v2)
+          # This is a placeholder - adjust based on actual API requirements
+          ENDPOINT="${{ github.event.inputs.api_endpoint || 'account' }}"
+          BASE_URL="https://api.etherscan.io/api"
+
+          # Map endpoint to appropriate action
+          # Note: These are placeholder actions - adjust based on needs
+          case "${ENDPOINT}" in
+            "account")
+              # Example: List recent transactions
+              ACTION="txlist"
+              # Additional params can be added as needed
+              PARAMS="&sort=desc&page=1&offset=10"
+              ;;
+            "transaction")
+              # Get transaction receipt status
+              ACTION="getstatus"
+              PARAMS=""
+              ;;
+            "contract")
+              # List verified contracts
+              ACTION="listcontracts"
+              PARAMS="&sort=desc&page=1&offset=10"
+              ;;
+            *)
+              ACTION="txlist"
+              PARAMS="&sort=desc&page=1&offset=10"
+              ;;
+          esac
+
+          echo "Querying Etherscan API: ${ENDPOINT}/${ACTION}"
+
+          # Build API URL without the key
+          api_url="${BASE_URL}?module=${ENDPOINT}&action=${ACTION}${PARAMS}"
+
+          # Make request with API key from secret
+          # Key is only exposed during curl execution, not in logs
+          curl -s "${api_url}&apikey=${{ secrets.ETHERSCAN_API_KEY }}" \
+            -o data/etherscan/latest.json || {
+            echo '{"status":"0","message":"API request failed"}' \
               > data/etherscan/latest.json
-          else
-            # Example API call to Etherscan v2
-            # Adjust based on actual API v2 endpoints needed
-            ENDPOINT="${{ github.event.inputs.api_endpoint || 'account' }}"
-            BASE_URL="https://api.etherscan.io/v2/api"
-
-            # Map endpoint to appropriate action
-            # Note: These are placeholder actions - adjust based on needs
-            case "${ENDPOINT}" in
-              "account")
-                # Example: List recent transactions
-                ACTION="txlist"
-                # Additional params can be added as needed
-                PARAMS="&sort=desc&page=1&offset=10"
-                ;;
-              "transaction")
-                # Get transaction receipt status
-                ACTION="getstatus"
-                PARAMS=""
-                ;;
-              "contract")
-                # List verified contracts
-                ACTION="listcontracts"
-                PARAMS="&sort=desc&page=1&offset=10"
-                ;;
-              *)
-                ACTION="txlist"
-                PARAMS="&sort=desc&page=1&offset=10"
-                ;;
-            esac
-
-            echo "Querying Etherscan API v2: ${ENDPOINT}/${ACTION}"
-            # Note: This is a placeholder. Real implementation requires
-            # proper API endpoint and parameters based on use case.
-            # The API key is passed as query param per Etherscan API spec.
-            api_url="${BASE_URL}?module=${ENDPOINT}&action=${ACTION}"
-            api_url="${api_url}${PARAMS}&apikey=\${ETHERSCAN_API_KEY}"
-
-            # Use environment variable to avoid key in process list
-            export ETHERSCAN_API_KEY="${{ secrets.ETHERSCAN_API_KEY }}"
-            eval "curl -s '${api_url}'" > data/etherscan/latest.json \
-              || echo '{"status":"0","message":"API request failed"}' \
-                > data/etherscan/latest.json
-            unset ETHERSCAN_API_KEY
-          fi
+          }
 
           # Add timestamp using jq for proper JSON handling
           timestamp="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
-          if command -v jq >/dev/null 2>&1; then
-            jq --arg ts "${timestamp}" \
-               '. + {timestamp: $ts}' \
-               data/etherscan/latest.json \
-               > data/etherscan/latest.tmp && \
-              mv data/etherscan/latest.tmp data/etherscan/latest.json
-          else
-            # Fallback if jq not available
-            echo "Warning: jq not found, using basic timestamp"
-            mv data/etherscan/latest.json data/etherscan/data.tmp
-            echo "{\"timestamp\":\"${timestamp}\"," \
-              "\"data\":$(cat data/etherscan/data.tmp)}" \
-              > data/etherscan/latest.json
-            rm -f data/etherscan/data.tmp
-          fi
+          jq --arg ts "${timestamp}" '. + {timestamp: $ts}' \
+             data/etherscan/latest.json \
+             > data/etherscan/latest.tmp && \
+            mv data/etherscan/latest.tmp data/etherscan/latest.json
 
           echo "✓ Data fetched successfully"
           cat data/etherscan/latest.json
+
+      - name: Handle missing API key
+        # Run this step if API key is not configured
+        if: secrets.ETHERSCAN_API_KEY == ''
+        run: |
+          echo "⚠️ ETHERSCAN_API_KEY not configured"
+          mkdir -p data/etherscan
+          repo_url="https://github.com/${{ github.repository }}"
+          echo "Configure at: ${repo_url}/settings/secrets/actions"
+          echo "Get API key: https://etherscan.io/myapikey"
+          echo '{"status":"0","message":"API key not configured"}' \
+            > data/etherscan/latest.json
 
       - name: Archive data with timestamp
         run: |
@@ -151,7 +143,7 @@ jobs:
           else
             endpoint="${{ github.event.inputs.api_endpoint || 'account' }}"
             run_id="${{ github.run_id }}"
-            git commit -m "chore: update Etherscan API v2 data [automated]
+            git commit -m "chore: update Etherscan API data [automated]
 
             - Fetched at: ${WORKFLOW_RUN_TIME}
             - Endpoint: ${endpoint}
@@ -162,20 +154,28 @@ jobs:
           fi
 
       - name: Create summary
+        if: always()
         run: |
           endpoint="${{ github.event.inputs.api_endpoint || 'account' }}"
           summary="${GITHUB_STEP_SUMMARY}"
-          echo "## Etherscan API v2 Integration Summary" >> "${summary}"
+          echo "## Etherscan API Integration Summary" >> "${summary}"
           echo "" >> "${summary}"
           echo "- **Timestamp**: ${WORKFLOW_RUN_TIME}" >> "${summary}"
           echo "- **Endpoint**: ${endpoint}" >> "${summary}"
-          echo "- **Status**: ✓ Completed" >> "${summary}"
-          echo "" >> "${summary}"
-          echo "### Data Preview" >> "${summary}"
-          echo "\`\`\`json" >> "${summary}"
-          head -20 data/etherscan/latest.json >> "${summary}" || \
-            echo "No data available" >> "${summary}"
-          echo "\`\`\`" >> "${summary}"
+          if [ -f data/etherscan/latest.json ]; then
+            if grep -q '"status":"0"' data/etherscan/latest.json; then
+              echo "- **Status**: ❌ Failed" >> "${summary}"
+            else
+              echo "- **Status**: ✓ Completed" >> "${summary}"
+            fi
+            echo "" >> "${summary}"
+            echo "### Data Preview" >> "${summary}"
+            echo "\`\`\`json" >> "${summary}"
+            head -20 data/etherscan/latest.json >> "${summary}"
+            echo "\`\`\`" >> "${summary}"
+          else
+            echo "- **Status**: ⚠️ No data file created" >> "${summary}"
+          fi
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4

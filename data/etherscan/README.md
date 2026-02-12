@@ -1,10 +1,10 @@
-# Etherscan API v2 Data
+# Etherscan API Data
 
-This directory contains data fetched from Etherscan's API v2 by the automated GitHub Actions workflow.
+This directory contains data fetched from Etherscan's API by the automated GitHub Actions workflow.
 
 ## Overview
 
-The Etherscan API v2 integration workflow automatically fetches blockchain data from Etherscan and commits it to this repository. This enables:
+The Etherscan API integration workflow automatically fetches blockchain data from Etherscan and commits it to this repository. This enables:
 
 - Historical tracking of blockchain data
 - Automated data collection
