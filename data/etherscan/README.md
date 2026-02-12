@@ -42,10 +42,8 @@ The workflow is configured in `.github/workflows/etherscan-apiv2.yml` and includ
 
 ## Permissions
 
-The workflow requires the following GitHub Actions permissions:
+The workflow requires the following GitHub Actions permission:
 - `contents: write` - To commit data files to the repository
-- `pull-requests: write` - To create/update PRs if needed
-- `issues: write` - To create issues for failures
 
 ## API Documentation
 

@@ -29,8 +29,6 @@ on:
 # to commit back to the repository
 permissions:
   contents: write
-  pull-requests: write
-  issues: write
 
 concurrency:
   group: etherscan-apiv2-${{ github.ref }}
@@ -64,25 +62,40 @@ jobs:
             repo_url="https://github.com/${{ github.repository }}"
             echo "Configure at: ${repo_url}/settings/secrets/actions"
             echo "Get API key: https://etherscan.io/myapikey"
-            msg="{\"status\":\"0\",\"message\":\"API key not configured\""
-            msg="${msg},\"result\":null}"
-            echo "${msg}" > data/etherscan/latest.json
+            echo '{"status":"0","message":"API key not configured"}' \
+              > data/etherscan/latest.json
           else
             # Example API call to Etherscan v2
             # Adjust based on actual API v2 endpoints needed
             ENDPOINT="${{ github.event.inputs.api_endpoint || 'account' }}"
             BASE_URL="https://api.etherscan.io/v2/api"
-            API_URL="${BASE_URL}?module=${ENDPOINT}&action=balance"
 
-            echo "Querying Etherscan API v2 endpoint: ${ENDPOINT}"
+            # Map endpoint to appropriate action
+            case "${ENDPOINT}" in
+              "account")
+                ACTION="balance"
+                ;;
+              "transaction")
+                ACTION="getstatus"
+                ;;
+              "contract")
+                ACTION="getabi"
+                ;;
+              *)
+                ACTION="balance"
+                ;;
+            esac
+
+            API_URL="${BASE_URL}?module=${ENDPOINT}&action=${ACTION}"
+
+            echo "Querying Etherscan API v2: ${ENDPOINT}/${ACTION}"
             api_key="${{ secrets.ETHERSCAN_API_KEY }}"
-            curl -H "Accept: application/json" \
+            if ! curl -H "Accept: application/json" \
                  -s "${API_URL}&apikey=${api_key}" \
-                 -o data/etherscan/latest.json || {
-              msg="{\"status\":\"0\",\"message\":\"API request failed\""
-              msg="${msg},\"result\":null}"
-              echo "${msg}" > data/etherscan/latest.json
-            }
+                 -o data/etherscan/latest.json; then
+              echo '{"status":"0","message":"API request failed"}' \
+                > data/etherscan/latest.json
+            fi
           fi
 
           # Add timestamp
