@@ -33,10 +33,10 @@ def fetch_website(url):
             
     except urllib.error.URLError as e:
         print(f"Error fetching URL: {e}", file=sys.stderr)
+        if hasattr(e, 'code'):
+            print(f"HTTP Error Code: {e.code}", file=sys.stderr)
         if hasattr(e, 'reason'):
             print(f"Reason: {e.reason}", file=sys.stderr)
-        elif hasattr(e, 'code'):
-            print(f"HTTP Error Code: {e.code}", file=sys.stderr)
         return 1
     except Exception as e:
         print(f"Unexpected error: {e}", file=sys.stderr)
