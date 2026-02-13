@@ -40,3 +40,46 @@ wallet.dat
 # Logs
 *.log
 logs/
+
+# API Keys and tokens
+*.apikey
+apikeys/
+tokens/
+*.token
+
+# Backup files
+*.backup
+*.bak
+*.swp
+*.swo
+*~
+
+# Personal notes
+notes.txt
+TODO.txt
+*.personal
+
+# Test data with sensitive info
+testnet_wallet.dat
+regtest_wallet.dat
+
+# Build artifacts (may contain paths or sensitive info)
+build/
+dist/
+*.o
+*.a
+*.so
+*.dylib
+*.dll
+*.exe
+
+# IDE and editor files
+.vscode/
+.idea/
+*.sublime-*
+.DS_Store
+
+# Temporary files
+tmp/
+temp/
+*.tmp
