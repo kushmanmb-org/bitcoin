@@ -94,7 +94,7 @@ jobs:
         run: |
           echo "Checking for files with overly permissive permissions..."
           # Check for executable files that shouldn't be
-          find . -type f -name "*.json" -executable -o -name "*.md" -executable | while read file; do
+          find . -type f \( -name "*.json" -executable \) -o -type f \( -name "*.md" -executable \) | while read file; do
             echo "Warning: $file is executable but probably shouldn't be"
           done
           

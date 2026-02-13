@@ -155,7 +155,8 @@ apply_rulesets() {
         fi
     done
     
-    info "\n" + "="*50
+    info ""
+    info "=================================================="
     info "Summary:"
     success "Successfully applied: $SUCCESS_COUNT ruleset(s)"
     if [ $FAIL_COUNT -gt 0 ]; then
@@ -165,7 +166,8 @@ apply_rulesets() {
 
 # Show next steps
 show_next_steps() {
-    info "\n" + "="*50
+    info ""
+    info "=================================================="
     info "Next Steps:"
     info "1. Verify rulesets in GitHub:"
     info "   https://github.com/$OWNER/$REPO/settings/rules"
@@ -189,7 +191,7 @@ show_next_steps() {
 # Main execution
 main() {
     info "GitHub Rulesets Setup Script"
-    info "="*50
+    info "=================================================="
     
     check_prerequisites
     get_repo_info
