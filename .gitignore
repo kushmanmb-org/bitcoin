@@ -117,8 +117,7 @@ mempool.dat
 
 # Bitcoin Core configuration files
 bitcoin.conf
-bitcoin.conf.local
-bitcoin.conf.user
+bitcoin.conf.*
 settings.json
 settings.json.bak
 guisettings.ini.bak
@@ -166,17 +165,16 @@ backup_phrase.txt
 
 # Bitcoin Core data directories (if accidentally added)
 # These contain blockchain data and should not be in source control
-/blocks/
-/chainstate/
-/indexes/
-/.bitcoin/
-~/.bitcoin/
-/wallets/
+blocks/
+chainstate/
+indexes/
+.bitcoin/
+wallets/
 # Network-specific data directories
-/testnet3/
-/testnet4/
-/signet/
-/regtest/
+testnet3/
+testnet4/
+signet/
+regtest/
 
 # Ethereum and ENS related (if any local config)
 *.keystore
