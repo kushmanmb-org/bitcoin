@@ -1,0 +1,52 @@
+name: Validate Rulesets
+
+on:
+  push:
+    paths:
+      - '.github/rulesets/**'
+      - '.github/validate-rulesets.py'
+  pull_request:
+    paths:
+      - '.github/rulesets/**'
+      - '.github/validate-rulesets.py'
+
+jobs:
+  validate:
+    name: Validate Ruleset Configuration
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      
+      - name: Validate Rulesets
+        run: |
+          python3 .github/validate-rulesets.py
+      
+      - name: Check JSON Formatting
+        run: |
+          echo "Checking JSON formatting..."
+          for file in .github/rulesets/*.json; do
+            if [ -f "$file" ]; then
+              echo "Validating $file..."
+              python3 -m json.tool "$file" > /dev/null || exit 1
+            fi
+          done
+          echo "All JSON files are properly formatted"
+      
+      - name: Summary
+        if: always()
+        run: |
+          echo "## Ruleset Validation Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Validated the following rulesets:" >> $GITHUB_STEP_SUMMARY
+          for file in .github/rulesets/*.json; do
+            if [ -f "$file" ]; then
+              echo "- $(basename $file)" >> $GITHUB_STEP_SUMMARY
+            fi
+          done
