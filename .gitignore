@@ -83,3 +83,101 @@ dist/
 tmp/
 temp/
 *.tmp
+
+# Bitcoin-specific sensitive files
+*.dat.bak
+*.dat.old
+debug.log
+fee_estimates.dat
+peers.dat
+banlist.dat
+anchors.dat
+
+# Cryptocurrency private keys and seeds
+*.mnemonic
+*.seed
+*_seed.txt
+*_mnemonic.txt
+private_keys/
+seeds/
+mnemonics/
+
+# Bitcoin Core data directories (if accidentally added)
+/blocks/
+/chainstate/
+/.bitcoin/
+~/.bitcoin/
+
+# Ethereum and ENS related (if any local config)
+*.keystore
+*.keystores
+keystore/
+keystores/
+geth/
+parity/
+
+# Hardware wallet related
+*.hww
+trezor_cache/
+ledger_cache/
+
+# Node modules and dependencies (if any JS tooling)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+
+# Python virtual environments (if any Python tooling)
+venv/
+env/
+ENV/
+.venv
+.pytest_cache/
+__pycache__/
+*.pyc
+*.pyo
+
+# Docker and container secrets
+.docker/
+docker-compose.override.yml
+*.dockerfile.secret
+
+# Testing artifacts that may contain sensitive data
+test_framework/cache/
+test/cache/
+test/tmp/
+*.test.log
+
+# macOS specific
+.AppleDouble
+.LSOverride
+._*
+
+# Windows specific
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Linux specific
+.directory
+.Trash-*/
+
+# Coverage reports (may contain code paths to sensitive areas)
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+*.cover
+
+# Security scanning results
+.trivy/
+.snyk/
+security-scan-results/
+
+# CI/CD secrets and local overrides
+.secrets/
+.local/
+*.local.yml
+*.secret.yml
