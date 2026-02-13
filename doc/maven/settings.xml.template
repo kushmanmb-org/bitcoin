@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0
+                              http://maven.apache.org/xsd/settings-1.0.0.xsd">
+  
+  <!-- 
+    ========================================
+    GitHub Packages Authentication Template
+    ========================================
+    
+    INSTRUCTIONS:
+    1. Copy this file to ~/.m2/settings.xml
+    2. Replace YOUR_GITHUB_USERNAME with your actual GitHub username
+    3. Set GITHUB_TOKEN environment variable with your Personal Access Token
+    4. NEVER commit settings.xml with real credentials to any repository
+    
+    The server ID 'github' must match the repository ID in pom.xml distributionManagement
+  -->
+  
+  <servers>
+    <server>
+      <id>github</id>
+      <username>YOUR_GITHUB_USERNAME</username>
+      <!-- Use environment variable for security - do not hardcode token! -->
+      <password>${env.GITHUB_TOKEN}</password>
+    </server>
+  </servers>
+
+  <!-- 
+    ========================================
+    Repository Configuration (Optional)
+    ========================================
+    
+    Configure profiles to access GitHub Packages and Maven Central
+  -->
+  <profiles>
+    <profile>
+      <id>github</id>
+      <repositories>
+        <repository>
+          <id>central</id>
+          <url>https://repo1.maven.org/maven2</url>
+          <releases><enabled>true</enabled></releases>
+          <snapshots><enabled>false</enabled></snapshots>
+        </repository>
+        <repository>
+          <id>github</id>
+          <url>https://maven.pkg.github.com/kushmanmb-org/bitcoin</url>
+          <releases><enabled>true</enabled></releases>
+          <snapshots><enabled>true</enabled></snapshots>
+        </repository>
+      </repositories>
+    </profile>
+  </profiles>
+
+  <activeProfiles>
+    <activeProfile>github</activeProfile>
+  </activeProfiles>
+
+</settings>
