@@ -22,6 +22,7 @@ on:
   pull_request:
     paths:
       - 'wiki/**'
+      - '.github/workflows/wiki-management.yml'
   workflow_dispatch:
 
 permissions:
