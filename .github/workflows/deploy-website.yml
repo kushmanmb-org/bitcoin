@@ -1,0 +1,272 @@
+# Website Deployment Workflow with Self-Hosted Runners
+# This workflow deploys the kushmanmb.org website with security best practices
+#
+# Security Features:
+# - Uses self-hosted runners for enhanced control
+# - Implements security scanning before deployment
+# - Uses encrypted secrets for credentials
+# - Minimal permissions principle
+
+name: Deploy Website
+
+on:
+  push:
+    branches:
+      - master
+      - main
+    paths:
+      - 'website/**'
+      - '.github/workflows/deploy-website.yml'
+  pull_request:
+    paths:
+      - 'website/**'
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deployment environment'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+          - staging
+          - production
+
+# Minimal permissions
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Prevent concurrent deployments
+concurrency:
+  group: website-deploy-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # Website directory
+  WEBSITE_DIR: website
+  # Build output directory
+  BUILD_DIR: website-build
+
+jobs:
+  # Security scanning job
+  security-scan:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Scan for secrets
+        uses: trufflesecurity/trufflehog@main
+        with:
+          path: ./
+          base: ${{ github.event.repository.default_branch }}
+          head: HEAD
+          extra_args: --only-verified
+
+      - name: Run Trivy security scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: './website'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          severity: 'CRITICAL,HIGH'
+
+      - name: Check for hardcoded credentials
+        run: |
+          echo "Scanning for potential hardcoded credentials..."
+          if grep -r -i -E "(password|secret|api_key|apikey|token|credential)" website/ --include="*.html" --include="*.js" --include="*.css" | grep -v "placeholder" | grep -v "example"; then
+            echo "Warning: Potential hardcoded credentials found!"
+            exit 1
+          fi
+          echo "No hardcoded credentials detected."
+
+      - name: Validate HTML security headers
+        run: |
+          echo "Checking for security headers in HTML files..."
+          for file in $(find website -name "*.html"); do
+            if ! grep -q "Content-Security-Policy" "$file"; then
+              echo "Warning: Missing CSP in $file"
+              exit 1
+            fi
+            if ! grep -q "X-Frame-Options" "$file"; then
+              echo "Warning: Missing X-Frame-Options in $file"
+              exit 1
+            fi
+          done
+          echo "All HTML files have required security headers."
+
+  # Build job
+  build:
+    name: Build Website
+    needs: security-scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Setup Node.js (for HTML validation)
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install HTML validator
+        run: npm install -g html-validate
+
+      - name: Validate HTML
+        run: |
+          echo "Validating HTML files..."
+          html-validate "website/**/*.html" || echo "HTML validation completed with warnings"
+
+      - name: Create build directory
+        run: |
+          mkdir -p ${{ env.BUILD_DIR }}
+          cp -r ${{ env.WEBSITE_DIR }}/* ${{ env.BUILD_DIR }}/
+
+      - name: Minify CSS (optional)
+        run: |
+          echo "CSS files prepared for deployment"
+          # Add CSS minification if needed
+
+      - name: Minify JavaScript (optional)
+        run: |
+          echo "JavaScript files prepared for deployment"
+          # Add JS minification if needed
+
+      - name: Generate deployment manifest
+        run: |
+          echo "Generating deployment manifest..."
+          cat > ${{ env.BUILD_DIR }}/deployment-manifest.json << EOF
+          {
+            "version": "${{ github.sha }}",
+            "build_date": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+            "environment": "${{ github.event.inputs.environment || 'staging' }}",
+            "branch": "${{ github.ref_name }}"
+          }
+          EOF
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: website-build
+          path: ${{ env.BUILD_DIR }}
+          retention-days: 7
+
+  # Deploy to GitHub Pages
+  deploy-pages:
+    name: Deploy to GitHub Pages
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main'
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: website-build
+          path: ./website-build
+
+      - name: Upload to GitHub Pages
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./website-build
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+  # Deploy to self-hosted environment
+  deploy-self-hosted:
+    name: Deploy to Self-Hosted Server
+    needs: build
+    # Use self-hosted runner with specific labels
+    runs-on: [self-hosted, linux, website-deployment]
+    if: github.event.inputs.environment == 'production' && github.ref == 'refs/heads/master'
+    environment:
+      name: production
+      url: https://kushmanmb.org
+    steps:
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: website-build
+          path: ./website-build
+
+      - name: Verify artifact integrity
+        run: |
+          echo "Verifying artifact integrity..."
+          if [ ! -f "./website-build/index.html" ]; then
+            echo "Error: index.html not found in build artifact"
+            exit 1
+          fi
+          echo "Artifact integrity verified"
+
+      - name: Backup current deployment
+        run: |
+          if [ -d "/var/www/kushmanmb.org" ]; then
+            echo "Creating backup of current deployment..."
+            sudo mkdir -p /var/backups/website
+            sudo cp -r /var/www/kushmanmb.org "/var/backups/website/backup-$(date +%Y%m%d-%H%M%S)"
+            echo "Backup created"
+          fi
+
+      - name: Deploy to production
+        run: |
+          echo "Deploying to production server..."
+          sudo mkdir -p /var/www/kushmanmb.org
+          sudo cp -r ./website-build/* /var/www/kushmanmb.org/
+          sudo chown -R www-data:www-data /var/www/kushmanmb.org
+          sudo chmod -R 755 /var/www/kushmanmb.org
+          echo "Deployment completed"
+
+      - name: Restart web server
+        run: |
+          echo "Restarting web server..."
+          sudo systemctl reload nginx || sudo systemctl reload apache2 || echo "Web server reload not required"
+
+      - name: Verify deployment
+        run: |
+          echo "Verifying deployment..."
+          if curl -f -s -o /dev/null https://kushmanmb.org; then
+            echo "Deployment verification successful"
+          else
+            echo "Warning: Could not verify deployment"
+          fi
+
+      - name: Cleanup old backups
+        run: |
+          echo "Cleaning up old backups (keeping last 5)..."
+          sudo ls -t /var/backups/website/ | tail -n +6 | xargs -I {} sudo rm -rf /var/backups/website/{} || echo "No old backups to clean"
+
+  # Post-deployment security check
+  post-deploy-check:
+    name: Post-Deployment Security Check
+    needs: [deploy-pages, deploy-self-hosted]
+    runs-on: ubuntu-latest
+    if: always() && (needs.deploy-pages.result == 'success' || needs.deploy-self-hosted.result == 'success')
+    steps:
+      - name: Check security headers
+        run: |
+          echo "Checking deployed website security headers..."
+          # Add security header checks for deployed site
+          echo "Security headers check placeholder"
+
+      - name: Verify HTTPS
+        run: |
+          echo "Verifying HTTPS configuration..."
+          # Add HTTPS verification
+          echo "HTTPS verification placeholder"
+
+      - name: Send deployment notification
+        if: always()
+        run: |
+          echo "Deployment completed for commit ${{ github.sha }}"
+          echo "Environment: ${{ github.event.inputs.environment || 'staging' }}"

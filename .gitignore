@@ -33,9 +33,15 @@ auth.json
 *.sqlite
 *.sqlite3
 
-# Wallet files
+# Wallet files (SQLite and legacy BDB formats)
+# Critical: These contain private keys and transaction history
 wallet.dat
+wallet.dat-journal
 *.wallet
+*.wallet-journal
+database/
+db.log
+*.wallet.bak
 
 # Logs
 *.log
@@ -47,21 +53,34 @@ apikeys/
 tokens/
 *.token
 
-# Backup files
+# Backup files (may contain sensitive data)
 *.backup
 *.bak
 *.swp
 *.swo
 *~
+# Encrypted backups (still contain sensitive data)
+*.backup.gpg
+*.bak.gpg
+*.backup.enc
+*.bak.enc
+*.backup.aes
+*.backup.zip
+*.wallet.zip
 
 # Personal notes
 notes.txt
 TODO.txt
 *.personal
 
-# Test data with sensitive info
+# Test data with potentially sensitive information
 testnet_wallet.dat
+testnet3_wallet.dat
+testnet4_wallet.dat
 regtest_wallet.dat
+signet_wallet.dat
+test_wallet.dat
+*.test.dat
 
 # Build artifacts (may contain paths or sensitive info)
 build/
@@ -84,29 +103,78 @@ tmp/
 temp/
 *.tmp
 
-# Bitcoin-specific sensitive files
+# Bitcoin Core specific sensitive files
+# Reference: doc/files.md for complete file descriptions
 *.dat.bak
 *.dat.old
 debug.log
 fee_estimates.dat
 peers.dat
 banlist.dat
+banlist.json
 anchors.dat
+mempool.dat
 
-# Cryptocurrency private keys and seeds
+# Bitcoin Core configuration files
+bitcoin.conf
+bitcoin.conf.*
+settings.json
+settings.json.bak
+guisettings.ini.bak
+
+# RPC authentication and session files
+.cookie
+.rpcauth
+rpcauth.txt
+rpcauth.json
+
+# Process and lock files
+bitcoind.pid
+bitcoin-qt.pid
+.lock
+.walletlock
+
+# Tor and I2P private keys (anonymity network identities)
+onion_v3_private_key
+onion_private_key
+i2p_private_key
+
+# Hardware wallet and external signer communication
+*.sock
+*.socket
+.trezor*
+.ledger*
+hwi/
+signer/
+
+# Cryptocurrency private keys and seed phrases
+# CRITICAL: Never commit seed phrases or private keys!
 *.mnemonic
 *.seed
+*.words
 *_seed.txt
 *_mnemonic.txt
+*_words.txt
+seed.txt
+mnemonic.txt
 private_keys/
 seeds/
 mnemonics/
+recovery_phrase.txt
+backup_phrase.txt
 
 # Bitcoin Core data directories (if accidentally added)
-/blocks/
-/chainstate/
-/.bitcoin/
-~/.bitcoin/
+# These contain blockchain data and should not be in source control
+blocks/
+chainstate/
+indexes/
+.bitcoin/
+wallets/
+# Network-specific data directories
+testnet3/
+testnet4/
+signet/
+regtest/
 
 # Ethereum and ENS related (if any local config)
 *.keystore
@@ -210,15 +278,115 @@ GITHUB_TOKEN.txt
 maven-credentials.xml
 maven-settings-local.xml
 
-# Rust and WASM specific
-**/target/
-**/*.rs.bk
-**/Cargo.lock
-*.wasm
-pkg/
-wasm-pkg/
+# Website build and deployment artifacts
+website-build/
+website/dist/
+website/.cache/
+website/node_modules/
 
-# Frontend build artifacts
-**/dist/
-**/.vite/
-**/coverage/
+# Website deployment credentials
+.deploy-key
+.ssh-deploy-key
+deploy-config.json
+.deployment-secrets
+
+# Website local development
+.env.website
+website/.env
+website/.env.local
+website/.env.production
+website-config.local.json
+
+# SSL/TLS certificates for local development
+website/ssl/
+*.csr
+*.ca-bundle
+
+# Web server logs
+access.log
+error.log
+website/logs/
+
+# Backup files from deployment
+website-backup-*/
+deployment-backup-*/
+
+# FTP/SFTP credentials
+.ftpconfig
+.sftpconfig
+.deploy-credentials
+
+# CDN and hosting configuration
+.netlify/
+.vercel/
+.cloudflare/
+
+# Website analytics and tracking (if any)
+analytics-config.json
+tracking-ids.json
+
+# Website A/B testing configuration
+ab-test-config.json
+
+# Local web server configuration
+.htaccess.local
+nginx.conf.local
+apache.conf.local
+
+# CMake build artifacts
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+CTestTestfile.cmake
+_deps/
+Testing/
+compile_commands.json
+
+# JetBrains IDEs
+*.iml
+*.ipr
+*.iws
+.idea/**/workspace.xml
+.idea/**/tasks.xml
+.idea/**/usage.statistics.xml
+.idea/**/dictionaries
+.idea/**/shelf
+
+# Visual Studio Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+
+# Vim
+[._]*.s[a-v][a-z]
+[._]*.sw[a-p]
+[._]s[a-rt-v][a-z]
+[._]ss[a-gi-z]
+[._]sw[a-p]
+Session.vim
+Sessionx.vim
+
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+.\#*
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# GitHub Codespaces
+.devcontainer/local/

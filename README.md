@@ -77,3 +77,32 @@ Translations are periodically pulled from Transifex and merged into the git repo
 
 **Important**: We do not accept translation changes as GitHub pull requests because the next
 pull from Transifex would automatically overwrite them again.
+
+Security and Safe Development Practices
+----------------------------------------
+
+Bitcoin Core is a security-critical project. Please review our security policies and best practices:
+
+- **[SECURITY.md](SECURITY.md)** - Security policy, supported versions, and how to report vulnerabilities
+- **[SECURITY_PRACTICES.md](SECURITY_PRACTICES.md)** - Comprehensive security and privacy practices for development
+
+### Key Security Reminders
+
+- **Never commit private keys, wallet files, or sensitive data** - Review the [.gitignore](.gitignore) file for protected patterns
+- **Use environment variables for secrets** - Never hardcode API keys, tokens, or credentials
+- **Keep dependencies updated** - Regularly check for security updates
+- **Review code carefully** - This is a security-critical project where mistakes can be costly
+- **Report vulnerabilities privately** - Email security@bitcoincore.org for security issues
+
+### Safe Git Practices
+
+When contributing to Bitcoin Core:
+
+1. **Review changes before committing**: Use `git diff` to verify you're not committing sensitive data
+2. **Check your gitignore**: Ensure local configuration files are properly excluded
+3. **Use meaningful commit messages**: Clearly describe what and why you're changing
+4. **Keep commits focused**: Make small, atomic commits that address one concern at a time
+5. **Test before pushing**: Run tests and verify your changes work as expected
+6. **Sign your commits**: Consider using GPG to sign commits for authenticity
+
+For detailed authentication and publishing guidance, especially for Maven/GitHub Packages, see [SECURITY_PRACTICES.md](SECURITY_PRACTICES.md).
