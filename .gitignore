@@ -390,7 +390,3 @@ Thumbs.db
 
 # GitHub Codespaces
 .devcontainer/local/
-
-# Secrets scanning exemptions (do not add actual secrets here!)
-# This section documents patterns that should never contain real secrets
-# Add comments explaining why certain patterns might appear secret-like
