@@ -540,7 +540,7 @@ Integrate security scanning in workflows:
 
 ```yaml
 - name: Run CodeQL Analysis
-  uses: github/codeql-action/analyze@v2
+  uses: github/codeql-action/analyze@v4
 
 - name: Run Trivy vulnerability scanner
   uses: aquasecurity/trivy-action@0.28.0
