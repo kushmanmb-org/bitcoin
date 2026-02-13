@@ -422,13 +422,16 @@ jobs:
       # Use validated input safely
       - name: Create release
         uses: actions/github-script@v7
+        env:
+          VERSION: ${{ inputs.version }}
         with:
           script: |
+            const version = process.env.VERSION;
             await github.rest.repos.createRelease({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              tag_name: 'v${{ inputs.version }}',
-              name: 'Release ${{ inputs.version }}'
+              tag_name: `v${version}`,
+              name: `Release ${version}`
             });
 ```
 
@@ -565,8 +568,8 @@ Regularly review:
       github.rest.issues.create({
         owner: context.repo.owner,
         repo: context.repo.repo,
-        title: 'Workflow failed: ${{ github.workflow }}',
-        body: 'Run: ${{ github.run_id }}'
+        title: `Workflow failed: ${context.workflow}`,
+        body: `Run: ${context.runId}`
       });
 ```
 
