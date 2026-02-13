@@ -1,85 +1,279 @@
-# Ignored files
+# Ignored files - Using Safe Practices
+# This .gitignore follows security best practices to prevent committing sensitive data
 
-# Private keys
+# ============================================================================
+# SECURITY: Private Keys and Certificates
+# ============================================================================
+# Never commit private keys, certificates, or cryptographic material
 *.pem
 *.key
 *.p12
 *.pfx
 *.crt
 *.der
+*.cer
+*.ca-bundle
+*.ca-cert
+*.keystore
+*.jks
+*.truststore
 id_rsa
 id_dsa
+id_ecdsa
+id_ed25519
 *.pub
+*.gpg
+*.pgp
+*.asc
 
-# Environment files
+# ============================================================================
+# SECURITY: Environment and Configuration Files
+# ============================================================================
+# Environment variables often contain secrets, API keys, passwords
 .env
+.env.*
 .env.local
 .env.*.local
+.env.development
+.env.production
+.env.staging
+.env.test
 *.secret
+*.secrets
+.envrc
 
-# Sensitive configuration
+# Sensitive configuration files
 config.json
 secrets.json
 credentials.json
 auth.json
+*.config.json
+*.credentials.json
+application-secrets.yml
+application-secrets.yaml
+secrets.yml
+secrets.yaml
 
-# Private documentation
+# ============================================================================
+# SECURITY: Private Documentation and Notes
+# ============================================================================
+# Personal or private documentation should not be committed
 /docs/private/
 /doc/private/
 *.private.md
+*.confidential.md
+PRIVATE_*
+CONFIDENTIAL_*
 
-# Database files
+# ============================================================================
+# SECURITY: Database Files
+# ============================================================================
+# Database files may contain sensitive user data
 *.db
 *.sqlite
 *.sqlite3
+*.db-shm
+*.db-wal
+*.mdb
+*.accdb
 
-# Wallet files
+# ============================================================================
+# SECURITY: Wallet Files and Blockchain Data
+# ============================================================================
+# Bitcoin wallet files contain private keys - never commit these
 wallet.dat
 *.wallet
+*wallet*.dat
+peers.dat
+banlist.dat
+anchors.dat
+fee_estimates.dat
+mempool.dat
+blocks/
+chainstate/
+indexes/
 
-# Logs
+# ============================================================================
+# SECURITY: Logs
+# ============================================================================
+# Log files may contain sensitive information
 *.log
+*.log.*
 logs/
+log/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
-# API Keys and tokens
+# ============================================================================
+# SECURITY: API Keys, Tokens, and Credentials
+# ============================================================================
+# API keys, tokens, and authentication credentials
 *.apikey
 apikeys/
 tokens/
 *.token
+.api-keys
+.credentials
+bearer-token
+oauth-token
+jwt-token
 
-# Backup files
+# Cloud provider credentials
+.aws/
+.azure/
+.gcp/
+google-credentials.json
+gcloud-service-key.json
+serviceAccount.json
+
+# CI/CD secrets (should use secure secrets management)
+.circleci/local-config.yml
+.travis/secrets.json
+
+# ============================================================================
+# SECURITY: Backup and Temporary Files
+# ============================================================================
+# Backup files may contain sensitive historical data
 *.backup
 *.bak
+*.old
+*.orig
+*.save
+*~
 *.swp
 *.swo
-*~
+.*.swp
+.*.swo
 
-# Personal notes
+# ============================================================================
+# SECURITY: Personal Notes and TODOs
+# ============================================================================
+# Personal notes might contain sensitive information
 notes.txt
 TODO.txt
+todo.txt
+NOTES.txt
 *.personal
+*.private
+scratch.txt
 
-# Test data with sensitive info
+# ============================================================================
+# SECURITY: Test Data with Sensitive Information
+# ============================================================================
 testnet_wallet.dat
 regtest_wallet.dat
+test-wallet.dat
+*.test.wallet
 
-# Build artifacts (may contain paths or sensitive info)
+# ============================================================================
+# BUILD: Artifacts and Output Directories
+# ============================================================================
+# Build artifacts may contain embedded paths or configuration
 build/
 dist/
+out/
+target/
 *.o
 *.a
 *.so
+*.so.*
 *.dylib
 *.dll
 *.exe
+*.app
+*.dmg
+*.pkg
+*.deb
+*.rpm
 
-# IDE and editor files
+# ============================================================================
+# IDE: Editor and IDE Configuration Files
+# ============================================================================
+# IDE files may contain local paths and preferences
 .vscode/
 .idea/
 *.sublime-*
-.DS_Store
+*.sublime-project
+*.sublime-workspace
+.project
+.classpath
+.settings/
+.metadata/
+*.iml
+*.ipr
+*.iws
 
-# Temporary files
+# OS-specific files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# ============================================================================
+# TEMPORARY: Temporary and Cache Files
+# ============================================================================
 tmp/
 temp/
 *.tmp
+*.temp
+.cache/
+.pytest_cache/
+__pycache__/
+*.pyc
+*.pyo
+.tox/
+
+# ============================================================================
+# DEPENDENCIES: Package Manager Files
+# ============================================================================
+# Dependencies should be reinstalled, not committed
+node_modules/
+bower_components/
+vendor/
+.bundle/
+
+# Lock files tracking:
+# Lock files ensure reproducible builds across environments
+# Generally RECOMMENDED to commit lock files for:
+# - Applications (ensures consistent deployments)
+# - Production projects
+# Optionally exclude for:
+# - Libraries (to test against latest compatible versions)
+# Uncomment the appropriate lines below based on your project needs:
+# package-lock.json
+# yarn.lock
+# Gemfile.lock
+# composer.lock
+
+# ============================================================================
+# DOCUMENTATION: Build Output
+# ============================================================================
+# Generated documentation
+docs/_build/
+docs/.buildinfo
+site/
+_site/
+
+# ============================================================================
+# MISCELLANEOUS: Other Files to Ignore
+# ============================================================================
+# Coverage reports
+coverage/
+.coverage
+.nyc_output/
+htmlcov/
+
+# Profile data
+*.prof
+*.pprof
+
+# Core dumps
+core
+core.*
+
+# End of .gitignore

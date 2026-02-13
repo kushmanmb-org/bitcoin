@@ -53,6 +53,9 @@ jobs:
       - name: Fetch Etherscan API data
         # Only run if API key is configured
         if: ${{ secrets.ETHERSCAN_API_KEY != '' }}
+        env:
+          # Store API key in environment variable for safer handling
+          ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
         run: |
           echo "Fetching data from Etherscan API..."
           mkdir -p data/etherscan
@@ -97,9 +100,10 @@ jobs:
           # Build API URL without the key
           api_url="${BASE_URL}?module=${ENDPOINT}&action=${ACTION}${PARAMS}"
 
-          # Make request with API key from secret
-          # Key is only exposed during curl execution, not in logs
-          curl -s "${api_url}&apikey=${{ secrets.ETHERSCAN_API_KEY }}" \
+          # Make request with API key from environment variable
+          # This is safer than inline secret substitution
+          # GitHub automatically masks the ETHERSCAN_API_KEY in logs
+          curl -s "${api_url}&apikey=${ETHERSCAN_API_KEY}" \
             -o data/etherscan/latest.json || {
             echo '{"status":"0","message":"API request failed"}' \
               > data/etherscan/latest.json
