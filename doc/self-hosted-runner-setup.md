@@ -64,8 +64,10 @@ curl -o actions-runner-linux-x64-${RUNNER_VERSION}.tar.gz -L \
 
 # Verify checksum (ALWAYS get the correct checksum from GitHub releases page)
 # Visit: https://github.com/actions/runner/releases/tag/v${RUNNER_VERSION}
-# Copy the SHA256 checksum for your platform and verify:
+# Copy the SHA256 checksum for your platform and replace CHECKSUM_FROM_GITHUB below:
+# Example: echo "29fc8cf2dab4c195bb1...  actions-runner-linux-x64-${RUNNER_VERSION}.tar.gz" | shasum -a 256 -c
 echo "CHECKSUM_FROM_GITHUB  actions-runner-linux-x64-${RUNNER_VERSION}.tar.gz" | shasum -a 256 -c
+# ⚠️ DO NOT PROCEED if checksum verification fails!
 
 # Extract the installer only after checksum verification passes
 tar xzf ./actions-runner-linux-x64-${RUNNER_VERSION}.tar.gz
