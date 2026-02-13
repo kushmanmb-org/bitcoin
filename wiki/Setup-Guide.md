@@ -71,7 +71,7 @@ Ensure your sensitive files are ignored:
 ```bash
 # Check if .env is ignored
 git check-ignore -v .env
-# Should output: .gitignore:15:.env    .env
+# Should output something like: .gitignore:<line>:.env    .env
 
 # Check status
 git status
