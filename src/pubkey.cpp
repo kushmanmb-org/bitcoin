@@ -383,15 +383,15 @@ CPubKey EllSwiftPubKey::Decode() const
 }
 
 void CExtPubKey::Encode(unsigned char code[BIP32_EXTKEY_SIZE]) const {
+    // Runtime bounds check to prevent potential buffer overflow
+    // Check before any writes to avoid leaving buffer in inconsistent state
+    if (pubkey.size() != CPubKey::COMPRESSED_SIZE) {
+        return;
+    }
     code[0] = nDepth;
     memcpy(code+1, vchFingerprint, 4);
     WriteBE32(code+5, nChild);
     memcpy(code+9, chaincode.begin(), 32);
-    // Runtime bounds check to prevent potential buffer overflow
-    if (pubkey.size() != CPubKey::COMPRESSED_SIZE) {
-        // Invalid pubkey size - return without writing to prevent undefined behavior
-        return;
-    }
     memcpy(code+41, pubkey.begin(), CPubKey::COMPRESSED_SIZE);
 }
 

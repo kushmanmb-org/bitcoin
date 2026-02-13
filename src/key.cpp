@@ -291,7 +291,6 @@ bool CKey::Load(const CPrivKey &seckey, const CPubKey &vchPubKey, bool fSkipChec
 }
 
 bool CKey::Derive(CKey& keyChild, ChainCode &ccChild, unsigned int nChild, const ChainCode& cc) const {
-    // Assertions document expected invariants and catch bugs in debug builds
     assert(IsValid());
     assert(IsCompressed());
     // Runtime checks ensure safety in release builds where assertions are compiled out
