@@ -1,6 +1,6 @@
 # Ignored files
 
-# Private keys
+# Private keys and certificates
 *.pem
 *.key
 *.p12
@@ -10,28 +10,42 @@
 id_rsa
 id_dsa
 *.pub
+*.keystore
+*.jks
+*.truststore
 
 # Environment files
 .env
 .env.local
 .env.*.local
+.env.production
+.env.development
+.env.test
 *.secret
+.envrc
 
 # Sensitive configuration
 config.json
 secrets.json
 credentials.json
 auth.json
+*-credentials.json
+*-secrets.json
+*.credentials
+apikeys.json
+tokens.json
 
 # Private documentation
 /docs/private/
 /doc/private/
 *.private.md
+PRIVATE_*.md
 
 # Database files
 *.db
 *.sqlite
 *.sqlite3
+*.db-journal
 
 # Wallet files
 wallet.dat
@@ -40,3 +54,59 @@ wallet.dat
 # Logs
 *.log
 logs/
+*.trace
+
+# Self-hosted runner specific
+.runner
+_diag/
+_work/
+runner-config.yml
+.credentials
+.credentials_rsaparams
+
+# API keys and tokens
+*.apikey
+*.token
+.token
+.api_key
+
+# Backup and temporary files
+*.backup
+*.bak
+*.tmp
+*~
+.DS_Store
+
+# IDE and editor files with potential secrets
+.vscode/settings.json
+.idea/
+*.swp
+*.swo
+
+# CI/CD artifacts with potential secrets
+ci_secrets/
+deploy_keys/
+github_token
+gitlab_token
+
+# Cloud provider credentials
+.aws/
+.azure/
+.gcloud/
+terraform.tfstate
+terraform.tfstate.backup
+*.tfvars
+
+# Docker secrets
+docker-compose.override.yml
+.dockerenv
+
+# SSH configuration
+.ssh/config
+.ssh/known_hosts
+.ssh/id_*
+
+# GPG keys
+*.gpg
+*.asc
+secring.*

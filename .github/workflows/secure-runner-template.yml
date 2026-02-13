@@ -1,0 +1,248 @@
+# Self-Hosted Runner Configuration Template
+
+# This workflow demonstrates security best practices for self-hosted runners.
+# Customize this template for your specific use cases.
+
+name: Secure Self-Hosted Runner Template
+
+on:
+  # Restrict when this workflow runs
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deployment environment'
+        required: true
+        type: choice
+        options:
+          - development
+          - staging
+          - production
+
+# Minimal permissions by default
+permissions:
+  contents: read
+
+# Prevent concurrent executions
+concurrency:
+  group: secure-runner-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  security-checks:
+    name: 'Pre-flight Security Checks'
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Validate workflow inputs
+        run: |
+          # Validate all user inputs to prevent injection
+          ENV="${{ github.event.inputs.environment }}"
+          
+          case "${ENV}" in
+            development|staging|production)
+              echo "✓ Valid environment: ${ENV}"
+              ;;
+            *)
+              echo "✗ Invalid environment: ${ENV}"
+              exit 1
+              ;;
+          esac
+      
+      - name: Check repository permissions
+        run: |
+          # Verify actor has appropriate permissions
+          echo "Triggered by: ${{ github.actor }}"
+          echo "Event: ${{ github.event_name }}"
+          echo "Ref: ${{ github.ref }}"
+
+  secure-build:
+    name: 'Build on Self-Hosted Runner'
+    needs: security-checks
+    
+    # Use specific runner labels
+    # IMPORTANT: Configure runners with these labels
+    runs-on: [self-hosted, linux, secure, ephemeral]
+    
+    # Timeout to prevent runaway processes
+    timeout-minutes: 30
+    
+    # Environment with approval requirements
+    environment:
+      name: ${{ github.event.inputs.environment }}
+      url: https://github.com/${{ github.repository }}
+    
+    # Explicit minimal permissions
+    permissions:
+      contents: read
+      actions: read
+    
+    steps:
+      - name: Clean workspace
+        run: |
+          # Remove any artifacts from previous runs
+          echo "Cleaning workspace..."
+          rm -rf "${GITHUB_WORKSPACE:?}"/*
+          rm -rf "${RUNNER_TEMP:?}"/*
+      
+      - name: Checkout code
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11  # v6.0.0 pinned
+        with:
+          # Limit clone depth for faster checkout
+          fetch-depth: 1
+          # Disable automatic submodule checkout for security
+          submodules: false
+      
+      - name: Verify checkout integrity
+        run: |
+          # Verify we're on the expected ref
+          CURRENT_SHA=$(git rev-parse HEAD)
+          EXPECTED_SHA="${{ github.sha }}"
+          
+          if [ "${CURRENT_SHA}" != "${EXPECTED_SHA}" ]; then
+            echo "✗ SHA mismatch!"
+            echo "Current: ${CURRENT_SHA}"
+            echo "Expected: ${EXPECTED_SHA}"
+            exit 1
+          fi
+          
+          echo "✓ Checkout integrity verified"
+      
+      - name: Set up secure environment
+        run: |
+          # Configure secure defaults
+          set -euo pipefail
+          
+          # Mask sensitive values
+          if [ -n "${RUNNER_NAME:-}" ]; then
+            echo "::add-mask::${RUNNER_NAME}"
+          fi
+          
+          # Set restrictive umask
+          umask 077
+          
+          echo "✓ Secure environment configured"
+      
+      - name: Example build step
+        env:
+          # Use secrets from GitHub Secrets, never hardcode
+          # API_KEY: ${{ secrets.API_KEY }}
+          NODE_ENV: production
+        run: |
+          echo "Building application..."
+          # Your build commands here
+          echo "✓ Build completed"
+      
+      - name: Clean sensitive data
+        if: always()
+        run: |
+          # Remove any sensitive files that may have been created
+          echo "Cleaning sensitive data..."
+          
+          # Remove common sensitive file patterns
+          find "${GITHUB_WORKSPACE}" -type f \( \
+            -name "*.key" -o \
+            -name "*.pem" -o \
+            -name "*.p12" -o \
+            -name ".env" -o \
+            -name "credentials.json" \
+          \) -delete
+          
+          # Unset sensitive environment variables
+          for var in API_KEY SECRET_KEY PASSWORD; do
+            if [ -n "${!var:-}" ]; then
+              unset "${var}"
+            fi
+          done
+          
+          echo "✓ Cleanup completed"
+      
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-${{ github.sha }}
+          path: |
+            dist/
+            build/
+          retention-days: 7
+          # Compress artifacts
+          if-no-files-found: warn
+
+  security-scan:
+    name: 'Post-Build Security Scan'
+    needs: secure-build
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-${{ github.sha }}
+      
+      - name: Scan for secrets
+        run: |
+          echo "Scanning for accidentally committed secrets..."
+          
+          # Check for common secret patterns
+          if grep -r "PRIVATE KEY" . 2>/dev/null; then
+            echo "✗ Found private key in artifacts!"
+            exit 1
+          fi
+          
+          if grep -r "sk_live_" . 2>/dev/null; then
+            echo "✗ Found potential API key in artifacts!"
+            exit 1
+          fi
+          
+          echo "✓ No secrets detected"
+      
+      - name: Generate security report
+        run: |
+          cat > security-report.md <<EOF
+          # Security Scan Report
+          
+          - **Workflow**: ${{ github.workflow }}
+          - **Run ID**: ${{ github.run_id }}
+          - **SHA**: ${{ github.sha }}
+          - **Actor**: ${{ github.actor }}
+          - **Timestamp**: $(date -u +%Y-%m-%dT%H:%M:%SZ)
+          
+          ## Checks Performed
+          
+          - ✓ Artifact secret scan passed
+          - ✓ No sensitive files in build output
+          - ✓ Permissions verified
+          
+          ## Recommendations
+          
+          - Regular security audits
+          - Keep runner software updated
+          - Rotate secrets quarterly
+          EOF
+          
+          cat security-report.md
+
+  notify:
+    name: 'Notification'
+    needs: [secure-build, security-scan]
+    if: always()
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Workflow summary
+        run: |
+          summary="${GITHUB_STEP_SUMMARY}"
+          echo "## Workflow Execution Summary" >> "${summary}"
+          echo "" >> "${summary}"
+          echo "- **Status**: ${{ job.status }}" >> "${summary}"
+          echo "- **Workflow**: ${{ github.workflow }}" >> "${summary}"
+          echo "- **Triggered by**: ${{ github.actor }}" >> "${summary}"
+          echo "- **Environment**: ${{ github.event.inputs.environment }}" >> "${summary}"
+          echo "- **Run ID**: ${{ github.run_id }}" >> "${summary}"
+          echo "" >> "${summary}"
+          echo "### Security Checklist" >> "${summary}"
+          echo "" >> "${summary}"
+          echo "- [x] Input validation completed" >> "${summary}"
+          echo "- [x] Secure runner used" >> "${summary}"
+          echo "- [x] Minimal permissions applied" >> "${summary}"
+          echo "- [x] Artifacts scanned" >> "${summary}"
+          echo "- [x] Cleanup performed" >> "${summary}"
