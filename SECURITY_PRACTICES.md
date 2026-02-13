@@ -11,7 +11,8 @@ This document outlines enhanced security and privacy practices for developing an
 3. [Sensitive Data Protection](#sensitive-data-protection)
 4. [Safe Development Workflow](#safe-development-workflow)
 5. [Publishing Security](#publishing-security)
-6. [Privacy Considerations](#privacy-considerations)
+6. [GitHub Actions Security](#github-actions-security)
+7. [Privacy Considerations](#privacy-considerations)
 
 ## Maven/GitHub Packages Security
 
@@ -322,6 +323,262 @@ snyk test
 # Trivy scanning
 trivy fs --security-checks vuln .
 ```
+
+## GitHub Actions Security
+
+### 1. Prevent Command Injection
+
+GitHub Actions workflows can be vulnerable to command injection when using untrusted input in shell commands.
+
+#### ❌ VULNERABLE Pattern
+
+**NEVER** directly interpolate GitHub context variables in shell commands:
+
+```yaml
+# DANGEROUS - Vulnerable to command injection
+- run: |
+    gh issue --repo ${{ github.repository }} \
+      create --title "Issue title" --body "Issue body"
+  env:
+    GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+```
+
+**Why this is dangerous:**
+- `${{ github.repository }}` is interpolated directly into the shell command
+- If the repository name contains special characters (e.g., backticks, semicolons), it could execute arbitrary commands
+- User-controlled input from PRs, issues, or comments can be exploited
+
+#### ✅ SECURE Pattern
+
+**Option 1: Use GitHub Script Action (Recommended)**
+
+```yaml
+# SAFE - Uses GitHub API directly, no shell execution
+- name: Create issue using GitHub Script
+  uses: actions/github-script@v7
+  with:
+    script: |
+      await github.rest.issues.create({
+        owner: context.repo.owner,
+        repo: context.repo.repo,
+        title: 'Issue title',
+        body: 'Issue body'
+      });
+```
+
+**Benefits:**
+- No shell command execution
+- Values passed as structured data, not string interpolation
+- Built-in authentication and error handling
+- Type-safe API
+
+**Option 2: Use Environment Variables**
+
+```yaml
+# SAFE - Uses environment variables
+- name: Create issue with gh CLI
+  run: |
+    gh issue --repo "$REPO_NAME" \
+      create --title "$ISSUE_TITLE" --body "$ISSUE_BODY"
+  env:
+    GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    REPO_NAME: ${{ github.repository }}
+    ISSUE_TITLE: "Issue title"
+    ISSUE_BODY: "Issue body"
+```
+
+**Benefits:**
+- Environment variables are properly escaped
+- No direct interpolation in shell commands
+- Shell treats them as single values
+
+### 2. Input Validation
+
+When accepting user input in workflows, always validate and sanitize:
+
+```yaml
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version'
+        required: true
+        type: string
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      # Validate input format
+      - name: Validate version format
+        run: |
+          if ! [[ "${{ inputs.version }}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Invalid version format. Expected: X.Y.Z"
+            exit 1
+          fi
+      
+      # Use validated input safely
+      - name: Create release
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.repos.createRelease({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              tag_name: 'v${{ inputs.version }}',
+              name: 'Release ${{ inputs.version }}'
+            });
+```
+
+### 3. Restrict Workflow Permissions
+
+Use the principle of least privilege for workflow permissions:
+
+```yaml
+# Minimal permissions
+permissions:
+  contents: read      # Read repository content
+  issues: write       # Create/update issues only
+
+jobs:
+  my-job:
+    runs-on: ubuntu-latest
+    # Override with even more restrictive permissions if needed
+    permissions:
+      issues: write
+      contents: none
+```
+
+**Avoid:**
+```yaml
+# DANGEROUS - Too permissive
+permissions: write-all
+```
+
+### 4. Secure Secrets Management
+
+**Best practices for secrets:**
+
+```yaml
+# GOOD - Secrets not exposed to shell
+- name: Deploy with action
+  uses: some-action@v1
+  with:
+    api_key: ${{ secrets.API_KEY }}
+
+# BAD - Secret exposed in shell environment
+- run: echo "API_KEY=${{ secrets.API_KEY }}" >> $GITHUB_ENV
+
+# BAD - Secret in command output
+- run: curl -H "Authorization: Bearer ${{ secrets.API_KEY }}" https://api.example.com
+```
+
+**Safe secret usage:**
+
+```yaml
+- name: Use secret safely
+  env:
+    API_KEY: ${{ secrets.API_KEY }}
+  run: |
+    # Secret in environment, not in command line
+    curl -H "Authorization: Bearer ${API_KEY}" https://api.example.com
+```
+
+### 5. Dependency Pinning
+
+Pin action versions to specific SHA for security:
+
+```yaml
+# GOOD - Pinned to specific SHA
+- uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+
+# ACCEPTABLE - Pinned to specific version
+- uses: actions/checkout@v4
+
+# BAD - Uses mutable tag
+- uses: actions/checkout@main
+```
+
+### 6. Third-Party Actions Review
+
+Before using third-party actions:
+- [ ] Review the action's source code
+- [ ] Check the action's security track record
+- [ ] Verify the action's permissions requirements
+- [ ] Pin to a specific version or SHA
+- [ ] Consider forking critical actions to your organization
+
+### 7. Pull Request Security
+
+**Prevent workflow execution from forks without approval:**
+
+```yaml
+on:
+  pull_request_target:  # Use with caution!
+    types: [opened, synchronize]
+
+jobs:
+  secure-job:
+    runs-on: ubuntu-latest
+    # Only run for organization members
+    if: github.event.pull_request.head.repo.full_name == github.repository
+```
+
+**For public repositories:**
+- Use `pull_request` trigger (not `pull_request_target`) for untrusted PRs
+- Require manual approval for first-time contributors
+- Never checkout untrusted PR code with write permissions
+
+### 8. Code Scanning Integration
+
+Integrate security scanning in workflows:
+
+```yaml
+- name: Run CodeQL Analysis
+  uses: github/codeql-action/analyze@v2
+
+- name: Run Trivy vulnerability scanner
+  uses: aquasecurity/trivy-action@master
+  with:
+    scan-type: 'fs'
+    scan-ref: '.'
+```
+
+### 9. Audit and Monitoring
+
+Regularly review:
+- Workflow run logs for suspicious activity
+- Failed authentication attempts
+- Unusual resource usage patterns
+- Changes to workflow files
+
+**Enable alerts:**
+```yaml
+# Set up workflow failure notifications
+- name: Notify on failure
+  if: failure()
+  uses: actions/github-script@v7
+  with:
+    script: |
+      github.rest.issues.create({
+        owner: context.repo.owner,
+        repo: context.repo.repo,
+        title: 'Workflow failed: ${{ github.workflow }}',
+        body: 'Run: ${{ github.run_id }}'
+      });
+```
+
+### 10. Security Checklist for Workflows
+
+Before merging workflow changes:
+- [ ] No direct interpolation of untrusted input in shell commands
+- [ ] Secrets not exposed in logs or command outputs
+- [ ] Minimal permissions assigned
+- [ ] Actions pinned to specific versions
+- [ ] Input validation implemented where needed
+- [ ] No hard-coded credentials
+- [ ] Reviewed third-party actions
+- [ ] Tested in a safe environment first
 
 ## Privacy Considerations
 
