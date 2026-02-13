@@ -209,3 +209,16 @@ GITHUB_TOKEN.txt
 # Maven server credentials
 maven-credentials.xml
 maven-settings-local.xml
+
+# Rust and WASM specific
+**/target/
+**/*.rs.bk
+**/Cargo.lock
+*.wasm
+pkg/
+wasm-pkg/
+
+# Frontend build artifacts
+**/dist/
+**/.vite/
+**/coverage/
