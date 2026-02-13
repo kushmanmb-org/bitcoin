@@ -1,6 +1,10 @@
 Bitcoin Core integration/staging tree
 =====================================
 
+[![CI](https://github.com/kushmanmb-org/bitcoin/actions/workflows/ci.yml/badge.svg)](https://github.com/kushmanmb-org/bitcoin/actions/workflows/ci.yml)
+[![Etherscan API Integration](https://github.com/kushmanmb-org/bitcoin/actions/workflows/etherscan-apiv2.yml/badge.svg)](https://github.com/kushmanmb-org/bitcoin/actions/workflows/etherscan-apiv2.yml)
+[![Wiki Management](https://github.com/kushmanmb-org/bitcoin/actions/workflows/wiki-management.yml/badge.svg)](https://github.com/kushmanmb-org/bitcoin/actions/workflows/wiki-management.yml)
+
 https://bitcoincore.org
 
 For an immediately usable, binary version of the Bitcoin Core software, see

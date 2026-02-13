@@ -13,6 +13,11 @@ on:
     tags-ignore:
       - '**'
 
+# Explicitly set minimal permissions for security
+# Workflows should only have the permissions they need
+permissions:
+  contents: read
+
 concurrency:
   group: ${{ github.event_name != 'pull_request' && github.run_id || github.ref }}
   cancel-in-progress: true
