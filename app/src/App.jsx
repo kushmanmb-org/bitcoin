@@ -14,15 +14,16 @@ function App() {
     const loadWasm = async () => {
       try {
         // TODO: Update path to your actual WASM module location
+        // Uncomment the following lines after building the WASM module:
         // const wasm = await import('../wasm-pkg/bitcoin_pdf_utils.js');
         // await wasm.default();
         // setWasmModule(wasm);
         // setWasmLoaded(true);
         
-        // For now, just mark as loaded (placeholder)
-        setWasmLoaded(false)
+        // Placeholder: WASM not yet integrated
         setError('WASM module not yet integrated. Build it first with: cd ../pdf-utils/wasm && ./generate_wasm.sh')
       } catch (err) {
+        setWasmLoaded(false)
         setError('Failed to load WASM module: ' + err.message)
       }
     }

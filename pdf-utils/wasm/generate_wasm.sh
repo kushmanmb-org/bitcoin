@@ -112,10 +112,19 @@ verify_build() {
     fi
     
     # Check WASM file size (warn if unusually large)
-    WASM_SIZE=$(stat -f%z "pkg/bitcoin_pdf_utils_bg.wasm" 2>/dev/null || stat -c%s "pkg/bitcoin_pdf_utils_bg.wasm" 2>/dev/null)
+    # Try GNU stat first, then BSD stat, with fallback
+    if WASM_SIZE=$(stat -c%s "pkg/bitcoin_pdf_utils_bg.wasm" 2>/dev/null); then
+        : # GNU stat succeeded
+    elif WASM_SIZE=$(stat -f%z "pkg/bitcoin_pdf_utils_bg.wasm" 2>/dev/null); then
+        : # BSD stat succeeded
+    else
+        log_warn "Unable to determine WASM file size (stat command not supported)"
+        WASM_SIZE=0
+    fi
+    
     if [ "$WASM_SIZE" -gt 1048576 ]; then  # 1MB
         log_warn "WASM binary is larger than 1MB ($WASM_SIZE bytes). Consider optimizing."
-    else
+    elif [ "$WASM_SIZE" -gt 0 ]; then
         log_info "WASM binary size: $WASM_SIZE bytes"
     fi
     
