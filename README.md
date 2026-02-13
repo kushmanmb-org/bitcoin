@@ -77,3 +77,31 @@ Translations are periodically pulled from Transifex and merged into the git repo
 
 **Important**: We do not accept translation changes as GitHub pull requests because the next
 pull from Transifex would automatically overwrite them again.
+
+Security and Branch Protection
+-------------------------------
+
+This repository uses comprehensive branch protection rules and security policies to maintain code quality and integrity.
+
+### Branch Protection Rulesets
+
+The repository is protected with GitHub Rulesets that enforce:
+- Required code reviews before merging
+- Status checks including security scans
+- Signed commits for protected branches
+- Prevention of force pushes and branch deletions
+
+See [.github/rulesets/README.md](.github/rulesets/README.md) for detailed information about protection rules.
+
+### Security Policies
+
+All changes undergo automated security scanning:
+- **CodeQL Analysis**: Automated vulnerability detection
+- **Dependency Scanning**: Detection of vulnerable dependencies
+- **Secret Scanning**: Prevention of exposed credentials
+- **Security Linting**: Automated security best practices checks
+
+For more information, see:
+- [SECURITY.md](SECURITY.md) - Security vulnerability reporting
+- [.github/SECURITY_MANAGEMENT.md](.github/SECURITY_MANAGEMENT.md) - Security management guide
+- [.github/QUICK_START_RULESETS.md](.github/QUICK_START_RULESETS.md) - Quick start for rulesets setup
