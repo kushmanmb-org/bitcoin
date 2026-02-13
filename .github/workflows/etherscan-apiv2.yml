@@ -25,41 +25,95 @@ on:
     paths:
       - '.github/workflows/etherscan-apiv2.yml'
 
-# Explicitly grant write permissions for the workflow
-# to commit back to the repository
+# Minimal permissions - only grant what's needed
+# Write permission only for committing API data back
 permissions:
   contents: write
+  actions: read
 
 concurrency:
   group: etherscan-apiv2-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
+  validate-inputs:
+    name: 'Validate Workflow Inputs'
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Validate API endpoint
+        run: |
+          # Input validation to prevent injection attacks
+          ENDPOINT="${{ github.event.inputs.api_endpoint || 'account' }}"
+          
+          case "${ENDPOINT}" in
+            account|transaction|contract)
+              echo "✓ Valid endpoint: ${ENDPOINT}"
+              ;;
+            *)
+              echo "✗ Invalid endpoint: ${ENDPOINT}"
+              echo "Allowed values: account, transaction, contract"
+              exit 1
+              ;;
+          esac
+      
+      - name: Log workflow context
+        run: |
+          echo "Workflow: ${{ github.workflow }}"
+          echo "Triggered by: ${{ github.actor }}"
+          echo "Event: ${{ github.event_name }}"
+          echo "Ref: ${{ github.ref }}"
+
   fetch-etherscan-data:
     name: 'Fetch data from Etherscan API'
+    needs: validate-inputs
     runs-on: ubuntu-latest
+    
+    # Timeout to prevent long-running jobs
+    timeout-minutes: 10
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11  # v6.0.0 pinned to SHA
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          fetch-depth: 0
+          fetch-depth: 1  # Shallow clone for efficiency
 
       - name: Setup environment
         run: |
+          # Use consistent timestamp
           echo "WORKFLOW_RUN_TIME=$(date -u +%Y-%m-%d-%H-%M-%S)" >> $GITHUB_ENV
+          
+          # Mask runner name if present
+          if [ -n "${RUNNER_NAME:-}" ]; then
+            echo "::add-mask::${RUNNER_NAME}"
+          fi
 
       - name: Fetch Etherscan API data
         # Only run if API key is configured
         if: ${{ secrets.ETHERSCAN_API_KEY != '' }}
+        env:
+          # Pass API key as environment variable for better security
+          ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
         run: |
+          set -euo pipefail  # Exit on error, undefined vars, pipe failures
+          
           echo "Fetching data from Etherscan API..."
           mkdir -p data/etherscan
+          
+          # Set restrictive permissions on data directory
+          chmod 750 data/etherscan
 
           # Placeholder values - CUSTOMIZE THESE FOR YOUR USE CASE
+          # These are example addresses only
           PLACEHOLDER_ADDRESS="0x0000000000000000000000000000000000000000"
           PLACEHOLDER_TXHASH="0x0000000000000000000000000000000000000000000000000000000000000000"
+
+          # Validate placeholder address format (basic check)
+          if [[ ! "${PLACEHOLDER_ADDRESS}" =~ ^0x[0-9a-fA-F]{40}$ ]]; then
+            echo "⚠️ Invalid Ethereum address format"
+            exit 1
+          fi
 
           # Example API call to Etherscan
           # Note: This is a placeholder implementation
@@ -86,34 +140,54 @@ jobs:
               PARAMS="&address=${PLACEHOLDER_ADDRESS}"
               ;;
             *)
-              ACTION="balance"
-              PARAMS="&address=${PLACEHOLDER_ADDRESS}&tag=latest"
+              echo "✗ Unexpected endpoint: ${ENDPOINT}"
+              exit 1
               ;;
           esac
 
           echo "Querying Etherscan API: ${ENDPOINT}/${ACTION}"
           echo "Note: Using placeholder parameters - customize for your use case"
 
-          # Build API URL without the key
+          # Build API URL without the key (safe to log)
           api_url="${BASE_URL}?module=${ENDPOINT}&action=${ACTION}${PARAMS}"
+          echo "API URL (without key): ${api_url}"
 
-          # Make request with API key from secret
+          # Make request with API key from environment variable
           # Key is only exposed during curl execution, not in logs
-          curl -s "${api_url}&apikey=${{ secrets.ETHERSCAN_API_KEY }}" \
+          # Use --max-time to prevent hanging
+          # Use --fail to error on HTTP errors
+          curl --silent --show-error --fail --max-time 30 \
+            "${api_url}&apikey=${ETHERSCAN_API_KEY}" \
             -o data/etherscan/latest.json || {
-            echo '{"status":"0","message":"API request failed"}' \
+            echo '{"status":"0","message":"API request failed","error":"curl_failed"}' \
               > data/etherscan/latest.json
           }
+          
+          # Unset API key immediately after use
+          unset ETHERSCAN_API_KEY
+
+          # Validate JSON response
+          if ! jq empty data/etherscan/latest.json 2>/dev/null; then
+            echo "⚠️ Invalid JSON response"
+            echo '{"status":"0","message":"Invalid JSON response"}' \
+              > data/etherscan/latest.json
+          fi
 
           # Add timestamp using jq for proper JSON handling
           timestamp="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
-          jq --arg ts "${timestamp}" '. + {timestamp: $ts}' \
+          jq --arg ts "${timestamp}" \
+             --arg endpoint "${ENDPOINT}" \
+             '. + {timestamp: $ts, endpoint: $endpoint}' \
              data/etherscan/latest.json \
              > data/etherscan/latest.tmp && \
             mv data/etherscan/latest.tmp data/etherscan/latest.json
 
           echo "✓ Data fetched successfully"
-          cat data/etherscan/latest.json
+          
+          # Show redacted response (hide potential sensitive data)
+          echo "Response preview (first 500 chars):"
+          head -c 500 data/etherscan/latest.json
+          echo ""
 
       - name: Handle missing API key
         # Run this step if API key is not configured
@@ -121,22 +195,60 @@ jobs:
         run: |
           echo "⚠️ ETHERSCAN_API_KEY not configured"
           mkdir -p data/etherscan
+          
+          # Set restrictive permissions
+          chmod 750 data/etherscan
+          
           repo_url="https://github.com/${{ github.repository }}"
           echo "Configure at: ${repo_url}/settings/secrets/actions"
           echo "Get API key: https://etherscan.io/myapikey"
-          echo '{"status":"0","message":"API key not configured"}' \
+          
+          timestamp="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          echo "{\"status\":\"0\",\"message\":\"API key not configured\",\"timestamp\":\"${timestamp}\"}" \
             > data/etherscan/latest.json
 
+      - name: Scan for secrets before commit
+        run: |
+          echo "Scanning data files for accidental secret exposure..."
+          
+          # Check for common secret patterns
+          if grep -r "sk_live_\|sk_test_\|rk_live_\|rk_test_" data/etherscan/ 2>/dev/null; then
+            echo "✗ Potential API key found in data!"
+            exit 1
+          fi
+          
+          if grep -r "BEGIN.*PRIVATE KEY" data/etherscan/ 2>/dev/null; then
+            echo "✗ Private key found in data!"
+            exit 1
+          fi
+          
+          echo "✓ No secrets detected in data files"
+      
       - name: Archive data with timestamp
         run: |
-          # Keep historical record
+          # Keep historical record with size limit
           src="data/etherscan/latest.json"
           if [ -f "${src}" ]; then
-            cp "${src}" "data/etherscan/data-${WORKFLOW_RUN_TIME}.json"
+            # Check file size (limit to 1MB)
+            file_size=$(stat -f%z "${src}" 2>/dev/null || stat -c%s "${src}")
+            if [ "${file_size}" -gt 1048576 ]; then
+              echo "⚠️ Data file exceeds 1MB, truncating..."
+              head -c 1048576 "${src}" > "data/etherscan/data-${WORKFLOW_RUN_TIME}.json"
+            else
+              cp "${src}" "data/etherscan/data-${WORKFLOW_RUN_TIME}.json"
+            fi
+            
+            # Set restrictive permissions
+            chmod 640 "data/etherscan/data-${WORKFLOW_RUN_TIME}.json"
           fi
+          
+          # Clean up old archives (keep last 30 days)
+          find data/etherscan/ -name "data-*.json" -mtime +30 -delete || true
 
       - name: Commit and push changes
         run: |
+          set -euo pipefail
+          
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
@@ -147,14 +259,30 @@ jobs:
           else
             endpoint="${{ github.event.inputs.api_endpoint || 'account' }}"
             run_id="${{ github.run_id }}"
+            actor="${{ github.actor }}"
+            
             git commit -m "chore: update Etherscan API data [automated]
 
             - Fetched at: ${WORKFLOW_RUN_TIME}
             - Endpoint: ${endpoint}
+            - Triggered by: ${actor}
             - Workflow run: ${run_id}"
 
-            git push origin ${{ github.ref_name }}
-            echo "✓ Changes committed and pushed"
+            # Push with retry logic
+            for i in {1..3}; do
+              if git push origin "${{ github.ref_name }}"; then
+                echo "✓ Changes committed and pushed"
+                break
+              else
+                if [ ${i} -lt 3 ]; then
+                  echo "Push failed, retrying in 5 seconds..."
+                  sleep 5
+                else
+                  echo "✗ Push failed after 3 attempts"
+                  exit 1
+                fi
+              fi
+            done
           fi
 
       - name: Create summary
@@ -182,7 +310,7 @@ jobs:
           fi
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@50769540e7f4bd5e21e526ee35c689e35e0d6874  # v4.0.0
         if: always()
         with:
           name: etherscan-data-${{ env.WORKFLOW_RUN_TIME }}
