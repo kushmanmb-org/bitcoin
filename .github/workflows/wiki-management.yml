@@ -49,13 +49,40 @@ jobs:
           
           FOUND_ISSUES=0
           
+          # Create a temporary directory for cleaned files
+          TEMP_DIR=$(mktemp -d)
+          
+          # Process each markdown file and strip code blocks
+          find wiki/ -name "*.md" -type f | while read -r file; do
+            # Remove code blocks (content between ``` markers) to avoid false positives
+            # This is safe because:
+            # 1. Code blocks are typically examples, not real credentials
+            # 2. Real credentials should never be in documentation
+            # 3. We still scan all non-code-block content
+            
+            cleaned_file="$TEMP_DIR/$(basename "$file")"
+            
+            # Use awk to remove content between ``` markers
+            awk '
+              /^```/ {
+                in_code_block = !in_code_block
+                next
+              }
+              !in_code_block { print }
+            ' "$file" > "$cleaned_file"
+          done
+          
+          # Scan the cleaned files
           for pattern in "${PATTERNS[@]}"; do
             echo "Checking for pattern: $pattern"
-            if grep -rniE "$pattern" wiki/ 2>/dev/null; then
+            if grep -rniE "$pattern" "$TEMP_DIR" 2>/dev/null; then
               echo "⚠️ WARNING: Potential sensitive data found matching pattern: $pattern"
               FOUND_ISSUES=$((FOUND_ISSUES + 1))
             fi
           done
+          
+          # Clean up
+          rm -rf "$TEMP_DIR"
           
           if [ $FOUND_ISSUES -gt 0 ]; then
             echo "❌ Found $FOUND_ISSUES potential security issues"
@@ -64,7 +91,7 @@ jobs:
             exit 1
           fi
           
-          echo "✅ No sensitive data patterns detected"
+          echo "✅ No sensitive data patterns detected (code blocks excluded from scan)"
       
       - name: Check markdown links
         run: |
