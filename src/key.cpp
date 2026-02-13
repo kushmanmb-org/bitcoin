@@ -291,9 +291,10 @@ bool CKey::Load(const CPrivKey &seckey, const CPubKey &vchPubKey, bool fSkipChec
 }
 
 bool CKey::Derive(CKey& keyChild, ChainCode &ccChild, unsigned int nChild, const ChainCode& cc) const {
+    // Assertions document expected invariants and catch bugs in debug builds
     assert(IsValid());
     assert(IsCompressed());
-    // Runtime bounds check for defense-in-depth
+    // Runtime checks ensure safety in release builds where assertions are compiled out
     if (!IsValid() || !IsCompressed()) {
         return false;
     }
@@ -301,14 +302,14 @@ bool CKey::Derive(CKey& keyChild, ChainCode &ccChild, unsigned int nChild, const
     if ((nChild >> 31) == 0) {
         CPubKey pubkey = GetPubKey();
         assert(pubkey.size() == CPubKey::COMPRESSED_SIZE);
-        // Runtime bounds check to prevent potential buffer overflow
+        // Runtime bounds check to prevent potential buffer overflow in release builds
         if (pubkey.size() != CPubKey::COMPRESSED_SIZE) {
             return false;
         }
         BIP32Hash(cc, nChild, *pubkey.begin(), pubkey.begin()+1, vout.data());
     } else {
         assert(size() == 32);
-        // Runtime bounds check to prevent potential buffer overflow
+        // Runtime bounds check to prevent potential buffer overflow in release builds
         if (size() != 32) {
             return false;
         }
