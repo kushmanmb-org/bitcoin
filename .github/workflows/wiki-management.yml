@@ -81,6 +81,7 @@ jobs:
             # If code blocks are malformed (odd number of markers), the scanner may
             # include some code content, which is acceptable for security scanning
             awk '
+              BEGIN { in_code_block = 0 }
               /^```/ {
                 in_code_block = !in_code_block
                 next
