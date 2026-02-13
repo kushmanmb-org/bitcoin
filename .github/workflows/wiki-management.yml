@@ -1,0 +1,276 @@
+# Copyright (c) 2026 The Bitcoin Core developers
+# Distributed under the MIT software license, see the accompanying
+# file COPYING or https://opensource.org/license/mit.
+
+name: Wiki Management
+
+on:
+  push:
+    branches:
+      - master
+      - main
+    paths:
+      - 'wiki/**'
+      - '.github/workflows/wiki-management.yml'
+  pull_request:
+    paths:
+      - 'wiki/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  validate-wiki:
+    name: 'Validate Wiki Content'
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+      
+      - name: Check for sensitive data patterns
+        run: |
+          echo "🔍 Scanning wiki files for sensitive data patterns..."
+          
+          # Define patterns to check for
+          PATTERNS=(
+            "password.*=.*['\"].*['\"]"
+            "api[_-]?key.*=.*['\"].*['\"]"
+            "secret.*=.*['\"].*['\"]"
+            "token.*=.*['\"].*['\"]"
+            "sk_live_"
+            "sk_test_"
+            "-----BEGIN.*PRIVATE KEY-----"
+            "aws_access_key_id"
+            "aws_secret_access_key"
+          )
+          
+          FOUND_ISSUES=0
+          
+          for pattern in "${PATTERNS[@]}"; do
+            echo "Checking for pattern: $pattern"
+            if grep -rniE "$pattern" wiki/ 2>/dev/null; then
+              echo "⚠️ WARNING: Potential sensitive data found matching pattern: $pattern"
+              FOUND_ISSUES=$((FOUND_ISSUES + 1))
+            fi
+          done
+          
+          if [ $FOUND_ISSUES -gt 0 ]; then
+            echo "❌ Found $FOUND_ISSUES potential security issues"
+            echo "Please review and ensure no real credentials are committed"
+            echo "Use placeholder values like 'your_key_here' or 'placeholder'"
+            exit 1
+          fi
+          
+          echo "✅ No sensitive data patterns detected"
+      
+      - name: Check markdown links
+        run: |
+          echo "🔗 Checking markdown links..."
+          
+          # Check for broken internal links
+          find wiki/ -name "*.md" -type f | while read -r file; do
+            echo "Checking links in $file"
+            
+            # Extract markdown links [text](path)
+            grep -oE '\[([^]]+)\]\(([^)]+)\)' "$file" | while read -r link; do
+              path=$(echo "$link" | sed -E 's/.*\(([^)]+)\).*/\1/')
+              
+              # Skip external URLs
+              if [[ "$path" =~ ^https?:// ]] || [[ "$path" =~ ^mailto: ]]; then
+                continue
+              fi
+              
+              # Skip anchors
+              if [[ "$path" =~ ^# ]]; then
+                continue
+              fi
+              
+              # Check if relative file exists
+              dir=$(dirname "$file")
+              target="$dir/$path"
+              
+              if [ ! -f "$target" ] && [ ! -d "$target" ]; then
+                echo "⚠️ Potential broken link in $file: $path"
+              fi
+            done
+          done
+          
+          echo "✅ Link check complete"
+      
+      - name: Validate markdown syntax
+        run: |
+          echo "📝 Validating markdown syntax..."
+          
+          # Check for basic markdown issues
+          find wiki/ -name "*.md" -type f | while read -r file; do
+            # Check for trailing whitespace
+            if grep -n ' $' "$file" > /dev/null; then
+              echo "⚠️ Trailing whitespace found in $file"
+            fi
+            
+            # Check for proper header hierarchy (basic check)
+            if grep -nE '^#####' "$file" > /dev/null; then
+              echo "ℹ️  Deep header nesting (h5+) in $file - consider reorganizing"
+            fi
+          done
+          
+          echo "✅ Markdown validation complete"
+      
+      - name: Check file naming
+        run: |
+          echo "📁 Checking file naming conventions..."
+          
+          find wiki/ -name "*.md" -type f | while read -r file; do
+            basename=$(basename "$file")
+            
+            # Check for spaces in filenames (prefer hyphens)
+            if [[ "$basename" =~ \  ]]; then
+              echo "⚠️ Space in filename: $file (prefer hyphens)"
+            fi
+            
+            # Check for uppercase in non-README files
+            if [[ "$basename" != "README.md" ]] && [[ "$basename" =~ [A-Z] ]]; then
+              # This is actually OK for wiki files like "Home.md"
+              # Just inform, don't fail
+              echo "ℹ️  Uppercase in filename: $file"
+            fi
+          done
+          
+          echo "✅ File naming check complete"
+      
+      - name: Generate wiki index
+        run: |
+          echo "📋 Generating wiki index..."
+          
+          cat > /tmp/wiki-index.md << 'EOF'
+          # Wiki Documentation Index
+          
+          Auto-generated index of all wiki pages.
+          
+          ## Pages
+          
+          EOF
+          
+          find wiki/ -name "*.md" -type f | sort | while read -r file; do
+            title=$(basename "$file" .md | sed 's/-/ /g')
+            rel_path=$(echo "$file" | sed 's|^wiki/||')
+            echo "- [$title]($rel_path)" >> /tmp/wiki-index.md
+          done
+          
+          echo "" >> /tmp/wiki-index.md
+          echo "---" >> /tmp/wiki-index.md
+          echo "Generated: $(date -u +%Y-%m-%d\ %H:%M:%S\ UTC)" >> /tmp/wiki-index.md
+          
+          echo "✅ Wiki index generated"
+          cat /tmp/wiki-index.md
+      
+      - name: Comment on PR (if applicable)
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            
+            // Read the generated index
+            let index = '';
+            try {
+              index = fs.readFileSync('/tmp/wiki-index.md', 'utf8');
+            } catch (err) {
+              index = 'Unable to read generated index';
+            }
+            
+            const comment = `## Wiki Validation Report
+            
+            ✅ Wiki content validation completed successfully!
+            
+            ### Checks Performed
+            - 🔍 Sensitive data pattern scan
+            - 🔗 Markdown link validation
+            - 📝 Markdown syntax check
+            - 📁 File naming conventions
+            
+            <details>
+            <summary>📋 Generated Wiki Index</summary>
+            
+            \`\`\`markdown
+            ${index}
+            \`\`\`
+            
+            </details>
+            
+            ---
+            *This is an automated check. Please ensure all changes follow the [Security Practices](wiki/Security-Practices.md).*
+            `;
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
+      
+      - name: Upload wiki artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: wiki-validation-report
+          path: /tmp/wiki-index.md
+          retention-days: 7
+
+  check-security:
+    name: 'Security Check'
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+      
+      - name: Run security checks
+        run: |
+          echo "🔒 Running security checks on wiki..."
+          
+          # Check for hardcoded IPs
+          if grep -rniE '([0-9]{1,3}\.){3}[0-9]{1,3}' wiki/ | grep -v '0.0.0.0' | grep -v '127.0.0.1' | grep -v 'localhost'; then
+            echo "⚠️ Found IP addresses - ensure they are not sensitive"
+          fi
+          
+          # Check for email addresses (might be personal)
+          if grep -rniE '[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}' wiki/ | grep -v 'example.com' | grep -v '@users.noreply.github.com'; then
+            echo "ℹ️  Found email addresses - verify they are appropriate for public docs"
+          fi
+          
+          # Check for common credential variable names in examples
+          SAFE_PATTERNS=(
+            "your_key_here"
+            "your_api_key"
+            "placeholder"
+            "example"
+            "test_key"
+            "dummy"
+          )
+          
+          echo "✅ Security check complete"
+          echo "Remember: Never commit real credentials!"
+
+  summary:
+    name: 'Wiki Management Summary'
+    runs-on: ubuntu-latest
+    needs: [validate-wiki, check-security]
+    if: always()
+    
+    steps:
+      - name: Create summary
+        run: |
+          echo "## Wiki Management Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Wiki validation and security checks completed" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Workflow Details" >> $GITHUB_STEP_SUMMARY
+          echo "- **Trigger**: ${{ github.event_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Branch**: ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Commit**: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "For more information, see [Wiki Management Documentation](wiki/Workflow-Management.md)" >> $GITHUB_STEP_SUMMARY

@@ -33,10 +33,302 @@ auth.json
 *.sqlite
 *.sqlite3
 
-# Wallet files
+# Wallet files (SQLite and legacy BDB formats)
+# Critical: These contain private keys and transaction history
 wallet.dat
+wallet.dat-journal
 *.wallet
+*.wallet-journal
+database/
+db.log
+*.wallet.bak
 
 # Logs
 *.log
 logs/
+
+# API Keys and tokens
+*.apikey
+apikeys/
+tokens/
+*.token
+
+# Backup files (may contain sensitive data)
+*.backup
+*.bak
+*.swp
+*.swo
+*~
+# Encrypted backups (still contain sensitive data)
+*.backup.gpg
+*.bak.gpg
+*.backup.enc
+*.bak.enc
+*.backup.aes
+*.backup.zip
+*.wallet.zip
+
+# Personal notes
+notes.txt
+TODO.txt
+*.personal
+
+# Test data with potentially sensitive information
+testnet_wallet.dat
+testnet3_wallet.dat
+testnet4_wallet.dat
+regtest_wallet.dat
+signet_wallet.dat
+test_wallet.dat
+*.test.dat
+
+# Build artifacts (may contain paths or sensitive info)
+build/
+dist/
+*.o
+*.a
+*.so
+*.dylib
+*.dll
+*.exe
+
+# IDE and editor files
+.vscode/
+.idea/
+*.sublime-*
+.DS_Store
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Bitcoin Core specific sensitive files
+# Reference: doc/files.md for complete file descriptions
+*.dat.bak
+*.dat.old
+debug.log
+fee_estimates.dat
+peers.dat
+banlist.dat
+banlist.json
+anchors.dat
+mempool.dat
+
+# Bitcoin Core configuration files
+bitcoin.conf
+bitcoin.conf.*
+settings.json
+settings.json.bak
+guisettings.ini.bak
+
+# RPC authentication and session files
+.cookie
+.rpcauth
+rpcauth.txt
+rpcauth.json
+
+# Process and lock files
+bitcoind.pid
+bitcoin-qt.pid
+.lock
+.walletlock
+
+# Tor and I2P private keys (anonymity network identities)
+onion_v3_private_key
+onion_private_key
+i2p_private_key
+
+# Hardware wallet and external signer communication
+*.sock
+*.socket
+.trezor*
+.ledger*
+hwi/
+signer/
+
+# Cryptocurrency private keys and seed phrases
+# CRITICAL: Never commit seed phrases or private keys!
+*.mnemonic
+*.seed
+*.words
+*_seed.txt
+*_mnemonic.txt
+*_words.txt
+seed.txt
+mnemonic.txt
+private_keys/
+seeds/
+mnemonics/
+recovery_phrase.txt
+backup_phrase.txt
+
+# Bitcoin Core data directories (if accidentally added)
+# These contain blockchain data and should not be in source control
+blocks/
+chainstate/
+indexes/
+.bitcoin/
+wallets/
+# Network-specific data directories
+testnet3/
+testnet4/
+signet/
+regtest/
+
+# Ethereum and ENS related (if any local config)
+*.keystore
+*.keystores
+keystore/
+keystores/
+geth/
+parity/
+
+# Hardware wallet related
+*.hww
+trezor_cache/
+ledger_cache/
+
+# Node modules and dependencies (if any JS tooling)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+
+# Python virtual environments (if any Python tooling)
+venv/
+env/
+ENV/
+.venv
+.pytest_cache/
+__pycache__/
+*.pyc
+*.pyo
+
+# Docker and container secrets
+.docker/
+docker-compose.override.yml
+*.dockerfile.secret
+
+# Testing artifacts that may contain sensitive data
+test_framework/cache/
+test/cache/
+test/tmp/
+*.test.log
+
+# macOS specific
+.AppleDouble
+.LSOverride
+._*
+
+# Windows specific
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Linux specific
+.directory
+.Trash-*/
+
+# Coverage reports (may contain code paths to sensitive areas)
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+*.cover
+
+# Security scanning results
+.trivy/
+.snyk/
+security-scan-results/
+
+# CI/CD secrets and local overrides
+.secrets/
+.local/
+*.local.yml
+*.secret.yml
+
+# Maven and GitHub Packages security
+settings.xml
+settings-security.xml
+.m2/settings.xml
+.m2/settings-security.xml
+**/target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+
+# GitHub Packages authentication
+.github-packages-token
+github-packages.token
+GITHUB_TOKEN
+GITHUB_TOKEN.txt
+.npmrc
+.yarnrc.yml
+
+# Maven server credentials
+maven-credentials.xml
+maven-settings-local.xml
+
+# Website build and deployment artifacts
+website-build/
+website/dist/
+website/.cache/
+website/node_modules/
+
+# Website deployment credentials
+.deploy-key
+.ssh-deploy-key
+deploy-config.json
+.deployment-secrets
+
+# Website local development
+.env.website
+website/.env
+website/.env.local
+website/.env.production
+website-config.local.json
+
+# SSL/TLS certificates for local development
+website/ssl/
+*.csr
+*.ca-bundle
+
+# Web server logs
+access.log
+error.log
+website/logs/
+
+# Backup files from deployment
+website-backup-*/
+deployment-backup-*/
+
+# FTP/SFTP credentials
+.ftpconfig
+.sftpconfig
+.deploy-credentials
+
+# CDN and hosting configuration
+.netlify/
+.vercel/
+.cloudflare/
+
+# Website analytics and tracking (if any)
+analytics-config.json
+tracking-ids.json
+
+# Website A/B testing configuration
+ab-test-config.json
+
+# Local web server configuration
+.htaccess.local
+nginx.conf.local
+apache.conf.local
