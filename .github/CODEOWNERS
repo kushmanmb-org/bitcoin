@@ -1,0 +1,51 @@
+# Bitcoin Core Code Owners
+# This file defines code ownership for required reviews in protected branches
+# See: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# Default owners for everything in the repository
+# These owners will be requested for review when someone opens a pull request
+* @bitcoin/maintainers
+
+# Core consensus code
+/src/consensus/ @bitcoin/consensus-reviewers
+/src/validation.cpp @bitcoin/consensus-reviewers
+/src/validation.h @bitcoin/consensus-reviewers
+
+# Wallet code
+/src/wallet/ @bitcoin/wallet-reviewers
+
+# Networking code
+/src/net.cpp @bitcoin/network-reviewers
+/src/net.h @bitcoin/network-reviewers
+/src/net_processing.cpp @bitcoin/network-reviewers
+
+# Cryptographic code
+/src/crypto/ @bitcoin/crypto-reviewers
+/src/key.cpp @bitcoin/crypto-reviewers
+/src/key.h @bitcoin/crypto-reviewers
+
+# Testing infrastructure
+/test/ @bitcoin/test-reviewers
+/src/test/ @bitcoin/test-reviewers
+
+# Build system
+/CMakeLists.txt @bitcoin/build-reviewers
+/cmake/ @bitcoin/build-reviewers
+/depends/ @bitcoin/build-reviewers
+
+# CI/CD workflows
+/.github/workflows/ @bitcoin/devops-reviewers
+/.github/actions/ @bitcoin/devops-reviewers
+
+# Security policies
+/SECURITY.md @bitcoin/security-team
+/.github/rulesets/ @bitcoin/security-team
+
+# Documentation
+/doc/ @bitcoin/doc-reviewers
+*.md @bitcoin/doc-reviewers
+
+# Configuration files
+*.yml @bitcoin/config-reviewers
+*.yaml @bitcoin/config-reviewers
+*.json @bitcoin/config-reviewers

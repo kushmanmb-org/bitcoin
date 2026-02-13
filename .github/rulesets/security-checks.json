@@ -1,0 +1,36 @@
+{
+  "name": "Security and Compliance Ruleset",
+  "description": "Security-focused rules applicable to all branches",
+  "target": "branch",
+  "enforcement": "active",
+  "conditions": {
+    "ref_name": {
+      "include": [
+        "refs/heads/*"
+      ],
+      "exclude": [
+        "refs/heads/dependabot/*",
+        "refs/heads/renovate/*"
+      ]
+    }
+  },
+  "rules": [
+    {
+      "type": "required_status_checks",
+      "parameters": {
+        "required_status_checks": [
+          {
+            "context": "security/codeql",
+            "integration_id": null
+          },
+          {
+            "context": "security/dependency-scan",
+            "integration_id": null
+          }
+        ],
+        "strict_required_status_checks_policy": false
+      }
+    }
+  ],
+  "bypass_actors": []
+}
