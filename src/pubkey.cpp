@@ -387,7 +387,12 @@ void CExtPubKey::Encode(unsigned char code[BIP32_EXTKEY_SIZE]) const {
     memcpy(code+1, vchFingerprint, 4);
     WriteBE32(code+5, nChild);
     memcpy(code+9, chaincode.begin(), 32);
-    assert(pubkey.size() == CPubKey::COMPRESSED_SIZE);
+    // Runtime bounds check to prevent potential buffer overflow
+    if (pubkey.size() != CPubKey::COMPRESSED_SIZE) {
+        // In case of invalid pubkey size, zero out the remaining bytes
+        memset(code+41, 0, CPubKey::COMPRESSED_SIZE);
+        return;
+    }
     memcpy(code+41, pubkey.begin(), CPubKey::COMPRESSED_SIZE);
 }
 

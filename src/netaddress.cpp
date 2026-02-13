@@ -624,7 +624,9 @@ bool CNetAddr::GetInAddr(struct in_addr* pipv4Addr) const
 {
     if (!IsIPv4())
         return false;
-    assert(sizeof(*pipv4Addr) == m_addr.size());
+    // Runtime bounds check to prevent potential buffer overflow
+    if (sizeof(*pipv4Addr) != m_addr.size())
+        return false;
     memcpy(pipv4Addr, m_addr.data(), m_addr.size());
     return true;
 }
@@ -644,7 +646,9 @@ bool CNetAddr::GetIn6Addr(struct in6_addr* pipv6Addr) const
     if (!IsIPv6() && !IsCJDNS()) {
         return false;
     }
-    assert(sizeof(*pipv6Addr) == m_addr.size());
+    // Runtime bounds check to prevent potential buffer overflow
+    if (sizeof(*pipv6Addr) != m_addr.size())
+        return false;
     memcpy(pipv6Addr, m_addr.data(), m_addr.size());
     return true;
 }
@@ -925,7 +929,11 @@ CSubNet::CSubNet(const CNetAddr& addr, uint8_t mask) : CSubNet()
         return;
     }
 
-    assert(mask <= sizeof(netmask) * 8);
+    // Runtime bounds check to prevent potential buffer overflow
+    if (mask > sizeof(netmask) * 8) {
+        valid = false;
+        return;
+    }
 
     network = addr;
 
@@ -977,7 +985,11 @@ CSubNet::CSubNet(const CNetAddr& addr, const CNetAddr& mask) : CSubNet()
         }
     }
 
-    assert(mask.m_addr.size() <= sizeof(netmask));
+    // Runtime bounds check to prevent potential buffer overflow
+    if (mask.m_addr.size() > sizeof(netmask)) {
+        valid = false;
+        return;
+    }
 
     memcpy(netmask, mask.m_addr.data(), mask.m_addr.size());
 
