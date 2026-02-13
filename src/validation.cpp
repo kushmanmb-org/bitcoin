@@ -6437,3 +6437,4 @@ util::Result<void> ChainstateManager::ActivateBestChains()
     }
     return {};
 }
+// Security analysis marker
