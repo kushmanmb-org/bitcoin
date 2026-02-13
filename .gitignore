@@ -209,3 +209,58 @@ GITHUB_TOKEN.txt
 # Maven server credentials
 maven-credentials.xml
 maven-settings-local.xml
+
+# Website build and deployment artifacts
+website-build/
+website/dist/
+website/.cache/
+website/node_modules/
+
+# Website deployment credentials
+.deploy-key
+.ssh-deploy-key
+deploy-config.json
+.deployment-secrets
+
+# Website local development
+.env.website
+website/.env
+website/.env.local
+website/.env.production
+website-config.local.json
+
+# SSL/TLS certificates for local development
+website/ssl/
+*.csr
+*.ca-bundle
+
+# Web server logs
+access.log
+error.log
+website/logs/
+
+# Backup files from deployment
+website-backup-*/
+deployment-backup-*/
+
+# FTP/SFTP credentials
+.ftpconfig
+.sftpconfig
+.deploy-credentials
+
+# CDN and hosting configuration
+.netlify/
+.vercel/
+.cloudflare/
+
+# Website analytics and tracking (if any)
+analytics-config.json
+tracking-ids.json
+
+# Website A/B testing configuration
+ab-test-config.json
+
+# Local web server configuration
+.htaccess.local
+nginx.conf.local
+apache.conf.local
