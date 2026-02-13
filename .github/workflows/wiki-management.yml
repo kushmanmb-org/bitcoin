@@ -69,9 +69,14 @@ jobs:
             # 2. Real credentials should never be in documentation
             # 3. We still scan all non-code-block content
             
-            cleaned_file="$TEMP_DIR/$(basename "$file")"
+            # Create unique filename preserving directory structure
+            relative_path="${file#wiki/}"
+            cleaned_file="$TEMP_DIR/${relative_path//\//_}"
             
             # Use awk to remove content between ``` markers
+            # Note: This handles triple-backtick code blocks
+            # Inline code and indented blocks are still scanned as they're less likely
+            # to contain multiline example credentials
             awk '
               /^```/ {
                 in_code_block = !in_code_block
