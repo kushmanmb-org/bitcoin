@@ -1,6 +1,13 @@
 # Copyright (c) 2026 The Bitcoin Core developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or https://opensource.org/license/mit.
+#
+# This workflow validates wiki content for sensitive data patterns while
+# using privacy-safe practices:
+# - Excludes markdown code blocks to avoid false positives from examples
+# - Still scans all non-code content for real credential leaks
+# - Validates markdown links and syntax
+# - Checks file naming conventions
 
 name: Wiki Management
 
@@ -33,6 +40,7 @@ jobs:
       - name: Check for sensitive data patterns
         run: |
           echo "🔍 Scanning wiki files for sensitive data patterns..."
+          echo "Note: Code blocks (```) are excluded to avoid false positives from examples"
           
           # Define patterns to check for
           PATTERNS=(
