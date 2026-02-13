@@ -1,8 +1,11 @@
 use wasm_bindgen::prelude::*;
+
+#[cfg(target_arch = "wasm32")]
 use web_sys::console;
 
 /// Initialize the WASM module
 /// This function is called when the module is loaded
+#[cfg(target_arch = "wasm32")]
 #[wasm_bindgen(start)]
 pub fn init() {
     // Set panic hook for better error messages in development
@@ -23,21 +26,29 @@ pub fn greet(name: &str) -> String {
 /// Future implementation will handle Bitcoin transaction PDFs
 #[wasm_bindgen]
 pub fn generate_bitcoin_transaction_pdf(transaction_id: &str) -> Result<String, JsValue> {
+    match validate_transaction_id(transaction_id) {
+        Ok(()) => Ok(format!("PDF generation requested for transaction: {}", transaction_id)),
+        Err(e) => Err(JsValue::from_str(e)),
+    }
+}
+
+/// Internal validation function that can be tested in native Rust
+fn validate_transaction_id(transaction_id: &str) -> Result<(), &'static str> {
     // Security: Validate input to prevent injection attacks
     if transaction_id.is_empty() {
-        return Err(JsValue::from_str("Transaction ID cannot be empty"));
+        return Err("Transaction ID cannot be empty");
     }
     
     if transaction_id.len() > 64 {
-        return Err(JsValue::from_str("Transaction ID too long"));
+        return Err("Transaction ID too long");
     }
     
     // Validate that transaction ID contains only valid hex characters
     if !transaction_id.chars().all(|c| c.is_ascii_hexdigit()) {
-        return Err(JsValue::from_str("Transaction ID must contain only hexadecimal characters"));
+        return Err("Transaction ID must contain only hexadecimal characters");
     }
     
-    Ok(format!("PDF generation requested for transaction: {}", transaction_id))
+    Ok(())
 }
 
 #[cfg(test)]
@@ -52,27 +63,30 @@ mod tests {
     }
 
     #[test]
-    fn test_generate_pdf_valid_tx() {
-        let result = generate_bitcoin_transaction_pdf("abc123");
+    fn test_validate_tx_valid() {
+        let result = validate_transaction_id("abc123");
         assert!(result.is_ok());
     }
 
     #[test]
-    fn test_generate_pdf_empty_tx() {
-        let result = generate_bitcoin_transaction_pdf("");
+    fn test_validate_tx_empty() {
+        let result = validate_transaction_id("");
         assert!(result.is_err());
+        assert_eq!(result.unwrap_err(), "Transaction ID cannot be empty");
     }
 
     #[test]
-    fn test_generate_pdf_invalid_chars() {
-        let result = generate_bitcoin_transaction_pdf("invalid<script>");
+    fn test_validate_tx_invalid_chars() {
+        let result = validate_transaction_id("invalid<script>");
         assert!(result.is_err());
+        assert_eq!(result.unwrap_err(), "Transaction ID must contain only hexadecimal characters");
     }
 
     #[test]
-    fn test_generate_pdf_too_long() {
+    fn test_validate_tx_too_long() {
         let long_id = "a".repeat(65);
-        let result = generate_bitcoin_transaction_pdf(&long_id);
+        let result = validate_transaction_id(&long_id);
         assert!(result.is_err());
+        assert_eq!(result.unwrap_err(), "Transaction ID too long");
     }
 }
