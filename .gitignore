@@ -237,8 +237,14 @@ bower_components/
 vendor/
 .bundle/
 
-# Lock files for development (keep for reproducibility in some cases)
-# Uncomment if you prefer not to track lock files:
+# Lock files tracking:
+# Lock files ensure reproducible builds across environments
+# Generally RECOMMENDED to commit lock files for:
+# - Applications (ensures consistent deployments)
+# - Production projects
+# Optionally exclude for:
+# - Libraries (to test against latest compatible versions)
+# Uncomment the appropriate lines below based on your project needs:
 # package-lock.json
 # yarn.lock
 # Gemfile.lock
