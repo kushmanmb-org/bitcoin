@@ -181,3 +181,31 @@ security-scan-results/
 .local/
 *.local.yml
 *.secret.yml
+
+# Maven and GitHub Packages security
+settings.xml
+settings-security.xml
+.m2/settings.xml
+.m2/settings-security.xml
+**/target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+
+# GitHub Packages authentication
+.github-packages-token
+github-packages.token
+GITHUB_TOKEN
+GITHUB_TOKEN.txt
+.npmrc
+.yarnrc.yml
+
+# Maven server credentials
+maven-credentials.xml
+maven-settings-local.xml
