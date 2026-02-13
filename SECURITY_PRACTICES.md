@@ -411,8 +411,10 @@ jobs:
     steps:
       # Validate input format
       - name: Validate version format
+        env:
+          VERSION: ${{ inputs.version }}
         run: |
-          if ! [[ "${{ inputs.version }}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+          if ! [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
             echo "Invalid version format. Expected: X.Y.Z"
             exit 1
           fi
@@ -538,7 +540,7 @@ Integrate security scanning in workflows:
   uses: github/codeql-action/analyze@v2
 
 - name: Run Trivy vulnerability scanner
-  uses: aquasecurity/trivy-action@master
+  uses: aquasecurity/trivy-action@0.28.0
   with:
     scan-type: 'fs'
     scan-ref: '.'
