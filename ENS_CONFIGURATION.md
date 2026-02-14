@@ -28,8 +28,11 @@ console.log('kushmanmb.eth resolves to:', address);
 #### 2. Via Etherscan API
 
 ```bash
-# Using Etherscan V2 API with eth_call (as specified in problem statement)
+# Using Etherscan V2 API with eth_call
 curl "https://api.etherscan.io/v2/api?chainid=1&module=proxy&action=eth_call&to=0xAEEF46DB4855E25702F8237E8f403FddcaF931C0&data=0x70a08231000000000000000000000000e16359506c028e51f16be38986ec5746251e9724&tag=latest&apikey=YourApiKeyToken"
+
+# Get current Ethereum block number
+curl "https://api.etherscan.io/v2/api?chainid=1&module=proxy&action=eth_blockNumber&apikey=YourApiKeyToken"
 ```
 
 #### 3. Via ENS Registry Contract
