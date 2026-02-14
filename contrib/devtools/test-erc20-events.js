@@ -67,4 +67,4 @@ console.log('═'.repeat(80));
 console.log('All tests completed successfully!');
 console.log('');
 console.log('To test with real API:');
-console.log('  ETHERSCAN_API_KEY=your_key node fetch-erc20-events.js 0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb');
+console.log('  ETHERSCAN_API_KEY=your_key node fetch-erc20-events.js 0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0');

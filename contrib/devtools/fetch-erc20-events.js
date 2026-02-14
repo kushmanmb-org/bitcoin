@@ -24,7 +24,7 @@
  *   ADDRESS          - Optional. Ethereum address to query (can also be passed as argument)
  * 
  * Examples:
- *   ETHERSCAN_API_KEY=ABC123 node fetch-erc20-events.js 0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb
+ *   ETHERSCAN_API_KEY=ABC123 node fetch-erc20-events.js 0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0
  */
 
 const https = require('https');
@@ -152,7 +152,7 @@ async function main() {
         console.error('  ETHERSCAN_API_KEY=your_api_key node fetch-erc20-events.js [ADDRESS]');
         console.error('');
         console.error('Example:');
-        console.error('  ETHERSCAN_API_KEY=ABC123 node fetch-erc20-events.js 0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb');
+        console.error('  ETHERSCAN_API_KEY=ABC123 node fetch-erc20-events.js 0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0');
         process.exit(1);
     }
 

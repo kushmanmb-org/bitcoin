@@ -129,7 +129,7 @@ ETHERSCAN_API_KEY=your_api_key node contrib/devtools/fetch-erc20-events.js <ethe
 **Example:**
 
 ```bash
-ETHERSCAN_API_KEY=ABC123DEF456 node contrib/devtools/fetch-erc20-events.js 0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb
+ETHERSCAN_API_KEY=ABC123DEF456 node contrib/devtools/fetch-erc20-events.js 0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0
 ```
 
 **Output:**
