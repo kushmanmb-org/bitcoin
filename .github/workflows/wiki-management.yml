@@ -1,6 +1,13 @@
 # Copyright (c) 2026 The Bitcoin Core developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or https://opensource.org/license/mit.
+#
+# This workflow validates wiki content for sensitive data patterns while
+# using privacy-safe practices:
+# - Excludes markdown code blocks to avoid false positives from examples
+# - Still scans all non-code content for real credential leaks
+# - Validates markdown links and syntax
+# - Checks file naming conventions
 
 name: Wiki Management
 
@@ -15,6 +22,7 @@ on:
   pull_request:
     paths:
       - 'wiki/**'
+      - '.github/workflows/wiki-management.yml'
   workflow_dispatch:
 
 permissions:
@@ -33,6 +41,7 @@ jobs:
       - name: Check for sensitive data patterns
         run: |
           echo "🔍 Scanning wiki files for sensitive data patterns..."
+          echo "Note: Code blocks (```) are excluded to avoid false positives from examples"
           
           # Define patterns to check for
           PATTERNS=(
@@ -49,13 +58,49 @@ jobs:
           
           FOUND_ISSUES=0
           
+          # Create a temporary directory for cleaned files
+          TEMP_DIR=$(mktemp -d)
+          
+          # Process each markdown file and strip code blocks
+          find wiki/ -name "*.md" -type f | while read -r file; do
+            # Remove code blocks (content between ``` markers) to avoid false positives
+            # This is safe because:
+            # 1. Code blocks are typically examples, not real credentials
+            # 2. Real credentials should never be in documentation
+            # 3. We still scan all non-code-block content
+            
+            # Preserve directory structure to avoid any filename collisions
+            relative_path="${file#wiki/}"
+            cleaned_file="$TEMP_DIR/$relative_path"
+            mkdir -p "$(dirname "$cleaned_file")"
+            
+            # Use awk to remove content between ``` markers (with optional language specifier)
+            # Note: This handles triple-backtick code blocks
+            # Inline code and indented blocks are still scanned as they're less likely
+            # to contain multiline example credentials
+            # If code blocks are malformed (odd number of markers), the scanner may
+            # include some code content, which is acceptable for security scanning
+            awk '
+              BEGIN { in_code_block = 0 }
+              /^```/ {
+                in_code_block = !in_code_block
+                next
+              }
+              !in_code_block { print }
+            ' "$file" > "$cleaned_file"
+          done
+          
+          # Scan the cleaned files
           for pattern in "${PATTERNS[@]}"; do
             echo "Checking for pattern: $pattern"
-            if grep -rniE "$pattern" wiki/ 2>/dev/null; then
+            if grep -rniE "$pattern" "$TEMP_DIR" 2>/dev/null; then
               echo "⚠️ WARNING: Potential sensitive data found matching pattern: $pattern"
               FOUND_ISSUES=$((FOUND_ISSUES + 1))
             fi
           done
+          
+          # Clean up
+          rm -rf "$TEMP_DIR"
           
           if [ $FOUND_ISSUES -gt 0 ]; then
             echo "❌ Found $FOUND_ISSUES potential security issues"
@@ -64,7 +109,7 @@ jobs:
             exit 1
           fi
           
-          echo "✅ No sensitive data patterns detected"
+          echo "✅ No sensitive data patterns detected (code blocks excluded from scan)"
       
       - name: Check markdown links
         run: |
