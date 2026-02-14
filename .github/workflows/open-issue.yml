@@ -1,6 +1,11 @@
 # Copyright (c) 2026 The Bitcoin Core developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or https://opensource.org/license/mit.
+#
+# Security Best Practices:
+# - Minimal permissions (only issues:write and contents:read)
+# - Manual workflow dispatch only
+# - No sensitive data exposure
 
 name: Open new issue
 
@@ -10,6 +15,7 @@ on:
 jobs:
   open-issue:
     runs-on: ubuntu-latest
+    # Note: For self-hosted runners, use [self-hosted, linux] instead
     permissions:
       contents: read
       issues: write

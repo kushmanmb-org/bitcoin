@@ -2,10 +2,18 @@
 # This workflow deploys the kushmanmb.org website with security best practices
 #
 # Security Features:
-# - Uses self-hosted runners for enhanced control
+# - Uses self-hosted runners for production deployments (enhanced control)
 # - Implements security scanning before deployment
 # - Uses encrypted secrets for credentials
 # - Minimal permissions principle
+# - Job isolation for security-critical tasks
+# - Regular runner maintenance and updates required
+#
+# Self-Hosted Runner Setup:
+# - Ensure runners have labels: [self-hosted, linux, website-deployment]
+# - Runners should be hardened and isolated
+# - Access should be restricted to deployment team
+# - Update runner software regularly
 
 name: Deploy Website
 

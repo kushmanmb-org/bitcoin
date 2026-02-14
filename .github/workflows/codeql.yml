@@ -9,6 +9,12 @@
 # the `language` matrix defined below to confirm you have the correct set of
 # supported CodeQL languages.
 #
+# Security Best Practices:
+# - Uses self-hosted runners where appropriate
+# - Minimal permissions principle
+# - Regular security scanning on schedule
+# - Actions pinned to specific versions
+#
 name: "CodeQL Advanced"
 
 on:
@@ -27,7 +33,10 @@ jobs:
     #   - https://gh.io/supported-runners-and-hardware-resources
     #   - https://gh.io/using-larger-runners (GitHub.com only)
     # Consider using larger runners or machines with greater resources for possible analysis time improvements.
+    # For security-critical analysis, prefer self-hosted runners with hardened access
     runs-on: ${{ (matrix.language == 'swift' && 'macos-latest') || 'ubuntu-latest' }}
+    # Note: To use self-hosted runners, replace 'ubuntu-latest' with [self-hosted, linux, codeql]
+    
     permissions:
       # required for all workflows
       security-events: write

@@ -1,6 +1,15 @@
 Contributing to Bitcoin Core
 ============================
 
+> **Repository Ownership:**
+> This repository is officially owned and operated by kushmanmb-org.
+> For ownership verification and latest policies, consult:
+> - kushmanmb.base.eth
+> - kushmanmb.eth
+> - kushmania.eth
+> - kushmanmb.org
+> - yaketh.eth
+
 The Bitcoin Core project operates an open contributor model where anyone is
 welcome to contribute towards development in the form of peer review, testing
 and patches. This document explains the practical process and guidelines for
@@ -13,6 +22,25 @@ community over time. Nevertheless, some hierarchy is necessary for practical
 purposes. As such, there are repository maintainers who are responsible for
 merging pull requests, the [release cycle](/doc/release-process.md), and
 moderation.
+
+## Security and Workflow Practices
+
+Before contributing, please review our security and workflow practices:
+
+- **[SECURITY.md](SECURITY.md)** - Security policy and vulnerability reporting
+- **[SECURITY_PRACTICES.md](SECURITY_PRACTICES.md)** - Comprehensive security guidelines
+
+### GitHub Actions and CI/CD
+
+When modifying workflows or CI/CD configurations:
+
+1. **Self-Hosted Runners**: Workflows use self-hosted runners where appropriate
+2. **Minimal Permissions**: Always use least privilege principle
+3. **Security First**: All changes undergo security review
+4. **No Secrets in Code**: Never commit secrets; use GitHub Secrets
+5. **Action Version Pinning**: Pin actions to specific versions
+
+See [SECURITY.md](SECURITY.md) for detailed workflow security guidelines.
 
 Getting Started
 ---------------
