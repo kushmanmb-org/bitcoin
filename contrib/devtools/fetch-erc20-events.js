@@ -179,7 +179,7 @@ async function main() {
             startblock: 0,
             endblock: 99999999,
             page: 1,
-            offset: 100,  // Fetch up to 100 transactions
+            offset: 100,  // Fetch up to 100 transactions per page (pagination needed for more)
             sort: 'desc',
             apikey: apiKey
         };

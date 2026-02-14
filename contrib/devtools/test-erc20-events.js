@@ -55,7 +55,7 @@ const sampleTransaction = {
     tokenDecimal: '18',
     tokenSymbol: 'USDT',
     tokenName: 'Tether USD',
-    timeStamp: '1609459200'
+    timeStamp: '1609459200'  // January 1, 2021 00:00:00 UTC (intentional test date)
 };
 
 console.log('');
