@@ -329,10 +329,37 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### Results" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "- Linux Runner: ${{ needs.test-linux-runner.result }}" >> $GITHUB_STEP_SUMMARY
-          echo "- macOS Runner: ${{ needs.test-macos-runner.result }}" >> $GITHUB_STEP_SUMMARY
-          echo "- Windows Runner: ${{ needs.test-windows-runner.result }}" >> $GITHUB_STEP_SUMMARY
+          
+          # Helper function to format result
+          format_result() {
+            case "$1" in
+              success) echo "✅ Success" ;;
+              failure) echo "❌ Failed" ;;
+              cancelled) echo "⚠️ Cancelled" ;;
+              skipped) echo "⏭️ Skipped (not selected)" ;;
+              *) echo "❓ $1" ;;
+            esac
+          }
+          
+          echo "- **Linux Runner**: $(format_result '${{ needs.test-linux-runner.result }}')" >> $GITHUB_STEP_SUMMARY
+          echo "- **macOS Runner**: $(format_result '${{ needs.test-macos-runner.result }}')" >> $GITHUB_STEP_SUMMARY
+          echo "- **Windows Runner**: $(format_result '${{ needs.test-windows-runner.result }}')" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
+          
+          # Overall status
+          if [[ "${{ needs.test-linux-runner.result }}" == "success" ]] || \
+             [[ "${{ needs.test-macos-runner.result }}" == "success" ]] || \
+             [[ "${{ needs.test-windows-runner.result }}" == "success" ]]; then
+            echo "### ✅ At least one runner test completed successfully" >> $GITHUB_STEP_SUMMARY
+          elif [[ "${{ needs.test-linux-runner.result }}" == "failure" ]] || \
+               [[ "${{ needs.test-macos-runner.result }}" == "failure" ]] || \
+               [[ "${{ needs.test-windows-runner.result }}" == "failure" ]]; then
+            echo "### ❌ One or more runner tests failed" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "### ⏭️ All runner tests were skipped" >> $GITHUB_STEP_SUMMARY
+          fi
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
           echo "### Security Features Verified" >> $GITHUB_STEP_SUMMARY
           echo "- ✓ No hardcoded credentials in workflows" >> $GITHUB_STEP_SUMMARY
           echo "- ✓ Workspace cleanup after each run" >> $GITHUB_STEP_SUMMARY
