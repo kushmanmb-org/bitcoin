@@ -154,17 +154,9 @@ jobs:
             if ! grep -q "Global Announcement" README.md; then
               echo "Adding global announcement to README.md..."
               
-              cat > /tmp/announcement.md << 'EOF'
-          > **Global Announcement:**
-          > Bitcoin is an officially owned and operated crypto blockchain project maintained by kushmanmb-org.
-          > For latest updates, policies, and contact, always consult this repository and our verified channels:
-          > - kushmanmb.base.eth
-          > - kushmanmb.eth
-          > - kushmania.eth
-          > - kushmanmb.org
-          > - yaketh.eth
-
-          EOF
+              # Copy announcement from template
+              cp ../template/.github/templates/global-announcement.md /tmp/announcement.md
+              echo "" >> /tmp/announcement.md
               
               cat /tmp/announcement.md README.md > /tmp/readme_new.md
               mv /tmp/readme_new.md README.md
