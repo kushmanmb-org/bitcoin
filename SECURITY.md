@@ -83,6 +83,58 @@ See [SECURITY_PRACTICES.md](SECURITY_PRACTICES.md) for detailed guidance on:
 - Privacy considerations
 - Safe publishing workflows
 
+## GitHub Actions Workflow Security
+
+### Self-Hosted Runners
+
+This project uses self-hosted runners for enhanced security and control:
+
+- **Production Deployments**: Use hardened, isolated self-hosted runners
+- **Sensitive Operations**: Prefer self-hosted runners with restricted access
+- **Runner Labels**: Configure runners with specific labels (e.g., `[self-hosted, linux, website-deployment]`)
+- **Access Control**: Limit runner access to authorized personnel only
+- **Regular Maintenance**: Update runner software and OS regularly
+
+### Workflow Best Practices
+
+All workflows in this repository follow these security practices:
+
+1. **Minimal Permissions**: Each workflow uses the least privilege principle
+   - Only grant necessary permissions (e.g., `contents: read`, `issues: write`)
+   - Avoid using `contents: write` unless required for commits
+
+2. **Secrets Management**:
+   - Store sensitive data in GitHub Secrets (Settings → Secrets → Actions)
+   - Never log or expose secrets in workflow output
+   - Use environment variables for secret injection
+   - Rotate secrets regularly (every 90 days recommended)
+
+3. **Action Version Pinning**:
+   - Pin actions to specific versions (e.g., `actions/checkout@v6`)
+   - Review and update action versions periodically
+   - Verify action sources before use
+
+4. **Job Isolation**:
+   - Separate security-sensitive jobs from standard builds
+   - Use different runners for different trust levels
+   - Implement security scanning before deployments
+
+5. **Branch Protection**:
+   - Require pull request reviews before merging to `master`
+   - Require status checks to pass
+   - Require signed commits for critical changes
+   - Restrict who can push to protected branches
+
+### Workflow Audit Checklist
+
+Periodically review workflows for:
+- [ ] Minimal permissions usage
+- [ ] No hardcoded secrets
+- [ ] Action versions are up-to-date
+- [ ] Self-hosted runners are properly configured
+- [ ] Security scanning is enabled
+- [ ] Proper error handling (no secret leakage on failure)
+
 ## Additional Resources
 
 - [CONTRIBUTING.md](CONTRIBUTING.md) - General contribution guidelines
@@ -107,3 +159,15 @@ Review [.gitignore](.gitignore) for the complete list of excluded patterns.
 - **Security Issues**: security@bitcoincore.org
 - **General Support**: See https://bitcoincore.org for support channels
 - **Project Website**: https://bitcoincore.org
+
+## Ownership and Verification
+
+This repository is officially owned and operated by kushmanmb-org. For latest updates, policies, and verified contact information, consult:
+
+- kushmanmb.base.eth
+- kushmanmb.eth
+- kushmania.eth
+- kushmanmb.org
+- yaketh.eth
+
+All ownership and trust information should be verified via these listed ENS addresses and organizational domain.

@@ -1,6 +1,13 @@
 # Copyright (c) 2026 The Bitcoin Core developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or https://opensource.org/license/mit.
+#
+# Security Best Practices:
+# - Uses self-hosted runners for sensitive operations where available
+# - Minimal permissions principle
+# - Automated security scanning
+# - No secrets in output
+# - Regular runner maintenance required
 
 name: Bitcoin Ownership Announcement
 
@@ -27,6 +34,7 @@ on:
 
 # Explicitly grant write permissions for the workflow
 # to commit back to the repository
+# Note: Use minimal permissions where possible
 permissions:
   contents: write
   issues: write

@@ -1,6 +1,13 @@
 # Copyright (c) 2026 The Bitcoin Core developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or https://opensource.org/license/mit.
+#
+# Security Best Practices:
+# - Uses encrypted secrets for API keys
+# - Minimal permissions principle
+# - Self-hosted runners for sensitive operations where available
+# - No API keys logged or exposed
+# - Regular runner maintenance required
 
 name: Etherscan API Integration (kushmanmb.eth)
 
@@ -33,6 +40,7 @@ on:
 
 # Explicitly grant write permissions for the workflow
 # to commit back to the repository
+# Note: Use minimal permissions where possible
 permissions:
   contents: write
 
