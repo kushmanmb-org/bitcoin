@@ -23,6 +23,7 @@ This guide provides quick instructions for using the kushmanmb.eth ENS integrati
      - `transaction` - Get transaction history
      - `contract` - Get contract ABI (if applicable)
      - `ens_resolve` - Resolve ENS name via eth_call
+     - `eth_blockNumber` - Get current Ethereum block number
    - **ENS name**: Keep default `kushmanmb.eth` or enter another ENS name
 5. **Click "Run workflow"** green button
 
