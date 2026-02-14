@@ -85,6 +85,8 @@ Bitcoin Core is a security-critical project. Please review our security policies
 
 - **[SECURITY.md](SECURITY.md)** - Security policy, supported versions, and how to report vulnerabilities
 - **[SECURITY_PRACTICES.md](SECURITY_PRACTICES.md)** - Comprehensive security and privacy practices for development
+- **[SELF_HOSTED_RUNNER_SETUP.md](SELF_HOSTED_RUNNER_SETUP.md)** - Self-hosted GitHub Actions runner configuration with security best practices
+- **[ENS_CONFIGURATION.md](ENS_CONFIGURATION.md)** - kushmanmb.eth ENS domain configuration and blockchain integration
 
 ### Key Security Reminders
 
@@ -93,6 +95,14 @@ Bitcoin Core is a security-critical project. Please review our security policies
 - **Keep dependencies updated** - Regularly check for security updates
 - **Review code carefully** - This is a security-critical project where mistakes can be costly
 - **Report vulnerabilities privately** - Email security@bitcoincore.org for security issues
+
+### ENS Integration
+
+This project uses the **kushmanmb.eth** ENS (Ethereum Name Service) domain for blockchain identity:
+- Provides decentralized identity on Ethereum
+- Links to website and other resources
+- Used in GitHub Actions workflows for Etherscan API integration
+- See [ENS_CONFIGURATION.md](ENS_CONFIGURATION.md) for details
 
 ### Safe Git Practices
 
