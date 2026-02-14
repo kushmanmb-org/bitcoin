@@ -123,22 +123,26 @@ Use your OS credential manager:
 When using SSH for Git operations:
 
 ```bash
-# Generate strong SSH key
-ssh-keygen -t ed25519 -C "your_email@example.com"
+# Generate hardware-backed SSH key (requires FIDO/U2F security key like YubiKey)
+ssh-keygen -t ed25519-sk -C "mattbrace92@gmail.com"
 
 # Add to ssh-agent
 eval "$(ssh-agent -s)"
-ssh-add ~/.ssh/id_ed25519
+ssh-add ~/.ssh/id_ed25519_sk
 
 # Add public key to GitHub
-cat ~/.ssh/id_ed25519.pub
+cat ~/.ssh/id_ed25519_sk.pub
 ```
 
 **Security measures:**
+- Use hardware security keys (ed25519-sk) for enhanced protection against key theft
+- Hardware security keys require physical presence for authentication (FIDO/U2F devices)
 - Use passphrase-protected keys
 - Rotate keys annually
 - Use separate keys for different purposes
 - Never commit private keys (`.gitignore` already configured)
+
+**Note:** The `ed25519-sk` key type requires a FIDO/U2F compatible hardware security key (e.g., YubiKey, SoloKey) to be connected during key generation and each use. This provides significantly stronger security by ensuring the private key never leaves the hardware device.
 
 ### 3. Access Control
 
