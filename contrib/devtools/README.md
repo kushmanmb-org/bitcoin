@@ -110,3 +110,53 @@ Example usage:
 
     cd .../src
     ../contrib/devtools/circular-dependencies.py {*,*/*,*/*/*}.{h,cpp}
+
+fetch-erc20-events.js
+=====================
+
+A Node.js script to fetch ERC20 token transfer events from the Etherscan API. This script queries the Etherscan API for ERC20 token transfers associated with a specific Ethereum address and displays detailed information about each transaction.
+
+**Requirements:**
+- Node.js (v12 or higher)
+- Etherscan API key (get one at https://etherscan.io/myapikey)
+
+**Usage:**
+
+```bash
+ETHERSCAN_API_KEY=your_api_key node contrib/devtools/fetch-erc20-events.js <ethereum_address>
+```
+
+**Example:**
+
+```bash
+ETHERSCAN_API_KEY=ABC123DEF456 node contrib/devtools/fetch-erc20-events.js 0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0
+```
+
+**Output:**
+
+For each ERC20 token transfer event, the script displays:
+- Transaction Hash
+- Block Number
+- Sender Address (From)
+- Recipient Address (To)
+- Token Value (formatted with proper decimals)
+- Token Symbol
+- Token Name
+- Timestamp
+
+**Error Handling:**
+
+The script handles various error conditions:
+- Missing or invalid API key
+- Missing or invalid Ethereum address
+- HTTP request failures
+- API errors (rate limits, invalid responses)
+- Empty results (no token transfers found)
+
+**Testing:**
+
+A test script is provided to verify the formatting functions:
+
+```bash
+node contrib/devtools/test-erc20-events.js
+```
