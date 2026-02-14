@@ -114,5 +114,8 @@ When contributing to Bitcoin Core:
 4. **Keep commits focused**: Make small, atomic commits that address one concern at a time
 5. **Test before pushing**: Run tests and verify your changes work as expected
 6. **Sign your commits**: Consider using GPG to sign commits for authenticity
+7. **Follow the PR workflow**: Never push directly to master; always use pull requests
+
+For detailed Git workflow, branch management, and contribution process, see [GIT_WORKFLOW_GUIDE.md](GIT_WORKFLOW_GUIDE.md).
 
 For detailed authentication and publishing guidance, especially for Maven/GitHub Packages, see [SECURITY_PRACTICES.md](SECURITY_PRACTICES.md).
