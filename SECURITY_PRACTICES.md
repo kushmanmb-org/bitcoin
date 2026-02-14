@@ -154,18 +154,25 @@ cat ~/.ssh/id_ed25519_sk.pub
 If hardware security keys are not available:
 
 ```bash
+# Generate hardware-backed SSH key (requires FIDO/U2F security key like YubiKey)
+ssh-keygen -t ed25519-sk -C "mattbrace92@gmail.com"
 # Generate standard SSH key
 ssh-keygen -t ed25519 -C "kushmanmb@gmx.com"
 
 # Add to ssh-agent
 eval "$(ssh-agent -s)"
-ssh-add ~/.ssh/id_ed25519
+ssh-add ~/.ssh/id_ed25519_sk
 
 # Add public key to GitHub
-cat ~/.ssh/id_ed25519.pub
+cat ~/.ssh/id_ed25519_sk.pub
 ```
 
 **Security measures:**
+- Use hardware security keys (ed25519-sk) for enhanced protection against key theft
+- Hardware security keys require physical presence for authentication (FIDO/U2F devices)
+- Use passphrase-protected keys
+- Rotate keys annually
+- Use separate keys for different purposes
 - **Prefer hardware security keys** (ed25519-sk) over standard keys when possible
 - Use passphrase-protected keys (minimum 20 characters)
 - Rotate keys annually or when compromised
@@ -174,6 +181,8 @@ cat ~/.ssh/id_ed25519.pub
 - Never commit private keys (`.gitignore` already configured)
 - Enable GitHub SSH key expiration for standard keys
 - Register security keys with GitHub: Settings → SSH and GPG keys → New SSH key
+
+**Note:** The `ed25519-sk` key type requires a FIDO/U2F compatible hardware security key (e.g., YubiKey, SoloKey) to be connected during key generation and each use. This provides significantly stronger security by ensuring the private key never leaves the hardware device.
 
 ### 3. Access Control
 
