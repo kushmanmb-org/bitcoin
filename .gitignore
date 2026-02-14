@@ -390,3 +390,150 @@ Thumbs.db
 
 # GitHub Codespaces
 .devcontainer/local/
+
+# GitHub Actions Self-Hosted Runners
+# Runner working directories and cache
+_work/
+_actions/
+_temp/
+_update/
+_diag/
+_runner/
+.runner
+.credentials
+.credentials_rsaparams
+
+# Runner logs and diagnostics
+_diag/Worker_*.log
+_diag/Runner_*.log
+*.runner.log
+
+# Runner environment and configuration
+.env.runner
+.runner.env
+runner-config.json
+.runner-config
+runner.json
+
+# Self-hosted runner specific data
+# CRITICAL: Runner credentials and tokens
+runner-registration-token.txt
+runner-auth-token.txt
+.runner-token
+RUNNER_TOKEN
+RUNNER_CFG_PAT
+.github-runner-token
+
+# Runner work directories (may contain sensitive build artifacts)
+_runner_work/
+runner-work/
+actions-runner-work/
+actions-runner/_work/
+
+# Runner cache and temporary files
+runner-cache/
+.runner-cache/
+_runner_cache/
+_runner_temp/
+
+# Platform-specific runner files
+# Linux runners
+/etc/systemd/system/actions.runner.*.service
+/etc/systemd/system/github-runner.service
+
+# Windows runners
+runsvc.exe
+run.cmd
+config.cmd
+actions-runner.exe
+
+# macOS runners
+svc.sh
+runsvc.sh
+
+# Runner diagnostic and telemetry data
+diagnostic-logs/
+runner-diagnostic-logs/
+telemetry/
+
+# Self-hosted runner updates and patches
+actions-runner-*.tar.gz
+actions-runner-*.zip
+runner-update/
+_update_backup/
+
+# Externals and dependencies (runner specific)
+externals/
+_externals/
+
+# Runner state and locks
+.runner.state
+.runner.lock
+runner.lock
+
+# Cloud provider metadata (if runner is in cloud)
+# AWS
+.aws/
+aws-credentials.json
+# Azure
+.azure/
+azure-credentials.json
+# GCP
+.gcloud/
+gcp-credentials.json
+service-account-key.json
+
+# Kubernetes runner configurations
+kube-config
+.kubeconfig
+k8s-runner-config.yaml
+
+# Container orchestration for runners
+docker-compose.runner.yml
+.docker-runner/
+podman-runner/
+
+# Runner monitoring and metrics
+prometheus-runner.yml
+grafana-runner.json
+runner-metrics/
+metrics-export/
+
+# Self-hosted runner networking
+# VPN configurations used by runners
+runner-vpn.conf
+.runner-vpn/
+openvpn-runner/
+wireguard-runner/
+
+# SSH keys for runner access (in addition to general SSH keys)
+runner_id_rsa
+runner_id_ed25519
+.ssh/runner_*
+runner-ssh-keys/
+
+# Webhook secrets for self-hosted runners
+webhook-secret.txt
+runner-webhook.secret
+.github-webhook-secret
+
+# Runner proxy configurations
+.runner-proxy
+runner-proxy.conf
+squid-runner.conf
+
+# Performance and profiling data from runner
+runner-perf/
+runner-profile/
+*.runner.prof
+
+# Self-hosted runner backups
+runner-backup/
+runner-backup-*/
+.runner-backup.tar.gz
+
+# Custom runner scripts (may contain credentials)
+custom-runner-setup.sh
+runner-provisioning.sh
+.runner-init
+runner-bootstrap.*
