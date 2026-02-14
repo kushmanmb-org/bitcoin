@@ -56,13 +56,57 @@ The kushmanmb.eth ENS name is integrated into GitHub Actions workflows for:
 
 ### Setting the Resolved Address
 
-The Ethereum address for kushmanmb.eth should be configured in the workflow file:
+**IMPORTANT**: Before using the Etherscan API workflow, you must update the Ethereum address for kushmanmb.eth.
 
-```yaml
-# In .github/workflows/etherscan-apiv2.yml
-env:
-  KUSHMANMB_ADDRESS: "0x..." # Replace with actual resolved address
-```
+The workflow contains a placeholder zero address that will cause it to fail with a clear error message until updated.
+
+**Steps to configure**:
+
+1. **Find the resolved address** using one of these methods:
+
+   **Method A: ENS App**
+   ```
+   Visit: https://app.ens.domains/kushmanmb.eth
+   Copy the ETH address shown
+   ```
+
+   **Method B: Etherscan**
+   ```
+   Visit: https://etherscan.io/enslookup-search?search=kushmanmb.eth
+   Copy the resolved address
+   ```
+
+   **Method C: Command Line** (requires Foundry)
+   ```bash
+   cast resolve-name kushmanmb.eth
+   ```
+
+2. **Update the workflow file**:
+
+   Edit `.github/workflows/etherscan-apiv2.yml` and replace the zero address:
+
+   ```yaml
+   # Change from:
+   KUSHMANMB_ADDRESS="0x0000000000000000000000000000000000000000"
+   
+   # To your actual address:
+   KUSHMANMB_ADDRESS="0xYourActualAddressHere"
+   ```
+
+3. **Commit and push** the change:
+
+   ```bash
+   git add .github/workflows/etherscan-apiv2.yml
+   git commit -m "Configure kushmanmb.eth resolved address"
+   git push
+   ```
+
+4. **Test the workflow**:
+   - Go to Actions tab
+   - Run "Etherscan API Integration (kushmanmb.eth)" workflow
+   - Verify it completes successfully
+
+**Validation**: The workflow includes automatic validation that will fail with a helpful error message if the zero address is detected, preventing accidental use of invalid configuration.
 
 ### API Keys
 

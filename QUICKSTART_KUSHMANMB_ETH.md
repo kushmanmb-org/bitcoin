@@ -75,15 +75,19 @@ sudo ./svc.sh start
 
 ## Configuring kushmanmb.eth Address
 
+**⚠️ REQUIRED BEFORE FIRST USE**: The workflow contains a placeholder address that must be updated.
+
 To update the Ethereum address that kushmanmb.eth resolves to:
 
 1. **Edit the workflow file**: `.github/workflows/etherscan-apiv2.yml`
-2. **Find the variable**: `KUSHMANMB_ADDRESS`
+2. **Find the variable**: `KUSHMANMB_ADDRESS` (around line 90-100)
 3. **Update with resolved address**:
    ```yaml
-   KUSHMANMB_ADDRESS="0xYourActualAddress"
+   KUSHMANMB_ADDRESS="0xYourActualAddress"  # Replace zero address
    ```
 4. **Commit and push** the change
+
+**Why this is required**: The workflow includes validation that prevents using the zero address placeholder. This ensures you don't accidentally query invalid data.
 
 ### How to Get the Resolved Address
 

@@ -56,6 +56,19 @@ jobs:
         run: |
           echo "WORKFLOW_RUN_TIME=$(date -u +%Y-%m-%d-%H-%M-%S)" >> $GITHUB_ENV
 
+      - name: Validate configuration
+        run: |
+          echo "Validating configuration..."
+          
+          # Check if ETHERSCAN_API_KEY is configured
+          if [ -z "${{ secrets.ETHERSCAN_API_KEY }}" ]; then
+            echo "⚠️ Warning: ETHERSCAN_API_KEY not configured"
+            echo "Please add your Etherscan API key to repository secrets"
+            echo "Get one at: https://etherscan.io/myapikey"
+          fi
+          
+          echo "✓ Configuration validation complete"
+
       - name: Resolve ENS name to address
         id: resolve-ens
         run: |
@@ -94,8 +107,30 @@ jobs:
           ENS_NAME="${{ github.event.inputs.ens_name || 'kushmanmb.eth' }}"
           
           # Known addresses - UPDATE THESE WITH ACTUAL kushmanmb.eth RESOLVED ADDRESSES
-          # These are placeholders - the actual address for kushmanmb.eth should be configured
+          # IMPORTANT: The zero address below is a placeholder and must be updated!
+          # To get the actual address for kushmanmb.eth:
+          # 1. Visit https://app.ens.domains/kushmanmb.eth
+          # 2. Visit https://etherscan.io/enslookup-search?search=kushmanmb.eth
+          # 3. Use command: cast resolve-name kushmanmb.eth (requires Foundry)
           KUSHMANMB_ADDRESS="0x0000000000000000000000000000000000000000"
+          
+          # Validation: Fail if zero address is still being used
+          if [ "$KUSHMANMB_ADDRESS" = "0x0000000000000000000000000000000000000000" ]; then
+            echo "❌ ERROR: KUSHMANMB_ADDRESS is still set to zero address!"
+            echo ""
+            echo "Please update the KUSHMANMB_ADDRESS variable in this workflow with"
+            echo "the actual Ethereum address that kushmanmb.eth resolves to."
+            echo ""
+            echo "To find the resolved address:"
+            echo "  1. Visit https://app.ens.domains/kushmanmb.eth"
+            echo "  2. Or use: curl 'https://etherscan.io/enslookup-search?search=kushmanmb.eth'"
+            echo ""
+            echo "Then edit .github/workflows/etherscan-apiv2.yml and update KUSHMANMB_ADDRESS"
+            echo ""
+            # Create placeholder data file instead of failing
+            echo '{"status":"0","message":"Configuration required: Update KUSHMANMB_ADDRESS in workflow","ens_name":"'${ENS_NAME}'"}' > data/etherscan/latest.json
+            exit 1
+          fi
           
           # Contract addresses from problem statement
           RESOLVER_CONTRACT="0xAEEF46DB4855E25702F8237E8f403FddcaF931C0"
