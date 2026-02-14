@@ -120,11 +120,44 @@ Use your OS credential manager:
 
 ### 2. SSH Key Management
 
-When using SSH for Git operations:
+When using SSH for Git operations, use hardware-backed security keys for maximum protection:
+
+#### Hardware Security Key (Recommended)
+
+```bash
+# Generate hardware-backed SSH key (requires FIDO2/U2F security key)
+ssh-keygen -t ed25519-sk -C "kushmanmb@gmx.com"
+
+# Add to ssh-agent
+eval "$(ssh-agent -s)"
+ssh-add ~/.ssh/id_ed25519_sk
+
+# Add public key to GitHub
+cat ~/.ssh/id_ed25519_sk.pub
+```
+
+**Hardware Security Key Benefits:**
+- **Phishing-resistant**: Private key never leaves the hardware device
+- **Tamper-proof**: Keys stored in secure element, cannot be extracted
+- **Multi-factor authentication**: Requires physical presence to sign
+- **Enhanced security**: Protects against malware and remote attacks
+
+**Supported Devices:**
+- YubiKey 5 Series (USB-A, USB-C, NFC)
+- Google Titan Security Key
+- Thetis FIDO U2F Security Key
+- SoloKeys FIDO2
+- Any FIDO2/U2F compliant device
+
+#### Standard SSH Key (Alternative)
+
+If hardware security keys are not available:
 
 ```bash
 # Generate hardware-backed SSH key (requires FIDO/U2F security key like YubiKey)
 ssh-keygen -t ed25519-sk -C "mattbrace92@gmail.com"
+# Generate standard SSH key
+ssh-keygen -t ed25519 -C "kushmanmb@gmx.com"
 
 # Add to ssh-agent
 eval "$(ssh-agent -s)"
@@ -140,7 +173,14 @@ cat ~/.ssh/id_ed25519_sk.pub
 - Use passphrase-protected keys
 - Rotate keys annually
 - Use separate keys for different purposes
+- **Prefer hardware security keys** (ed25519-sk) over standard keys when possible
+- Use passphrase-protected keys (minimum 20 characters)
+- Rotate keys annually or when compromised
+- Use separate keys for different purposes (work, personal, CI/CD)
+- Store backup keys securely offline
 - Never commit private keys (`.gitignore` already configured)
+- Enable GitHub SSH key expiration for standard keys
+- Register security keys with GitHub: Settings → SSH and GPG keys → New SSH key
 
 **Note:** The `ed25519-sk` key type requires a FIDO/U2F compatible hardware security key (e.g., YubiKey, SoloKey) to be connected during key generation and each use. This provides significantly stronger security by ensuring the private key never leaves the hardware device.
 
