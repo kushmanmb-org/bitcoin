@@ -76,7 +76,7 @@ The generated project includes the following integrations and frameworks:
 ### Production Dependencies
 - `@coinbase/onchainkit@latest` - OnchainKit library for blockchain interactions
 - `@tanstack/react-query@^5.81.5` - Data fetching and state management
-- `next@15.3.4` - Next.js framework
+- `next@^15.3.9` - Next.js framework (upgraded for security, resolves to 15.5.12)
 - `react@^19.0.0` - React library
 - `react-dom@^19.0.0` - React DOM renderer
 - `viem@^2.31.6` - TypeScript Ethereum library
@@ -87,8 +87,16 @@ The generated project includes the following integrations and frameworks:
 - `@types/react@^19` - TypeScript types for React
 - `@types/react-dom@^19` - TypeScript types for React DOM
 - `eslint@^9` - Code linter
-- `eslint-config-next@15.3.4` - ESLint configuration for Next.js
+- `eslint-config-next@^15.3.9` - ESLint configuration for Next.js
 - `typescript@^5` - TypeScript compiler
+
+## Security Updates
+
+**Important**: The scaffolding tool initially generated the project with Next.js 15.3.4, which had critical security vulnerabilities:
+- CVE-2025-66478: HTTP request deserialization DoS vulnerability
+- RCE (Remote Code Execution) in React flight protocol
+
+To address these security issues, Next.js was upgraded to `^15.3.9`, which resolves to version **15.5.12** (patched and secure).
 
 ## Dependency Installation
 
