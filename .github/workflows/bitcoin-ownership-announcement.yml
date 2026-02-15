@@ -1,6 +1,19 @@
 # Copyright (c) 2026 The Bitcoin Core developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or https://opensource.org/license/mit.
+#
+# ═══════════════════════════════════════════════════════════════════
+# GLOBAL OWNERSHIP & CREATOR STATUS
+# ═══════════════════════════════════════════════════════════════════
+# Repository Owner: kushmanmb.eth (Ethereum Name Service)
+# Creator: Kushman MB
+# ENS Identifiers:
+#   - Primary: kushmanmb.eth (Ethereum Mainnet)
+#   - Base Network: Kushmanmb.base.eth
+# 
+# This workflow is part of the kushmanmb-org/bitcoin repository
+# and is maintained by the repository owner and authorized contributors.
+# ═══════════════════════════════════════════════════════════════════
 
 name: Bitcoin Ownership Announcement
 
@@ -38,7 +51,8 @@ concurrency:
 jobs:
   announce-ownership:
     name: 'Announce Bitcoin Ownership'
-    runs-on: ubuntu-latest
+    # Using self-hosted runner when available for kushmanmb.eth repository
+    runs-on: ${{ vars.USE_SELF_HOSTED == 'true' && 'self-hosted' || 'ubuntu-latest' }}
 
     steps:
       - name: Checkout repository
@@ -232,7 +246,8 @@ jobs:
 
   verify-no-secrets:
     name: 'Verify No Secrets in Announcement'
-    runs-on: ubuntu-latest
+    # Using self-hosted runner when available for kushmanmb.eth repository
+    runs-on: ${{ vars.USE_SELF_HOSTED == 'true' && 'self-hosted' || 'ubuntu-latest' }}
     needs: announce-ownership
 
     steps:
@@ -299,7 +314,8 @@ jobs:
 
   create-summary:
     name: 'Create Summary Issue'
-    runs-on: ubuntu-latest
+    # Using self-hosted runner when available for kushmanmb.eth repository
+    runs-on: ${{ vars.USE_SELF_HOSTED == 'true' && 'self-hosted' || 'ubuntu-latest' }}
     needs: [announce-ownership, verify-no-secrets]
     if: github.event_name == 'workflow_dispatch'
 
