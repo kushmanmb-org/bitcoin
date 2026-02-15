@@ -7,7 +7,6 @@ associated with ENS (Ethereum Name Service) identifiers.
 
 - **Kushmanmb.base.eth** - Base Network ENS
 - **kushmanmb.eth** - Ethereum Mainnet ENS
-- **yaketh.eth** - Ethereum Name Service
 
 ## Recent Announcements
 
@@ -15,4 +14,4 @@ associated with ENS (Ethereum Name Service) identifiers.
 - [announcement-2026-02-13.md](announcement-2026-02-13.md)
 
 ---
-Last updated: 2026-02-15 14:50:42 UTC
+Last updated: 2026-02-15 18:36:57 UTC
