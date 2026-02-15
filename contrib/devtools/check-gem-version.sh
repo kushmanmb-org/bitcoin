@@ -18,5 +18,3 @@ fi
 # Display gem version
 echo "Checking gem version..."
 gem --version
-
-exit 0
