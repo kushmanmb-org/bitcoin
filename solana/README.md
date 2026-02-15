@@ -435,7 +435,7 @@ MIT License - See [COPYING](../COPYING) for details.
 
 ## Contributing
 
-This program is part of the Bitcoin Core project. See [CONTRIBUTING.md](../CONTRIBUTING.md) for contribution guidelines.
+This Solana program is part of the broader blockchain verification ecosystem in this repository. It provides Solana-based zero-knowledge proof capabilities that complement the existing zkpdf_lib. See [CONTRIBUTING.md](../CONTRIBUTING.md) for contribution guidelines.
 
 ## Support
 

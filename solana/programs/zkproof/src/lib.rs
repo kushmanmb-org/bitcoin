@@ -122,11 +122,12 @@ pub struct ProofAccount {
     pub proof_data: Vec<u8>,
 }
 
-impl ProofAccount {
-    pub const INIT_SPACE: usize = 32 + 1 + 4 + 1024; // pubkey + bool + vec length + proof data
-}
-
 const MAX_PROOF_SIZE: usize = 1024;
+
+impl ProofAccount {
+    // Space calculation: discriminator (8) + pubkey (32) + bool (1) + vec length (4) + proof data (MAX_PROOF_SIZE)
+    pub const INIT_SPACE: usize = 8 + 32 + 1 + 4 + MAX_PROOF_SIZE;
+}
 
 #[error_code]
 pub enum ErrorCode {
