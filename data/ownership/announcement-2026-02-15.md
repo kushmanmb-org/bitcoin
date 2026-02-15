@@ -11,6 +11,7 @@ Ethereum Name Service (ENS) identifiers:
 ### Primary ENS Names
 - **Base Network**: Kushmanmb.base.eth
 - **Ethereum Mainnet**: kushmanmb.eth
+- **yaketh.eth**
 
 ### Important Notes
 
