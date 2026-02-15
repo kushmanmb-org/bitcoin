@@ -160,7 +160,7 @@ start_dev_server() {
     log_info "Starting Bitcoin Core Frontend"
     log_info "============================================"
     log_info "The application will be available at:"
-    log_info "  http://localhost:5173"
+    log_info "  http://localhost:3000"
     log_info ""
     log_info "Press Ctrl+C to stop the server"
     log_info "============================================"
