@@ -14,6 +14,26 @@ Private data includes any information that should not be publicly accessible, su
 - Database connection strings
 - Session tokens
 
+## 🏆 Repository Ownership & Creator Badge
+
+This repository is maintained and secured by:
+
+**Repository Owner**: kushmanmb.eth (Ethereum Name Service)  
+**Creator**: kushmanmb
+
+### ENS Identifiers
+- **Primary**: kushmanmb.eth (Ethereum Mainnet)
+- **Base Network**: Kushmanmb.base.eth
+- **yaketh.eth** (Ethereum Name Service)
+
+### Ownership Verification
+All ownership claims are publicly documented in the `/data/ownership/` directory and verified through:
+- Timestamped announcements
+- GitHub Actions workflow signatures
+- ENS domain associations
+
+⚠️ **Important**: Private keys associated with these ENS identifiers are NEVER stored in this repository or any public location. All private key management follows the security practices outlined in this document.
+
 ## 📁 File-Based Data Protection
 
 ### .gitignore Configuration
