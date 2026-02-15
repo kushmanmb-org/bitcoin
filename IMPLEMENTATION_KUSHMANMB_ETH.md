@@ -55,6 +55,8 @@ Docker/Podman runner configurations
 **File**: `.github/workflows/etherscan-apiv2.yml` (MODIFIED)
 
 **Changes**:
+- **✅ NEW**: Automatic ENS name resolution using Etherscan API
+- **✅ NEW**: Dynamic address lookup - no manual configuration required
 - Added ENS name resolution support
 - Integrated the curl command from problem statement
 - Support for multiple API endpoints:
@@ -63,12 +65,16 @@ Docker/Podman runner configurations
   - `contract` - Contract ABI retrieval
   - `ens_resolve` - Direct ENS resolution via eth_call
 - Configurable ENS name input (defaults to kushmanmb.eth)
-- Enhanced metadata in API responses (timestamp, ENS name, endpoint)
+- Enhanced metadata in API responses (timestamp, ENS name, resolved address, endpoint)
 
 **Implementation**:
 ```yaml
-# Uses Etherscan V2 API as specified in problem statement
-curl "https://api.etherscan.io/v2/api?chainid=1&module=proxy&action=eth_call&..."
+# Automatic ENS resolution using Etherscan's ENS API
+ENS_LOOKUP_URL="https://api.etherscan.io/api?module=ens&action=getaddress&name=${ENS_NAME}&apikey=${API_KEY}"
+RESOLVED_ADDRESS=$(curl -s "${ENS_LOOKUP_URL}" | jq -r '.result // empty')
+
+# Dynamic address usage - no hardcoded addresses
+TARGET_ADDRESS="${RESOLVED_ADDRESS}"
 ```
 
 ### 4. Comprehensive Documentation
@@ -370,14 +376,14 @@ When updating:
 
 ## Known Limitations
 
-1. **ENS Resolution**: Requires manual address configuration until automated resolution is implemented
-2. **API Rate Limits**: Etherscan free tier has rate limits (5 calls/sec)
-3. **Runner Registration**: Token expires after 1 hour during setup
-4. **Data Storage**: Repository size may grow with historical data
+1. **API Rate Limits**: Etherscan free tier has rate limits (5 calls/sec)
+2. **Runner Registration**: Token expires after 1 hour during setup
+3. **Data Storage**: Repository size may grow with historical data
+4. **ENS Resolution Dependency**: Requires Etherscan API key for ENS resolution
 
 ## Future Enhancements
 
-- [ ] Automated ENS resolution in workflows
+- [x] Automated ENS resolution in workflows (✅ Implemented)
 - [ ] Enhanced data visualization
 - [ ] Alerting for ENS record changes
 - [ ] Runner auto-scaling configuration
