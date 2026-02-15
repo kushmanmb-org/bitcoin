@@ -104,6 +104,27 @@ This project uses the **kushmanmb.eth** ENS (Ethereum Name Service) domain for b
 - Used in GitHub Actions workflows for Etherscan API integration
 - See [ENS_CONFIGURATION.md](ENS_CONFIGURATION.md) for details
 
+### Coinbase Developer Platform (CDP) API Integration
+
+This repository includes tools for interacting with the Coinbase Developer Platform API:
+- **JWT-based authentication** with ES256 algorithm
+- **EVM blockchain data queries** (token balances, transactions, blocks)
+- **Multi-network support** (Ethereum, Base, Polygon, Optimism, Arbitrum, etc.)
+- **Secure credential management** via environment variables
+
+**Quick Start:**
+```bash
+export KEY_ID="your-key-id"
+export KEY_SECRET="your-key-secret"
+export REQUEST_PATH="/platform/v2/evm/token-balances/base-sepolia/0x..."
+node contrib/devtools/fetch-cdp-api.js
+```
+
+**Documentation:**
+- Quick Start Guide: [CDP_API_QUICKSTART.md](CDP_API_QUICKSTART.md)
+- Full Documentation: [contrib/devtools/CDP_API_README.md](contrib/devtools/CDP_API_README.md)
+- Demo Script: `./contrib/devtools/demo-cdp-api.sh`
+
 ### Safe Git Practices
 
 When contributing to Bitcoin Core:
