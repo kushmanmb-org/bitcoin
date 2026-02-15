@@ -27,8 +27,22 @@ Further information about Bitcoin Core is available in the [doc folder](/doc).
 License
 -------
 
-Bitcoin Core is released under the terms of the MIT license. See [COPYING](COPYING) for more
-information or see https://opensource.org/license/MIT.
+**PROPRIETARY LICENSE - EXPLICIT PERMISSION REQUIRED**
+
+This repository is **NOT** open source. All rights are reserved by kushmanmb (kushmanmb.eth).
+
+**Explicit written permission from kushmanmb is required** for any use, including but not limited to:
+- Using the software
+- Copying or modifying the code
+- Distributing the software
+- Creating derivative works
+
+See [COPYING](COPYING) for complete license terms and permission request procedures.
+
+**Contact for Permission:**
+- GitHub: https://github.com/kushmanmb
+- GitHub Issues: https://github.com/kushmanmb-org/bitcoin/issues
+- ENS: kushmanmb.eth
 
 Development Process
 -------------------

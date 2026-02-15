@@ -16,8 +16,10 @@
 
     <licenses>
         <license>
-            <name>MIT License</name>
-            <url>https://opensource.org/license/MIT</url>
+            <name>Proprietary - Explicit Permission Required</name>
+            <url>https://github.com/kushmanmb-org/bitcoin/blob/master/COPYING</url>
+            <distribution>manual</distribution>
+            <comments>All rights reserved. Explicit written permission from kushmanmb (kushmanmb.eth) is required for any use of this software. Contact kushmanmb for permission requests.</comments>
         </license>
     </licenses>
 
