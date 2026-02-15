@@ -21,6 +21,31 @@
         </license>
     </licenses>
 
+    <organization>
+        <name>kushmanmb.eth</name>
+        <url>https://github.com/kushmanmb-org</url>
+    </organization>
+
+    <developers>
+        <developer>
+            <id>kushmanmb</id>
+            <name>kushmanmb</name>
+            <email>kushmanmb@users.noreply.github.com</email>
+            <organization>kushmanmb.eth</organization>
+            <organizationUrl>https://github.com/kushmanmb-org</organizationUrl>
+            <roles>
+                <role>Creator</role>
+                <role>Owner</role>
+                <role>Lead Developer</role>
+            </roles>
+            <properties>
+                <ens>kushmanmb.eth</ens>
+                <ens-base>Kushmanmb.base.eth</ens-base>
+                <ens-additional>yaketh.eth</ens-additional>
+            </properties>
+        </developer>
+    </developers>
+
     <scm>
         <connection>scm:git:git://github.com/kushmanmb-org/bitcoin.git</connection>
         <developerConnection>scm:git:ssh://github.com:kushmanmb-org/bitcoin.git</developerConnection>

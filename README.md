@@ -1,6 +1,15 @@
 Bitcoin Core integration/staging tree
 =====================================
 
+**Repository Owner**: kushmanmb.eth (Ethereum Name Service)  
+**Creator**: kushmanmb  
+**ENS Identities**:
+- Primary: kushmanmb.eth (Ethereum Mainnet)
+- Base Network: Kushmanmb.base.eth
+- Additional: yaketh.eth
+
+---
+
 https://bitcoincore.org
 
 For an immediately usable, binary version of the Bitcoin Core software, see
