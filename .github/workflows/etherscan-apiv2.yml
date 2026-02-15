@@ -85,25 +85,41 @@ jobs:
 
       - name: Resolve ENS name to address
         id: resolve-ens
-        # Only run if API key is configured
-        if: ${{ secrets.ETHERSCAN_API_KEY != '' }}
         run: |
           echo "Resolving ENS name: ${{ github.event.inputs.ens_name || 'kushmanmb.eth' }}"
           mkdir -p data/etherscan
           
           ENS_NAME="${{ github.event.inputs.ens_name || 'kushmanmb.eth' }}"
           
+          # Check if API key is configured
+          if [ -z "${{ secrets.ETHERSCAN_API_KEY }}" ]; then
+            echo "⚠️ ETHERSCAN_API_KEY not configured - skipping ENS resolution"
+            echo "ENS_NAME=${ENS_NAME}" >> $GITHUB_ENV
+            echo "ENS_RESOLVED=false" >> $GITHUB_ENV
+            echo "{\"ens_name\": \"${ENS_NAME}\", \"status\": \"no_api_key\"}" > data/etherscan/ens-resolution.json
+            exit 0
+          fi
+          
           # Use Etherscan API to resolve ENS name
-          # First, try the ENS lookup endpoint
           echo "Attempting ENS resolution via Etherscan API..."
           
-          # Method 1: Use Etherscan's ENS lookup API
+          # Use Etherscan's ENS lookup API with error handling
           ENS_LOOKUP_URL="https://api.etherscan.io/api?module=ens&action=getaddress&name=${ENS_NAME}&apikey=${{ secrets.ETHERSCAN_API_KEY }}"
           
-          RESOLVED_ADDRESS=$(curl -s "${ENS_LOOKUP_URL}" | jq -r '.result // empty')
+          # Fetch with error handling
+          if ! API_RESPONSE=$(curl -s -f "${ENS_LOOKUP_URL}"); then
+            echo "⚠️ Failed to connect to Etherscan API"
+            echo "ENS_NAME=${ENS_NAME}" >> $GITHUB_ENV
+            echo "ENS_RESOLVED=false" >> $GITHUB_ENV
+            echo "{\"ens_name\": \"${ENS_NAME}\", \"status\": \"api_error\"}" > data/etherscan/ens-resolution.json
+            exit 0
+          fi
           
-          # Check if we got a valid address
-          if [ -n "$RESOLVED_ADDRESS" ] && [ "$RESOLVED_ADDRESS" != "null" ] && [ "$RESOLVED_ADDRESS" != "" ]; then
+          # Extract address with error handling
+          RESOLVED_ADDRESS=$(echo "$API_RESPONSE" | jq -r '.result // empty' 2>/dev/null || echo "")
+          
+          # Check if we got a valid address (simplified condition)
+          if [ -n "$RESOLVED_ADDRESS" ] && [ "$RESOLVED_ADDRESS" != "null" ]; then
             echo "✓ ENS name resolved successfully"
             echo "ENS_NAME=${ENS_NAME}" >> $GITHUB_ENV
             echo "RESOLVED_ADDRESS=${RESOLVED_ADDRESS}" >> $GITHUB_ENV
@@ -118,14 +134,22 @@ jobs:
           fi
 
       - name: Fetch Etherscan API data
-        # Only run if API key is configured
-        if: ${{ secrets.ETHERSCAN_API_KEY != '' }}
         run: |
           echo "Fetching data from Etherscan API for ${{ env.ENS_NAME }}..."
           mkdir -p data/etherscan
 
           # ENS-related configuration
           ENS_NAME="${{ github.event.inputs.ens_name || 'kushmanmb.eth' }}"
+          
+          # Check if API key is configured
+          if [ -z "${{ secrets.ETHERSCAN_API_KEY }}" ]; then
+            echo "⚠️ ETHERSCAN_API_KEY not configured"
+            repo_url="https://github.com/${{ github.repository }}"
+            echo "Configure at: ${repo_url}/settings/secrets/actions"
+            echo "Get API key: https://etherscan.io/myapikey"
+            echo '{"status":"0","message":"API key not configured"}' > data/etherscan/latest.json
+            exit 1
+          fi
           
           # Use the dynamically resolved address from previous step
           if [ "${{ env.ENS_RESOLVED }}" = "true" ] && [ -n "${{ env.RESOLVED_ADDRESS }}" ]; then
@@ -230,18 +254,6 @@ jobs:
 
           echo "✓ Data fetched successfully for ${ENS_NAME}"
           cat data/etherscan/latest.json
-
-      - name: Handle missing API key
-        # Run this step if API key is not configured
-        if: ${{ secrets.ETHERSCAN_API_KEY == '' }}
-        run: |
-          echo "⚠️ ETHERSCAN_API_KEY not configured"
-          mkdir -p data/etherscan
-          repo_url="https://github.com/${{ github.repository }}"
-          echo "Configure at: ${repo_url}/settings/secrets/actions"
-          echo "Get API key: https://etherscan.io/myapikey"
-          echo '{"status":"0","message":"API key not configured"}' \
-            > data/etherscan/latest.json
 
       - name: Archive data with timestamp
         run: |
