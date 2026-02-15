@@ -87,9 +87,10 @@ env:
 
 - **Total workflows updated**: 9
 - **Total jobs updated**: 24
-- **Lines added**: 167
+- **Lines added**: 515 (including documentation)
 - **Lines removed**: 17
-- **Net change**: +150 lines
+- **Net change**: +498 lines
+- **Workflow changes only**: 167 lines added, 17 removed (+150 net)
 
 ## Configuration Required
 
