@@ -1,5 +1,7 @@
 name: 'Configure Docker'
 description: 'Set up Docker build driver and configure build cache args'
+# Security: This action handles GitHub Actions cache tokens (ACTIONS_RUNTIME_TOKEN)
+# which are automatically masked to prevent exposure in logs.
 inputs:
   cache-provider:
     description: 'gha or cirrus cache provider'
@@ -28,6 +30,10 @@ runs:
         script: |
           Object.keys(process.env).forEach(function (key) {
             if (key.startsWith('ACTIONS_')) {
+              // Security: Mask the runtime token to prevent accidental exposure in logs
+              if (key === 'ACTIONS_RUNTIME_TOKEN') {
+                core.setSecret(process.env[key]);
+              }
               core.info(`Exporting ${key}`);
               core.exportVariable(key, process.env[key]);
             }
