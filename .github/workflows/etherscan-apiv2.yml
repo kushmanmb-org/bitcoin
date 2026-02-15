@@ -15,6 +15,15 @@
 # This workflow is part of the kushmanmb-org/bitcoin repository
 # and is maintained by the repository owner and authorized contributors.
 # ═══════════════════════════════════════════════════════════════════
+#
+# SECURITY NOTICE:
+# This workflow handles sensitive API keys and follows security best practices:
+# - API keys are passed via HTTP headers, not URL parameters
+# - Shell debugging (set -x) is explicitly disabled
+# - Secrets are masked using GitHub Actions ::add-mask:: command
+# - All API requests use HTTPS
+# - No sensitive data is logged or exposed in workflow outputs
+# ═══════════════════════════════════════════════════════════════════
 
 name: Etherscan API Integration (kushmanmb.eth)
 
@@ -67,6 +76,16 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           fetch-depth: 0
 
+      - name: Security - Disable shell debugging and mask secrets
+        run: |
+          # Ensure shell debugging is disabled to prevent secret exposure
+          set +x
+          # Mask API key if accidentally echoed (additional protection)
+          if [ -n "${{ secrets.ETHERSCAN_API_KEY }}" ]; then
+            echo "::add-mask::${{ secrets.ETHERSCAN_API_KEY }}"
+          fi
+          echo "✓ Security measures applied"
+
       - name: Setup environment
         run: |
           echo "WORKFLOW_RUN_TIME=$(date -u +%Y-%m-%d-%H-%M-%S)" >> $GITHUB_ENV
@@ -104,11 +123,12 @@ jobs:
           # Use Etherscan API to resolve ENS name
           echo "Attempting ENS resolution via Etherscan API V2..."
           
-          # Use Etherscan's ENS lookup API V2 with error handling
-          ENS_LOOKUP_URL="https://api.etherscan.io/v2/api?chainid=1&module=ens&action=getaddress&name=${ENS_NAME}&apikey=${{ secrets.ETHERSCAN_API_KEY }}"
+          # Security: Use header-based authentication to prevent API key exposure in URLs
+          # Build URL without API key
+          ENS_LOOKUP_URL="https://api.etherscan.io/v2/api?chainid=1&module=ens&action=getaddress&name=${ENS_NAME}"
           
-          # Fetch with error handling
-          if ! API_RESPONSE=$(curl -s -f "${ENS_LOOKUP_URL}"); then
+          # Fetch with error handling - API key passed as header, not in URL
+          if ! API_RESPONSE=$(curl -s -f -H "X-Api-Key: ${{ secrets.ETHERSCAN_API_KEY }}" "${ENS_LOOKUP_URL}"); then
             echo "⚠️ Failed to connect to Etherscan API"
             echo "ENS_NAME=${ENS_NAME}" >> $GITHUB_ENV
             echo "ENS_RESOLVED=false" >> $GITHUB_ENV
@@ -229,9 +249,9 @@ jobs:
           # Build API URL - All endpoints now use V2 API
           api_url="${BASE_URL}?chainid=1&module=${MODULE}&action=${ACTION}${PARAMS}"
 
-          # Make request with API key from secret
-          # Key is only exposed during curl execution, not in logs
-          curl -s "${api_url}&apikey=${{ secrets.ETHERSCAN_API_KEY }}" \
+          # Security: Make request with API key in header to prevent exposure in logs
+          # The API key is passed as a header, not in the URL, to avoid logging
+          curl -s -H "X-Api-Key: ${{ secrets.ETHERSCAN_API_KEY }}" "${api_url}" \
             -o data/etherscan/latest.json || {
             echo '{"status":"0","message":"API request failed"}' \
               > data/etherscan/latest.json
