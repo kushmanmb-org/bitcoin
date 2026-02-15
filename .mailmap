@@ -1,0 +1,18 @@
+# Git mailmap for consolidating contributor identities
+# This file maps various email addresses and names to canonical identities
+# See: https://git-scm.com/docs/gitmailmap
+
+# Kushman MB - Primary Identity
+# Consolidates ENS addresses and email accounts
+Kushman MB <Kushmanmb@gmx.com> <mattbrace92@gmail.com>
+Kushman MB <Kushmanmb@gmx.com> <193178375+Kushmanmb@users.noreply.github.com>
+Kushman MB <Kushmanmb@gmx.com> Yaketh <193178375+Kushmanmb@users.noreply.github.com>
+
+# ENS Address Mappings
+# kushmanmb.eth - Primary ENS identity on Ethereum Mainnet
+# kushmanmb.base.eth - ENS identity on Base L2 network
+# Yaketh.eth - Additional ENS identity
+#
+# Note: ENS addresses resolve to Ethereum addresses on-chain
+# These mappings ensure git history properly attributes all commits
+# regardless of which identity was used for signing/committing

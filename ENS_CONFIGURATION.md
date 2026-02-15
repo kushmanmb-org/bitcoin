@@ -1,18 +1,43 @@
-# kushmanmb.eth ENS Configuration
+# ENS Configuration for kushmanmb-org/bitcoin
 
 ## Overview
 
-This document describes the Ethereum Name Service (ENS) integration for the **kushmanmb.eth** domain within the Bitcoin Core project repository.
+This document describes the Ethereum Name Service (ENS) integration for multiple ENS domains within the Bitcoin Core project repository.
 
 ## ENS Domain Information
 
+### Primary ENS Identities
+
 - **ENS Name**: kushmanmb.eth
-- **Purpose**: Identity and blockchain integration for the kushmanmb.org Bitcoin Core project
-- **Network**: Ethereum Mainnet
+  - **Network**: Ethereum Mainnet
+  - **Purpose**: Primary identity for the kushmanmb.org Bitcoin Core project
+  - **Status**: Active
+
+- **ENS Name**: kushmanmb.base.eth
+  - **Network**: Base L2 (Ethereum Layer 2)
+  - **Purpose**: Layer 2 identity for Base network integration
+  - **Status**: Active
+
+- **ENS Name**: Yaketh.eth
+  - **Network**: Ethereum Mainnet
+  - **Purpose**: Secondary identity and collaboration
+  - **Status**: Active
+
+### Associated Email Addresses
+
+- **Kushmanmb@gmx.com** - Primary contact email
+- **mattbrace92@gmail.com** - Secondary contact email
+
+These identities are consolidated in the repository's `.mailmap` file for consistent git attribution.
 
 ## ENS Resolution
 
-The kushmanmb.eth ENS name resolves to an Ethereum address that can be queried using various Ethereum APIs, including Etherscan.
+All ENS names (kushmanmb.eth, kushmanmb.base.eth, Yaketh.eth) resolve to Ethereum addresses that can be queried using various Ethereum APIs, including Etherscan.
+
+### Network-Specific Resolution
+
+- **kushmanmb.eth** and **Yaketh.eth**: Resolve on Ethereum Mainnet (Chain ID: 1)
+- **kushmanmb.base.eth**: Resolves on Base L2 network (Chain ID: 8453)
 
 ### Resolution Methods
 
@@ -28,8 +53,14 @@ console.log('kushmanmb.eth resolves to:', address);
 #### 2. Via Etherscan API
 
 ```bash
-# Using Etherscan V2 API with eth_call (as specified in problem statement)
-curl "https://api.etherscan.io/v2/api?chainid=1&module=proxy&action=eth_call&to=0xAEEF46DB4855E25702F8237E8f403FddcaF931C0&data=0x70a08231000000000000000000000000e16359506c028e51f16be38986ec5746251e9724&tag=latest&apikey=YourApiKeyToken"
+# Ethereum Mainnet - kushmanmb.eth
+curl "https://api.etherscan.io/v2/api?chainid=1&module=ens&action=getaddress&name=kushmanmb.eth&apikey=YourApiKeyToken"
+
+# Ethereum Mainnet - Yaketh.eth
+curl "https://api.etherscan.io/v2/api?chainid=1&module=ens&action=getaddress&name=Yaketh.eth&apikey=YourApiKeyToken"
+
+# Base L2 - kushmanmb.base.eth
+curl "https://api.basescan.org/api?module=ens&action=getaddress&name=kushmanmb.base.eth&apikey=YourBaseScanApiKey"
 ```
 
 #### 3. Via ENS Registry Contract
@@ -41,7 +72,7 @@ curl "https://api.etherscan.io/v2/api?chainid=1&module=proxy&action=eth_call&to=
 
 ## Integration with Workflows
 
-The kushmanmb.eth ENS name is integrated into GitHub Actions workflows for:
+The ENS names are integrated into GitHub Actions workflows for:
 
 1. **Etherscan API Integration** (`.github/workflows/etherscan-apiv2.yml`)
    - Queries blockchain data associated with kushmanmb.eth
@@ -51,6 +82,19 @@ The kushmanmb.eth ENS name is integrated into GitHub Actions workflows for:
 2. **Website Deployment** (`.github/workflows/deploy-website.yml`)
    - Uses kushmanmb.eth as the primary identity marker
    - Links website to blockchain identity
+
+3. **CodeQL Analysis** (`.github/workflows/Kushmanmb.eth`)
+   - Includes ownership metadata for all ENS identities
+   - Documents repository creator and primary contacts
+
+### Multi-Identity Management
+
+All workflows recognize the following identities as authorized contributors:
+- kushmanmb.eth (Primary)
+- kushmanmb.base.eth (Base L2)
+- Yaketh.eth (Secondary)
+- Kushmanmb@gmx.com (Primary email)
+- mattbrace92@gmail.com (Secondary email)
 
 ## Configuration
 
@@ -64,8 +108,14 @@ No manual configuration is required. The workflow uses Etherscan's ENS lookup AP
 
 1. **Automatic Resolution**: When the workflow runs, it automatically calls Etherscan's ENS API V2:
    ```bash
-   # The workflow automatically executes:
+   # Primary identity (kushmanmb.eth)
    curl "https://api.etherscan.io/v2/api?chainid=1&module=ens&action=getaddress&name=kushmanmb.eth&apikey=YOUR_KEY"
+   
+   # Secondary identity (Yaketh.eth)
+   curl "https://api.etherscan.io/v2/api?chainid=1&module=ens&action=getaddress&name=Yaketh.eth&apikey=YOUR_KEY"
+   
+   # Base L2 identity (kushmanmb.base.eth)
+   curl "https://api.basescan.org/api?module=ens&action=getaddress&name=kushmanmb.base.eth&apikey=YOUR_BASE_KEY"
    ```
 
 2. **Dynamic Address**: The resolved address is stored in the `RESOLVED_ADDRESS` environment variable and used for all subsequent API calls.
@@ -77,9 +127,14 @@ No manual configuration is required. The workflow uses Etherscan's ENS lookup AP
 
 **Prerequisites**:
 
-Only one requirement: Add your Etherscan API key to repository secrets:
-1. Get an API key from https://etherscan.io/myapikey
-2. Add it as a repository secret named `ETHERSCAN_API_KEY`
+API keys required for full multi-identity support:
+1. **Etherscan API Key** (for kushmanmb.eth and Yaketh.eth):
+   - Get an API key from https://etherscan.io/myapikey
+   - Add it as a repository secret named `ETHERSCAN_API_KEY`
+
+2. **BaseScan API Key** (for kushmanmb.base.eth):
+   - Get an API key from https://basescan.org/myapikey
+   - Add it as a repository secret named `BASESCAN_API_KEY`
 
 **Testing the workflow**:
 - Go to Actions tab
@@ -90,13 +145,20 @@ Only one requirement: Add your Etherscan API key to repository secrets:
 
 ### API Keys
 
-To query Etherscan API for kushmanmb.eth data:
+To query blockchain APIs for all ENS identities:
 
-1. Get an API key from https://etherscan.io/myapikey
-2. Add it as a repository secret:
+1. **Etherscan API** (for kushmanmb.eth and Yaketh.eth):
+   - Get an API key from https://etherscan.io/myapikey
+   - Add it as a repository secret named `ETHERSCAN_API_KEY`
+
+2. **BaseScan API** (for kushmanmb.base.eth):
+   - Get an API key from https://basescan.org/myapikey
+   - Add it as a repository secret named `BASESCAN_API_KEY`
+
+3. **Adding secrets**:
    - Go to repository Settings → Secrets and variables → Actions
-   - Create a new secret named `ETHERSCAN_API_KEY`
-   - Paste your API key
+   - Create new secrets with the appropriate names
+   - Paste your API keys
 
 ## Privacy Considerations
 
@@ -134,15 +196,25 @@ ENS names and their resolved addresses are public on the Ethereum blockchain. Th
 
 ### Standard Records
 
-ENS supports various record types:
+ENS supports various record types for all identities:
 
 - **ETH Address**: Primary Ethereum address
 - **BTC Address**: Bitcoin address (if set)
-- **Email**: Contact email (if set)
+- **Email**: Contact email
+  - kushmanmb.eth: Kushmanmb@gmx.com
+  - Yaketh.eth: Associated with kushmanmb identity
 - **URL**: Website URL (e.g., https://kushmanmb.org)
 - **Avatar**: Profile image
 - **Description**: Text description
 - **Keywords**: Searchable tags
+
+### Identity Consolidation
+
+The `.mailmap` file in the repository root consolidates all git identities:
+- Maps all ENS addresses to a canonical identity
+- Consolidates email addresses
+- Ensures consistent git history attribution
+- Follows git best practices for multi-identity management
 
 ### Setting Records
 
@@ -156,19 +228,35 @@ Records can be set via:
 ### Verify ENS Resolution
 
 ```bash
-# Check current resolution (requires API key)
+# Check kushmanmb.eth resolution
 curl "https://api.etherscan.io/v2/api?chainid=1&module=account&action=balance&address=RESOLVED_ADDRESS&tag=latest&apikey=YOUR_API_KEY"
+
+# Check Yaketh.eth resolution
+curl "https://api.etherscan.io/v2/api?chainid=1&module=ens&action=getaddress&name=Yaketh.eth&apikey=YOUR_API_KEY"
+
+# Check kushmanmb.base.eth resolution
+curl "https://api.basescan.org/api?module=ens&action=getaddress&name=kushmanmb.base.eth&apikey=YOUR_BASE_KEY"
 ```
 
 ### Verify ENS Records
 
 ```javascript
-// Using ethers.js
-const resolver = await provider.getResolver('kushmanmb.eth');
-const address = await resolver.getAddress();
-const url = await resolver.getText('url');
-const email = await resolver.getText('email');
-console.log({ address, url, email });
+// Using ethers.js for all identities
+const identities = ['kushmanmb.eth', 'Yaketh.eth'];
+
+for (const ens of identities) {
+  const resolver = await provider.getResolver(ens);
+  const address = await resolver.getAddress();
+  const url = await resolver.getText('url');
+  const email = await resolver.getText('email');
+  console.log(`${ens}:`, { address, url, email });
+}
+
+// For Base L2
+const baseProvider = new ethers.providers.JsonRpcProvider('https://mainnet.base.org');
+const baseResolver = await baseProvider.getResolver('kushmanmb.base.eth');
+const baseAddress = await baseResolver.getAddress();
+console.log('kushmanmb.base.eth:', { address: baseAddress });
 ```
 
 ## Maintenance
@@ -215,11 +303,17 @@ If you need to query a specific address instead of using ENS resolution, you can
 ### ENS Not Resolving
 
 ```bash
-# Check if ENS name is registered (using V2 API)
+# Check if ENS names are registered (using V2 API)
 curl "https://api.etherscan.io/v2/api?chainid=1&module=ens&action=lookup&name=kushmanmb.eth"
+curl "https://api.etherscan.io/v2/api?chainid=1&module=ens&action=lookup&name=Yaketh.eth"
+
+# Check Base L2 registration
+curl "https://api.basescan.org/api?module=ens&action=lookup&name=kushmanmb.base.eth"
 
 # Verify resolver is set
 # Check on https://app.ens.domains/kushmanmb.eth
+# Check on https://app.ens.domains/Yaketh.eth
+# Check on Base ENS manager for kushmanmb.base.eth
 ```
 
 ### API Errors
@@ -254,7 +348,11 @@ For issues related to:
 
 ---
 
-**ENS Name**: kushmanmb.eth  
-**Last Updated**: 2026-02-14  
+**Primary ENS**: kushmanmb.eth  
+**Base L2 ENS**: kushmanmb.base.eth  
+**Secondary ENS**: Yaketh.eth  
+**Primary Email**: Kushmanmb@gmx.com  
+**Secondary Email**: mattbrace92@gmail.com  
+**Last Updated**: 2026-02-15  
 **Maintainer**: kushmanmb.org team  
-**Version**: 1.0.0
+**Version**: 2.0.0
