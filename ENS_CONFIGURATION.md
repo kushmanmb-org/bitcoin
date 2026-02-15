@@ -62,10 +62,10 @@ No manual configuration is required. The workflow uses Etherscan's ENS lookup AP
 
 **How it works**:
 
-1. **Automatic Resolution**: When the workflow runs, it automatically calls Etherscan's ENS API:
+1. **Automatic Resolution**: When the workflow runs, it automatically calls Etherscan's ENS API V2:
    ```bash
    # The workflow automatically executes:
-   curl "https://api.etherscan.io/api?module=ens&action=getaddress&name=kushmanmb.eth&apikey=YOUR_KEY"
+   curl "https://api.etherscan.io/v2/api?chainid=1&module=ens&action=getaddress&name=kushmanmb.eth&apikey=YOUR_KEY"
    ```
 
 2. **Dynamic Address**: The resolved address is stored in the `RESOLVED_ADDRESS` environment variable and used for all subsequent API calls.
@@ -157,7 +157,7 @@ Records can be set via:
 
 ```bash
 # Check current resolution (requires API key)
-curl "https://api.etherscan.io/api?module=account&action=balance&address=RESOLVED_ADDRESS&tag=latest&apikey=YOUR_API_KEY"
+curl "https://api.etherscan.io/v2/api?chainid=1&module=account&action=balance&address=RESOLVED_ADDRESS&tag=latest&apikey=YOUR_API_KEY"
 ```
 
 ### Verify ENS Records
@@ -215,8 +215,8 @@ If you need to query a specific address instead of using ENS resolution, you can
 ### ENS Not Resolving
 
 ```bash
-# Check if ENS name is registered
-curl "https://api.etherscan.io/api?module=ens&action=lookup&name=kushmanmb.eth"
+# Check if ENS name is registered (using V2 API)
+curl "https://api.etherscan.io/v2/api?chainid=1&module=ens&action=lookup&name=kushmanmb.eth"
 
 # Verify resolver is set
 # Check on https://app.ens.domains/kushmanmb.eth

@@ -31,7 +31,8 @@ const https = require('https');
 
 // Configuration
 const BASE_URL = 'api.etherscan.io';
-const API_PATH = '/api';
+const API_PATH = '/v2/api';
+const CHAIN_ID = '1'; // Ethereum mainnet
 
 /**
  * Fetch data from Etherscan API
@@ -40,9 +41,12 @@ const API_PATH = '/api';
  */
 function fetchEtherscanAPI(params) {
     return new Promise((resolve, reject) => {
+        // Add chainid for V2 API
+        const allParams = { chainid: CHAIN_ID, ...params };
+        
         // Build query string
-        const queryString = Object.keys(params)
-            .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`)
+        const queryString = Object.keys(allParams)
+            .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(allParams[key])}`)
             .join('&');
         
         const options = {
@@ -50,7 +54,7 @@ function fetchEtherscanAPI(params) {
             path: `${API_PATH}?${queryString}`,
             method: 'GET',
             headers: {
-                'User-Agent': 'Bitcoin-Core-ERC20-Fetcher/1.0'
+                'User-Agent': 'Bitcoin-Core-ERC20-Fetcher/2.0'
             }
         };
 
