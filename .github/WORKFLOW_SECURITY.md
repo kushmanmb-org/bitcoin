@@ -10,14 +10,18 @@ This document describes the security practices implemented in the GitHub Actions
 
 **Location**: `.github/workflows/etherscan-apiv2.yml`
 
-**措施**:
-- ✅ API keys are passed via HTTP headers (`X-Api-Key`) instead of URL parameters
+**Measures**:
+- ✅ API keys are constructed in subshells with command echoing disabled (`set +x`)
 - ✅ Secrets are masked using `::add-mask::` command at the start of jobs
-- ✅ Shell debugging (`set -x`) is explicitly disabled to prevent command echoing
+- ✅ Shell debugging is explicitly disabled to prevent command echoing
 - ✅ All API requests use HTTPS
-- ✅ No API keys are stored in environment variables that could be logged
+- ✅ Temporary files are cleaned up immediately after use
+- ✅ URL construction happens in isolated subshells to minimize exposure risk
 
-**Why**: URL parameters can be logged in various places (proxy logs, server logs, browser history), while HTTP headers are more secure.
+**Why**: While Etherscan requires API keys as URL parameters (not headers), we can still protect them by:
+1. Constructing URLs in subshells with `set +x` to disable command echoing
+2. Masking secrets at the job level using `::add-mask::`
+3. Avoiding storage of URLs containing secrets in environment variables that could be logged
 
 ### 2. GitHub Actions Runtime Token Protection
 
@@ -111,13 +115,20 @@ This document describes the security practices implemented in the GitHub Actions
 
 ### When Adding New Workflows:
 
-1. **Never** put secrets in URL parameters
+1. **Prefer** header-based authentication when the API supports it
    ```yaml
-   # ❌ BAD
-   curl "https://api.example.com/data?apikey=${{ secrets.API_KEY }}"
-   
-   # ✅ GOOD
+   # ✅ BEST (if API supports it)
    curl -H "Authorization: Bearer ${{ secrets.API_KEY }}" "https://api.example.com/data"
+   
+   # ✅ ACCEPTABLE (if API requires URL parameters)
+   # Use subshell with disabled echoing
+   (
+     set +x 2>/dev/null
+     curl "https://api.example.com/data?apikey=${{ secrets.API_KEY }}" -o output.json
+   )
+   
+   # ❌ BAD - Direct construction that could be logged
+   curl "https://api.example.com/data?apikey=${{ secrets.API_KEY }}"
    ```
 
 2. **Always** mask secrets at the start of jobs
@@ -137,10 +148,13 @@ This document describes the security practices implemented in the GitHub Actions
    - run: echo "API Key configured successfully"
    ```
 
-4. **Use** header-based authentication
-   ```yaml
-   # ✅ GOOD
-   curl -H "X-Api-Key: ${{ secrets.API_KEY }}" "https://api.example.com/data"
+4. **Use** subshells for API calls that require secrets in URLs
+   ```bash
+   # ✅ GOOD - Subshell with disabled echoing
+   (
+     set +x 2>/dev/null  # Disable debugging
+     curl "https://api.example.com/data?apikey=${{ secrets.API_KEY }}" -o output.json
+   )
    ```
 
 5. **Disable** shell debugging in sensitive operations
@@ -149,7 +163,7 @@ This document describes the security practices implemented in the GitHub Actions
    # sensitive operations here
    ```
 
-6. **Clear** credentials after use (especially on self-hosted runners)
+6. **Clear** credentials and temporary files after use
    ```bash
    git config --unset-all credential.helper
    rm -rf .git/credentials

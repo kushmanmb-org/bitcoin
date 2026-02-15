@@ -18,11 +18,12 @@
 #
 # SECURITY NOTICE:
 # This workflow handles sensitive API keys and follows security best practices:
-# - API keys are passed via HTTP headers, not URL parameters
-# - Shell debugging (set -x) is explicitly disabled
+# - API keys are constructed in subshells with command echoing disabled (set +x)
 # - Secrets are masked using GitHub Actions ::add-mask:: command
+# - Shell debugging (set -x) is explicitly disabled at job start
 # - All API requests use HTTPS
 # - No sensitive data is logged or exposed in workflow outputs
+# - Temporary files with API responses are cleaned up immediately
 # ═══════════════════════════════════════════════════════════════════
 
 name: Etherscan API Integration (kushmanmb.eth)
@@ -123,12 +124,21 @@ jobs:
           # Use Etherscan API to resolve ENS name
           echo "Attempting ENS resolution via Etherscan API V2..."
           
-          # Security: Use header-based authentication to prevent API key exposure in URLs
-          # Build URL without API key
-          ENS_LOOKUP_URL="https://api.etherscan.io/v2/api?chainid=1&module=ens&action=getaddress&name=${ENS_NAME}"
+          # Security: Build the URL carefully to prevent API key exposure
+          # Etherscan requires apikey as URL parameter, so we must prevent logging
+          # Use set +x and build URL in a subshell to minimize exposure risk
+          (
+            set +x 2>/dev/null  # Disable command echoing
+            ENS_LOOKUP_URL="https://api.etherscan.io/v2/api?chainid=1&module=ens&action=getaddress&name=${ENS_NAME}&apikey=${{ secrets.ETHERSCAN_API_KEY }}"
+            
+            # Fetch with error handling - URL construction happens in subshell
+            curl -s -f "${ENS_LOOKUP_URL}" -o /tmp/ens_response.json
+          )
           
-          # Fetch with error handling - API key passed as header, not in URL
-          if ! API_RESPONSE=$(curl -s -f -H "X-Api-Key: ${{ secrets.ETHERSCAN_API_KEY }}" "${ENS_LOOKUP_URL}"); then
+          if [ ! -f /tmp/ens_response.json ]; then
+          )
+          
+          if [ ! -f /tmp/ens_response.json ]; then
             echo "⚠️ Failed to connect to Etherscan API"
             echo "ENS_NAME=${ENS_NAME}" >> $GITHUB_ENV
             echo "ENS_RESOLVED=false" >> $GITHUB_ENV
@@ -137,6 +147,8 @@ jobs:
           fi
           
           # Extract address with error handling
+          API_RESPONSE=$(cat /tmp/ens_response.json)
+          rm -f /tmp/ens_response.json
           RESOLVED_ADDRESS=$(echo "$API_RESPONSE" | jq -r '.result // empty' 2>/dev/null || echo "")
           
           # Check if we got a valid address (simplified condition)
@@ -249,10 +261,13 @@ jobs:
           # Build API URL - All endpoints now use V2 API
           api_url="${BASE_URL}?chainid=1&module=${MODULE}&action=${ACTION}${PARAMS}"
 
-          # Security: Make request with API key in header to prevent exposure in logs
-          # The API key is passed as a header, not in the URL, to avoid logging
-          curl -s -H "X-Api-Key: ${{ secrets.ETHERSCAN_API_KEY }}" "${api_url}" \
-            -o data/etherscan/latest.json || {
+          # Security: Make request with API key as URL parameter (Etherscan requirement)
+          # Use subshell with disabled command echoing to prevent API key logging
+          (
+            set +x 2>/dev/null  # Disable command echoing
+            full_url="${api_url}&apikey=${{ secrets.ETHERSCAN_API_KEY }}"
+            curl -s "${full_url}" -o data/etherscan/latest.json
+          ) || {
             echo '{"status":"0","message":"API request failed"}' \
               > data/etherscan/latest.json
           }
