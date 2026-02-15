@@ -207,8 +207,8 @@ function buildJWT(config) {
         iss: 'coinbase-cloud',
         nbf: now,
         exp: now + 120, // Token valid for 2 minutes
-        aud: [requestHost],
-        uri: requestMethod + ' ' + requestHost + requestPath
+        aud: [config.requestHost],
+        uri: requestMethod + ' ' + config.requestHost + requestPath
     };
     
     // Encode header and payload
