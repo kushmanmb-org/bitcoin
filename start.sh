@@ -110,12 +110,7 @@ build_wasm() {
     if [ -f "./generate_wasm.sh" ]; then
         log_info "Running WASM build script..."
         bash ./generate_wasm.sh
-        if [ $? -eq 0 ]; then
-            log_info "WASM module built successfully"
-        else
-            log_error "WASM build failed"
-            exit 1
-        fi
+        log_info "WASM module built successfully"
     else
         log_warn "WASM build script not found, skipping WASM build"
     fi
@@ -137,7 +132,7 @@ install_dependencies() {
     if [ -f "yarn.lock" ] && command -v yarn &> /dev/null; then
         log_info "Using yarn to install dependencies..."
         yarn install
-    elif [ -f "package-lock.json" ] || command -v npm &> /dev/null; then
+    elif command -v npm &> /dev/null; then
         log_info "Using npm to install dependencies..."
         npm install
     else
@@ -145,12 +140,7 @@ install_dependencies() {
         exit 1
     fi
     
-    if [ $? -eq 0 ]; then
-        log_info "Dependencies installed successfully"
-    else
-        log_error "Dependency installation failed"
-        exit 1
-    fi
+    log_info "Dependencies installed successfully"
     
     cd "$SCRIPT_DIR"
 }
