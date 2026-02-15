@@ -196,6 +196,8 @@ yarn-debug.log*
 yarn-error.log*
 package-lock.json
 yarn.lock
+# Exception: allow yarn.lock in onchain project for dependency consistency
+!bitcoin-onchain-app/yarn.lock
 
 # Python virtual environments (if any Python tooling)
 venv/
