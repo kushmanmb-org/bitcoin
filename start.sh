@@ -46,7 +46,8 @@ check_prerequisites() {
     if ! command -v node &> /dev/null; then
         missing_tools+=("Node.js (https://nodejs.org/)")
     else
-        local node_version=$(node --version | sed 's/v//')
+        local node_version
+        node_version=$(node --version | sed 's/v//')
         log_info "Node.js version: $node_version"
     fi
     
@@ -55,10 +56,12 @@ check_prerequisites() {
         missing_tools+=("npm or yarn")
     else
         if command -v yarn &> /dev/null; then
-            local yarn_version=$(yarn --version)
+            local yarn_version
+            yarn_version=$(yarn --version)
             log_info "Yarn version: $yarn_version"
         elif command -v npm &> /dev/null; then
-            local npm_version=$(npm --version)
+            local npm_version
+            npm_version=$(npm --version)
             log_info "npm version: $npm_version"
         fi
     fi
@@ -68,7 +71,8 @@ check_prerequisites() {
         log_warn "Rust/Cargo is not installed. WASM build will be skipped."
         log_warn "To install Rust: https://rustup.rs/"
     else
-        local rust_version=$(rustc --version)
+        local rust_version
+        rust_version=$(rustc --version)
         log_info "Rust: $rust_version"
     fi
     
