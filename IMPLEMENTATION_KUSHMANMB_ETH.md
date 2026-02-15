@@ -69,8 +69,8 @@ Docker/Podman runner configurations
 
 **Implementation**:
 ```yaml
-# Automatic ENS resolution using Etherscan's ENS API
-ENS_LOOKUP_URL="https://api.etherscan.io/api?module=ens&action=getaddress&name=${ENS_NAME}&apikey=${API_KEY}"
+# Automatic ENS resolution using Etherscan's ENS API V2
+ENS_LOOKUP_URL="https://api.etherscan.io/v2/api?chainid=1&module=ens&action=getaddress&name=${ENS_NAME}&apikey=${API_KEY}"
 RESOLVED_ADDRESS=$(curl -s "${ENS_LOOKUP_URL}" | jq -r '.result // empty')
 
 # Dynamic address usage - no hardcoded addresses
