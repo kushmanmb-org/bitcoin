@@ -54,59 +54,39 @@ The kushmanmb.eth ENS name is integrated into GitHub Actions workflows for:
 
 ## Configuration
 
-### Setting the Resolved Address
+### Automatic ENS Resolution
 
-**IMPORTANT**: Before using the Etherscan API workflow, you must update the Ethereum address for kushmanmb.eth.
+**NEW**: The Etherscan API workflow now automatically resolves ENS names to their Ethereum addresses!
 
-The workflow contains a placeholder zero address that will cause it to fail with a clear error message until updated.
+No manual configuration is required. The workflow uses Etherscan's ENS lookup API to dynamically resolve the ENS name each time it runs.
 
-**Steps to configure**:
+**How it works**:
 
-1. **Find the resolved address** using one of these methods:
-
-   **Method A: ENS App**
-   ```
-   Visit: https://app.ens.domains/kushmanmb.eth
-   Copy the ETH address shown
-   ```
-
-   **Method B: Etherscan**
-   ```
-   Visit: https://etherscan.io/enslookup-search?search=kushmanmb.eth
-   Copy the resolved address
-   ```
-
-   **Method C: Command Line** (requires Foundry)
+1. **Automatic Resolution**: When the workflow runs, it automatically calls Etherscan's ENS API:
    ```bash
-   cast resolve-name kushmanmb.eth
+   # The workflow automatically executes:
+   curl "https://api.etherscan.io/api?module=ens&action=getaddress&name=kushmanmb.eth&apikey=YOUR_KEY"
    ```
 
-2. **Update the workflow file**:
+2. **Dynamic Address**: The resolved address is stored in the `RESOLVED_ADDRESS` environment variable and used for all subsequent API calls.
 
-   Edit `.github/workflows/etherscan-apiv2.yml` and replace the zero address:
+3. **Error Handling**: If resolution fails, the workflow provides clear error messages explaining potential causes:
+   - ENS name not registered
+   - No address record set
+   - API connectivity issues
 
-   ```yaml
-   # Change from:
-   KUSHMANMB_ADDRESS="0x0000000000000000000000000000000000000000"
-   
-   # To your actual address:
-   KUSHMANMB_ADDRESS="0xYourActualAddressHere"
-   ```
+**Prerequisites**:
 
-3. **Commit and push** the change:
+Only one requirement: Add your Etherscan API key to repository secrets:
+1. Get an API key from https://etherscan.io/myapikey
+2. Add it as a repository secret named `ETHERSCAN_API_KEY`
 
-   ```bash
-   git add .github/workflows/etherscan-apiv2.yml
-   git commit -m "Configure kushmanmb.eth resolved address"
-   git push
-   ```
+**Testing the workflow**:
+- Go to Actions tab
+- Run "Etherscan API Integration (kushmanmb.eth)" workflow
+- The workflow will automatically resolve and use the current ENS address
 
-4. **Test the workflow**:
-   - Go to Actions tab
-   - Run "Etherscan API Integration (kushmanmb.eth)" workflow
-   - Verify it completes successfully
-
-**Validation**: The workflow includes automatic validation that will fail with a helpful error message if the zero address is detected, preventing accidental use of invalid configuration.
+**Verification**: You can verify the resolved address in the workflow output logs and in the resulting JSON file under the `resolved_address` field.
 
 ### API Keys
 
@@ -208,16 +188,27 @@ ENS names must be renewed periodically:
 
 ### Updating Resolved Address
 
-If the Ethereum address for kushmanmb.eth changes:
+The workflow automatically resolves ENS names each time it runs, so no manual updates are needed when the Ethereum address for kushmanmb.eth changes.
 
-1. Update ENS records via ENS Manager
-2. Update workflow configuration:
-   ```bash
-   # Edit .github/workflows/etherscan-apiv2.yml
-   # Update KUSHMANMB_ADDRESS variable
-   ```
-3. Test the workflow to verify new address works
-4. Commit and push changes
+**How address updates are handled**:
+
+1. **Automatic Detection**: Each workflow run queries the current ENS record
+2. **Always Current**: The workflow always uses the latest resolved address
+3. **No Configuration**: No workflow file edits needed
+
+**Monitoring changes**:
+
+To track when the resolved address changes:
+- Check the `resolved_address` field in `data/etherscan/latest.json`
+- Compare historical data files in `data/etherscan/data-YYYY-MM-DD-HH-MM-SS.json`
+- Review workflow logs for the resolved address
+
+**Manual override** (optional):
+
+If you need to query a specific address instead of using ENS resolution, you can:
+1. Fork the workflow
+2. Modify the resolution step to use a hardcoded address
+3. This is not recommended as it defeats the purpose of ENS
 
 ## Troubleshooting
 
