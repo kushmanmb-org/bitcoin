@@ -77,40 +77,40 @@ sudo ./svc.sh start
 4. Choose your OS (linux/macos/windows/all)
 5. Run and verify in the logs
 
-## Configuring kushmanmb.eth Address
+## Automatic ENS Resolution
 
-**⚠️ REQUIRED BEFORE FIRST USE**: The workflow contains a placeholder address that must be updated.
+**GOOD NEWS**: The workflow automatically resolves kushmanmb.eth to its Ethereum address!
 
-To update the Ethereum address that kushmanmb.eth resolves to:
+No manual configuration is required. The workflow uses Etherscan's ENS lookup API to dynamically resolve the ENS name each time it runs.
 
-1. **Edit the workflow file**: `.github/workflows/etherscan-apiv2.yml`
-2. **Find the variable**: `KUSHMANMB_ADDRESS` (around line 90-100)
-3. **Update with resolved address**:
-   ```yaml
-   KUSHMANMB_ADDRESS="0xYourActualAddress"  # Replace zero address
-   ```
-4. **Commit and push** the change
+### Quick Setup
 
-**Why this is required**: The workflow includes validation that prevents using the zero address placeholder. This ensures you don't accidentally query invalid data.
+**Only one step needed**:
 
-### How to Get the Resolved Address
+1. **Add Etherscan API Key** (Required)
+   - Go to repository Settings → Secrets and variables → Actions
+   - Click "New repository secret"
+   - Name: `ETHERSCAN_API_KEY`
+   - Value: Your Etherscan API key from https://etherscan.io/myapikey
 
-**Option 1: Via ENS App**
-- Visit https://app.ens.domains/kushmanmb.eth
-- Copy the ETH address shown
+That's it! The workflow will automatically:
+- Resolve kushmanmb.eth (or any ENS name you specify) to its Ethereum address
+- Use the current address for all API queries
+- Include the resolved address in the output metadata
 
-**Option 2: Via Etherscan**
-- Visit https://etherscan.io/enslookup-search?search=kushmanmb.eth
-- Copy the resolved address
+### How It Works
 
-**Option 3: Via Command Line**
-```bash
-# Using cast (from Foundry)
-cast resolve-name kushmanmb.eth
+When you run the workflow:
+1. The workflow calls Etherscan's ENS API to resolve the name
+2. The resolved address is stored and used for all subsequent queries
+3. The address is included in the output JSON under `resolved_address`
 
-# Using ethers-cli
-ethers-ens resolve kushmanmb.eth
-```
+### Verifying Resolution
+
+After running the workflow, check:
+- **Workflow logs**: Shows "✓ ENS name resolved successfully" with the address
+- **Output JSON**: Contains `resolved_address` field with the current address
+- **ENS resolution file**: `data/etherscan/ens-resolution.json` has resolution status
 
 ## Scheduled Runs
 

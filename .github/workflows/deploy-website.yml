@@ -1,3 +1,20 @@
+# Copyright (c) 2023-present The Bitcoin Core developers
+# Distributed under the MIT software license, see the accompanying
+# file COPYING or https://opensource.org/license/mit.
+#
+# ═══════════════════════════════════════════════════════════════════
+# GLOBAL OWNERSHIP & CREATOR STATUS
+# ═══════════════════════════════════════════════════════════════════
+# Repository Owner: kushmanmb.eth (Ethereum Name Service)
+# Creator: kushmanmb
+# ENS Identifiers:
+#   - Primary: kushmanmb.eth (Ethereum Mainnet)
+#   - Base Network: Kushmanmb.base.eth
+# 
+# This workflow is part of the kushmanmb-org/bitcoin repository
+# and is maintained by the repository owner and authorized contributors.
+# ═══════════════════════════════════════════════════════════════════
+#
 # Website Deployment Workflow with Self-Hosted Runners
 # This workflow deploys the kushmanmb.org website with security best practices
 #
@@ -52,7 +69,8 @@ jobs:
   # Security scanning job
   security-scan:
     name: Security Scan
-    runs-on: ubuntu-latest
+    # Using self-hosted runner when available for kushmanmb.eth repository
+    runs-on: ${{ vars.USE_SELF_HOSTED == 'true' && 'self-hosted' || 'ubuntu-latest' }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -104,7 +122,8 @@ jobs:
   build:
     name: Build Website
     needs: security-scan
-    runs-on: ubuntu-latest
+    # Using self-hosted runner when available for kushmanmb.eth repository
+    runs-on: ${{ vars.USE_SELF_HOSTED == 'true' && 'self-hosted' || 'ubuntu-latest' }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -162,7 +181,8 @@ jobs:
   deploy-pages:
     name: Deploy to GitHub Pages
     needs: build
-    runs-on: ubuntu-latest
+    # Using self-hosted runner when available for kushmanmb.eth repository
+    runs-on: ${{ vars.USE_SELF_HOSTED == 'true' && 'self-hosted' || 'ubuntu-latest' }}
     if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main'
     environment:
       name: github-pages
@@ -250,7 +270,8 @@ jobs:
   post-deploy-check:
     name: Post-Deployment Security Check
     needs: [deploy-pages, deploy-self-hosted]
-    runs-on: ubuntu-latest
+    # Using self-hosted runner when available for kushmanmb.eth repository
+    runs-on: ${{ vars.USE_SELF_HOSTED == 'true' && 'self-hosted' || 'ubuntu-latest' }}
     if: always() && (needs.deploy-pages.result == 'success' || needs.deploy-self-hosted.result == 'success')
     steps:
       - name: Check security headers
