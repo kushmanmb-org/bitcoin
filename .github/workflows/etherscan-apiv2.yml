@@ -136,9 +136,6 @@ jobs:
           )
           
           if [ ! -f /tmp/ens_response.json ]; then
-          )
-          
-          if [ ! -f /tmp/ens_response.json ]; then
             echo "⚠️ Failed to connect to Etherscan API"
             echo "ENS_NAME=${ENS_NAME}" >> $GITHUB_ENV
             echo "ENS_RESOLVED=false" >> $GITHUB_ENV
