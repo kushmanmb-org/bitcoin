@@ -9,8 +9,8 @@
 
 /* Encode a double using the IEEE 754 binary64 format. All NaNs are encoded as x86/ARM's
  * positive quiet NaN with payload 0. */
-uint64_t EncodeDouble(double f) noexcept;
-/* Reverse operation of DecodeDouble. DecodeDouble(EncodeDouble(f))==f unless isnan(f). */
-double DecodeDouble(uint64_t v) noexcept;
+uint64_t EncodeDouble(double value) noexcept;
+/* Reverse operation of DecodeDouble. DecodeDouble(EncodeDouble(value))==value unless isnan(value). */
+double DecodeDouble(uint64_t encoded_value) noexcept;
 
 #endif // BITCOIN_UTIL_SERFLOAT_H
