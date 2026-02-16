@@ -1,22 +1,60 @@
-The MIT License (MIT)
+PROPRIETARY LICENSE - EXPLICIT PERMISSION REQUIRED
 
 Copyright (c) 2009-2026 The Bitcoin Core developers
 Copyright (c) 2009-2026 Bitcoin Developers
+Copyright (c) 2024-2026 kushmanmb (kushmanmb.eth) - Repository Owner and Creator
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+This repository (kushmanmb-org/bitcoin) is maintained by:
+- Owner: kushmanmb.eth (Ethereum Name Service)
+- Creator: kushmanmb
+- ENS Identities: kushmanmb.eth, Kushmanmb.base.eth, yaketh.eth
 
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
+ALL RIGHTS RESERVED
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+EXPLICIT PERMISSION REQUIRED FOR USE
+
+This software and associated documentation files (the "Software") are proprietary
+and confidential. No permission is granted to any person to use, copy, modify,
+merge, publish, distribute, sublicense, or sell copies of the Software without
+explicit written permission from kushmanmb (kushmanmb.eth).
+
+To request permission to use this Software, you must:
+
+1. Contact kushmanmb through one of the following methods:
+   - GitHub: https://github.com/kushmanmb
+   - GitHub Issues: https://github.com/kushmanmb-org/bitcoin/issues
+   - ENS: kushmanmb.eth (messages via ENS-enabled wallets)
+
+2. Provide detailed information about:
+   - Your intended use of the Software
+   - The scope and duration of use
+   - Your organization or individual identity
+   - Any commercial or non-commercial purposes
+
+3. Await explicit written permission from kushmanmb before using the Software
+
+UNAUTHORIZED USE IS PROHIBITED
+
+Any use of this Software without explicit written permission from kushmanmb is
+strictly prohibited and may be subject to legal action.
+
+DISCLAIMER OF WARRANTIES
+
+THE SOFTWARE IS PROVIDED "AS IS" TO AUTHORIZED USERS ONLY. kushmanmb MAKES
+NO WARRANTIES, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, OR NONINFRINGEMENT. USE OF
+THIS SOFTWARE IS AT YOUR OWN RISK AND ONLY WITH EXPLICIT PERMISSION.
+
+LIMITATION OF LIABILITY
+
+IN NO EVENT SHALL kushmanmb OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+DAMAGES, OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT, OR
+OTHERWISE, ARISING FROM, OUT OF, OR IN CONNECTION WITH ANY AUTHORIZED USE OF
 THE SOFTWARE.
+
+This copyright notice and permission requirements shall be included in all
+authorized copies or substantial portions of the Software.
+
+NOTICE: This license supersedes any previous MIT or open source licenses
+that may have been associated with this repository. All rights are now
+reserved and explicit permission from kushmanmb is required for any use.
