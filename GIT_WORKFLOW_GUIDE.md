@@ -4,6 +4,36 @@
 
 This document explains the git workflow for contributing to the kushmanmb-org/bitcoin repository.
 
+## Identity Management
+
+### Git Mailmap
+
+This repository uses a `.mailmap` file to consolidate contributor identities. The following identities are mapped to ensure consistent attribution:
+
+- **kushmanmb.eth** (Primary ENS - Ethereum Mainnet)
+- **kushmanmb.base.eth** (Base L2 ENS)
+- **Yaketh.eth** (Secondary ENS)
+- **Kushmanmb@gmx.com** (Primary email)
+- **mattbrace92@gmail.com** (Secondary email)
+
+The mailmap ensures that all commits from these identities are properly attributed to the canonical identity "Kushman MB <Kushmanmb@gmx.com>" in git history.
+
+### Configuring Your Git Identity
+
+When contributing, use one of the recognized identities:
+
+```bash
+# Primary email configuration
+git config user.name "Kushman MB"
+git config user.email "Kushmanmb@gmx.com"
+
+# Alternative email configuration
+git config user.name "Kushman MB"
+git config user.email "mattbrace92@gmail.com"
+```
+
+For ENS-based workflows or blockchain integration, the repository recognizes commits from any of the mapped identities.
+
 ## Branch Structure
 
 - **master**: The main development branch. All changes must go through pull requests.
@@ -170,12 +200,16 @@ git rebase master  # or git merge master
 4. **Keep PRs focused**: One PR should address one issue or feature
 5. **Update regularly**: Regularly sync your branch with master
 6. **Sign your commits**: Use GPG to sign commits for authenticity
+7. **Use consistent identity**: Configure git with one of the recognized identities from `.mailmap`
+8. **Follow ENS best practices**: When using blockchain integration, ensure ENS records are current
 
 ## Resources
 
 - [CONTRIBUTING.md](CONTRIBUTING.md) - Detailed contribution guidelines
 - [SECURITY_PRACTICES.md](SECURITY_PRACTICES.md) - Security best practices
+- [ENS_CONFIGURATION.md](ENS_CONFIGURATION.md) - ENS identity configuration
 - [doc/developer-notes.md](doc/developer-notes.md) - Developer notes and conventions
+- [.mailmap](.mailmap) - Git identity consolidation mapping
 
 ## Questions?
 
@@ -186,4 +220,8 @@ If you have questions about the workflow:
 
 ---
 
-Last Updated: 2026-02-14
+Last Updated: 2026-02-15
+
+**Repository**: kushmanmb-org/bitcoin  
+**Primary Maintainer**: Kushman MB (kushmanmb.eth)  
+**Contact**: Kushmanmb@gmx.com, mattbrace92@gmail.com

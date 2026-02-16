@@ -86,7 +86,9 @@ Bitcoin Core is a security-critical project. Please review our security policies
 - **[SECURITY.md](SECURITY.md)** - Security policy, supported versions, and how to report vulnerabilities
 - **[SECURITY_PRACTICES.md](SECURITY_PRACTICES.md)** - Comprehensive security and privacy practices for development
 - **[SELF_HOSTED_RUNNER_SETUP.md](SELF_HOSTED_RUNNER_SETUP.md)** - Self-hosted GitHub Actions runner configuration with security best practices
-- **[ENS_CONFIGURATION.md](ENS_CONFIGURATION.md)** - kushmanmb.eth ENS domain configuration and blockchain integration
+- **[ENS_CONFIGURATION.md](ENS_CONFIGURATION.md)** - Multi-ENS domain configuration and blockchain integration
+- **[IDENTITY_MANAGEMENT.md](IDENTITY_MANAGEMENT.md)** - Git identity consolidation and contributor attribution
+- **[GIT_WORKFLOW_GUIDE.md](GIT_WORKFLOW_GUIDE.md)** - Git workflow and contribution process
 
 ### Key Security Reminders
 
@@ -96,13 +98,23 @@ Bitcoin Core is a security-critical project. Please review our security policies
 - **Review code carefully** - This is a security-critical project where mistakes can be costly
 - **Report vulnerabilities privately** - Email security@bitcoincore.org for security issues
 
-### ENS Integration
+### ENS Integration and Identity Management
 
-This project uses the **kushmanmb.eth** ENS (Ethereum Name Service) domain for blockchain identity:
-- Provides decentralized identity on Ethereum
-- Links to website and other resources
-- Used in GitHub Actions workflows for Etherscan API integration
-- See [ENS_CONFIGURATION.md](ENS_CONFIGURATION.md) for details
+This project uses multiple ENS (Ethereum Name Service) domains for blockchain identity:
+
+**ENS Identities:**
+- **kushmanmb.eth** - Primary ENS on Ethereum Mainnet
+- **kushmanmb.base.eth** - ENS on Base L2 network
+- **Yaketh.eth** - Secondary ENS on Ethereum Mainnet
+
+**Email Addresses:**
+- **Kushmanmb@gmx.com** - Primary contact
+- **mattbrace92@gmail.com** - Secondary contact
+
+All identities are consolidated via `.mailmap` for consistent git attribution. See:
+- [ENS_CONFIGURATION.md](ENS_CONFIGURATION.md) - ENS domain details and blockchain integration
+- [IDENTITY_MANAGEMENT.md](IDENTITY_MANAGEMENT.md) - Identity consolidation and contributor attribution
+- [GIT_WORKFLOW_GUIDE.md](GIT_WORKFLOW_GUIDE.md) - Git workflow with identity management
 
 ### Coinbase Developer Platform (CDP) API Integration
 
