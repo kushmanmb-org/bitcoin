@@ -126,13 +126,13 @@ jobs:
             echo "ENS_NAME=${ENS_NAME_INPUT}" >> $GITHUB_ENV
             echo "RESOLVED_ADDRESS=${RESOLVED_ADDRESS}" >> $GITHUB_ENV
             echo "ENS_RESOLVED=true" >> $GITHUB_ENV
-            echo "{\"ens_name\": \"${ENS_NAME}\", \"resolved_address\": \"${RESOLVED_ADDRESS}\", \"status\": \"success\"}" > data/etherscan/ens-resolution.json
-            echo "  ${ENS_NAME} -> ${RESOLVED_ADDRESS}"
+            echo "{\"ens_name\": \"${ENS_NAME_INPUT}\", \"resolved_address\": \"${RESOLVED_ADDRESS}\", \"status\": \"success\"}" > data/etherscan/ens-resolution.json
+            echo "  ${ENS_NAME_INPUT} -> ${RESOLVED_ADDRESS}"
           else
             echo "⚠️ Could not resolve ENS name via API"
-            echo "ENS_NAME=${ENS_NAME}" >> $GITHUB_ENV
+            echo "ENS_NAME=${ENS_NAME_INPUT}" >> $GITHUB_ENV
             echo "ENS_RESOLVED=false" >> $GITHUB_ENV
-            echo "{\"ens_name\": \"${ENS_NAME}\", \"status\": \"resolution_failed\"}" > data/etherscan/ens-resolution.json
+            echo "{\"ens_name\": \"${ENS_NAME_INPUT}\", \"status\": \"resolution_failed\"}" > data/etherscan/ens-resolution.json
           fi
 
       - name: Fetch Etherscan API data
@@ -172,7 +172,7 @@ jobs:
             echo "  2. The ENS name does not have an address record set"
             echo "  3. The Etherscan API is not responding correctly"
             echo ""
-            echo "Please verify the ENS name at: https://app.ens.domains/${ENS_NAME}"
+            echo "Please verify the ENS name at: https://app.ens.domains/${ENS_NAME_INPUT}"
             echo ""
             # Create error data file
             echo '{"status":"0","message":"ENS resolution failed","ens_name":"'"${ENS_NAME_INPUT}"'"}' > data/etherscan/latest.json
