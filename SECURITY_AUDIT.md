@@ -176,4 +176,7 @@ This audit was performed using:
 ---
 **Report Status**: COMPLETED  
 **Next Review**: Scheduled quarterly or after significant changes  
-**Contact**: security@bitcoincore.org
+**Contact**: 
+- Security Issues: security@bitcoincore.org
+- Repository Issues: https://github.com/kushmanmb-org/bitcoin/issues
+- Repository Owner: kushmanmb.eth
