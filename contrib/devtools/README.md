@@ -160,3 +160,94 @@ A test script is provided to verify the formatting functions:
 ```bash
 node contrib/devtools/test-erc20-events.js
 ```
+
+fetch-github-api.js
+===================
+
+A Node.js script to interact with the GitHub API using OAuth access tokens or Personal Access Tokens (PAT). This script provides comprehensive support for GitHub API operations with Bearer token authentication.
+
+**Features:**
+- OAuth access token support (gho_* tokens)
+- Personal Access Token support (ghp_* tokens)
+- Multiple HTTP methods (GET, POST, PUT, PATCH, DELETE)
+- Rate limit tracking and display
+- Secure credential management via environment variables
+
+**Requirements:**
+- Node.js (v14 or higher)
+- GitHub OAuth token or Personal Access Token
+
+**Usage:**
+
+```bash
+export GITHUB_TOKEN="gho_16C7e42F292c6912E7710c838347Ae178B4a"
+export REQUEST_PATH="/user"
+node contrib/devtools/fetch-github-api.js
+```
+
+**OAuth Token Response Format:**
+
+When using GitHub OAuth flow, the token response follows this format:
+
+```json
+{
+  "access_token": "gho_16C7e42F292c6912E7710c838347Ae178B4a",
+  "token_type": "bearer",
+  "scope": "repo,gist"
+}
+```
+
+**Examples:**
+
+Get authenticated user information:
+```bash
+export GITHUB_TOKEN="gho_xxxxx"
+export REQUEST_PATH="/user"
+node contrib/devtools/fetch-github-api.js
+```
+
+List user repositories:
+```bash
+export REQUEST_PATH="/user/repos"
+node contrib/devtools/fetch-github-api.js
+```
+
+Get repository information:
+```bash
+export REQUEST_PATH="/repos/bitcoin/bitcoin"
+node contrib/devtools/fetch-github-api.js
+```
+
+Create an issue (POST request):
+```bash
+export REQUEST_METHOD="POST"
+export REQUEST_PATH="/repos/owner/repo/issues"
+export REQUEST_BODY='{"title":"Bug Report","body":"Description"}'
+node contrib/devtools/fetch-github-api.js
+```
+
+**Shell Wrapper:**
+
+A convenient shell wrapper is provided:
+```bash
+./contrib/devtools/fetch-github-api.sh
+```
+
+**Demo Script:**
+
+Run the demo to see various GitHub API operations:
+```bash
+export GITHUB_TOKEN="gho_xxxxx"
+./contrib/devtools/demo-github-api.sh
+```
+
+**Testing:**
+
+A comprehensive test suite is provided:
+```bash
+node contrib/devtools/test-github-api.js
+```
+
+**Documentation:**
+
+For detailed documentation, see [GITHUB_API_README.md](GITHUB_API_README.md)
