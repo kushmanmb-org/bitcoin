@@ -160,3 +160,71 @@ A test script is provided to verify the formatting functions:
 ```bash
 node contrib/devtools/test-erc20-events.js
 ```
+
+monitor-accounts.js
+===================
+
+A real-time monitoring tool for Ethereum accounts that continuously tracks ETH balances, ERC20 token transfers, and account activity.
+
+**Requirements:**
+- Node.js (v14 or higher)
+- Etherscan API key (get one at https://etherscan.io/myapikey)
+
+**Usage:**
+
+Monitor a single address:
+```bash
+ETHERSCAN_API_KEY=your_api_key node contrib/devtools/monitor-accounts.js <ethereum_address>
+```
+
+Monitor multiple addresses:
+```bash
+ETHERSCAN_API_KEY=your_api_key node contrib/devtools/monitor-accounts.js <address1> <address2> <address3>
+```
+
+Using the shell wrapper:
+```bash
+ETHERSCAN_API_KEY=your_api_key ./contrib/devtools/monitor-accounts.sh <ethereum_address>
+```
+
+**Options:**
+
+Set custom polling interval (in seconds, minimum 10):
+```bash
+POLL_INTERVAL=30 ETHERSCAN_API_KEY=your_api_key node contrib/devtools/monitor-accounts.js <address>
+```
+
+**Features:**
+- Continuous real-time monitoring of Ethereum accounts
+- ETH balance tracking
+- ERC20 token transfer history (last 5 transactions)
+- New transaction detection and notifications
+- Support for monitoring multiple addresses simultaneously
+- Configurable polling interval
+- Clean console-based display with formatted output
+
+**Output:**
+
+The monitor displays:
+- Current ETH balance
+- Account status (monitoring, new transaction detected, error)
+- Recent token transfers with direction indicators (IN/OUT)
+- Block numbers and timestamps
+- Transaction hashes
+
+**Testing:**
+
+Test the account monitor functions:
+```bash
+node contrib/devtools/test-monitor-accounts.js
+```
+
+**Full Documentation:**
+
+See [MONITOR_ACCOUNTS_README.md](./MONITOR_ACCOUNTS_README.md) for comprehensive documentation including:
+- Detailed usage examples
+- Environment variable reference
+- Output format details
+- Troubleshooting guide
+- API call information
+- Rate limit considerations
