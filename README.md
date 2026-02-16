@@ -125,6 +125,36 @@ node contrib/devtools/fetch-cdp-api.js
 - Full Documentation: [contrib/devtools/CDP_API_README.md](contrib/devtools/CDP_API_README.md)
 - Demo Script: `./contrib/devtools/demo-cdp-api.sh`
 
+### GitHub API Integration
+
+This repository includes tools for interacting with the GitHub API using OAuth tokens:
+- **OAuth access token support** with Bearer authentication
+- **Personal Access Token (PAT)** support for automated scripts
+- **Multiple HTTP methods** (GET, POST, PUT, PATCH, DELETE)
+- **Secure credential management** via environment variables
+- **Rate limit tracking** and display
+
+**Quick Start:**
+```bash
+export GITHUB_TOKEN="gho_16C7e42F292c6912E7710c838347Ae178B4a"
+export REQUEST_PATH="/user"
+node contrib/devtools/fetch-github-api.js
+```
+
+**OAuth Token Response Format:**
+```json
+{
+  "access_token": "gho_16C7e42F292c6912E7710c838347Ae178B4a",
+  "token_type": "bearer",
+  "scope": "repo,gist"
+}
+```
+
+**Documentation:**
+- Full Documentation: [contrib/devtools/GITHUB_API_README.md](contrib/devtools/GITHUB_API_README.md)
+- Demo Script: `./contrib/devtools/demo-github-api.sh`
+- Test Suite: `node contrib/devtools/test-github-api.js`
+
 ### Safe Git Practices
 
 When contributing to Bitcoin Core:
