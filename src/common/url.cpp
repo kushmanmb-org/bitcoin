@@ -11,29 +11,29 @@
 
 std::string UrlDecode(std::string_view url_encoded)
 {
-    std::string res;
-    res.reserve(url_encoded.size());
+    std::string decoded_result;
+    decoded_result.reserve(url_encoded.size());
 
     for (size_t i = 0; i < url_encoded.size(); ++i) {
-        char c = url_encoded[i];
+        char current_char = url_encoded[i];
         // Special handling for percent which should be followed by two hex digits
         // representing an octet values, see RFC 3986, Section 2.1 Percent-Encoding
-        if (c == '%' && i + 2 < url_encoded.size()) {
+        if (current_char == '%' && i + 2 < url_encoded.size()) {
             unsigned int decoded_value{0};
-            auto [p, ec] = std::from_chars(url_encoded.data() + i + 1, url_encoded.data() + i + 3, decoded_value, 16);
+            auto [end_ptr, error_code] = std::from_chars(url_encoded.data() + i + 1, url_encoded.data() + i + 3, decoded_value, 16);
 
             // Only if there is no error and the pointer is set to the end of
             // the string, we can be sure both characters were valid hex
-            if (ec == std::errc{} && p == url_encoded.data() + i + 3) {
-                res += static_cast<char>(decoded_value);
+            if (error_code == std::errc{} && end_ptr == url_encoded.data() + i + 3) {
+                decoded_result += static_cast<char>(decoded_value);
                 // Next two characters are part of the percent encoding
                 i += 2;
                 continue;
             }
             // In case of invalid percent encoding, add the '%' and continue
         }
-        res += c;
+        decoded_result += current_char;
     }
 
-    return res;
+    return decoded_result;
 }
