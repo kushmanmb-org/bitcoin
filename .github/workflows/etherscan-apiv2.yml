@@ -31,6 +31,7 @@ on:
           - transaction
           - contract
           - ens_resolve
+          - eth_blockNumber
       ens_name:
         description: 'ENS name to resolve (default: kushmanmb.eth)'
         required: false
@@ -215,6 +216,13 @@ jobs:
               DATA="0x70a08231000000000000000000000000${QUERY_ADDRESS#0x}"
               PARAMS="&to=${RESOLVER_CONTRACT}&data=${DATA}&tag=latest"
               ;;
+            "eth_blockNumber")
+              # Get current Ethereum block number
+              echo "Fetching current Ethereum block number..."
+              MODULE="proxy"
+              ACTION="eth_blockNumber"
+              PARAMS=""
+              ;;
             *)
               MODULE="account"
               ACTION="balance"
@@ -226,6 +234,13 @@ jobs:
           echo "Target Address: ${TARGET_ADDRESS}"
           echo "ENS Name: ${ENS_NAME}"
 
+          # Build API URL
+          if [ "${ENDPOINT}" = "ens_resolve" ] || [ "${ENDPOINT}" = "eth_blockNumber" ]; then
+            # Use v2 API for proxy calls (matching problem statement)
+            api_url="https://api.etherscan.io/v2/api?chainid=1&module=${MODULE}&action=${ACTION}${PARAMS}"
+          else
+            api_url="${BASE_URL}?module=${MODULE}&action=${ACTION}${PARAMS}"
+          fi
           # Build API URL - All endpoints now use V2 API
           api_url="${BASE_URL}?chainid=1&module=${MODULE}&action=${ACTION}${PARAMS}"
 

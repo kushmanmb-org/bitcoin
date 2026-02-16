@@ -23,6 +23,7 @@ This guide provides quick instructions for using the kushmanmb.eth ENS integrati
      - `transaction` - Get transaction history
      - `contract` - Get contract ABI (if applicable)
      - `ens_resolve` - Resolve ENS name via eth_call
+     - `eth_blockNumber` - Get current Ethereum block number
    - **ENS name**: Keep default `kushmanmb.eth` or enter another ENS name
 5. **Click "Run workflow"** green button
 
@@ -36,12 +37,15 @@ The workflow will:
 5. Commit and push the data files back to the repository
 6. Generate a summary in the workflow run
 
-### Example: Fetching Account Balance
+### Example API Calls
 
-The curl command from the problem statement is now integrated:
+The following Etherscan API calls are supported:
 
 ```bash
-# This is automatically executed in the workflow:
+# Get current Ethereum block number
+curl "https://api.etherscan.io/v2/api?chainid=1&module=proxy&action=eth_blockNumber&apikey=<YOUR_KEY>"
+
+# Query via eth_call (automatically executed in the workflow)
 curl "https://api.etherscan.io/v2/api?chainid=1&module=proxy&action=eth_call&to=0xAEEF46DB4855E25702F8237E8f403FddcaF931C0&data=0x70a08231000000000000000000000000e16359506c028e51f16be38986ec5746251e9724&tag=latest&apikey=<YOUR_KEY>"
 ```
 
