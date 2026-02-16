@@ -158,8 +158,9 @@ Every single pull request submitted against the Bitcoin Core repo is automatical
 There are 3 ways fuzz tests can be built:
 
 1. With `-DBUILD_FOR_FUZZING=ON` which forces on fuzz determinism (skipping
-   proof of work checks, disabling random number seeding, disabling clock time)
-   and causes `Assume()` checks to abort on failure.
+   proof of work checks (see [doc/design/proof-of-work.md](design/proof-of-work.md#testing-and-fuzzing)), 
+   disabling random number seeding, disabling clock time) and causes `Assume()` 
+   checks to abort on failure.
 
    This is the normal way to run fuzz tests and generate new inputs. Because
    determinism is hardcoded on in this build, only the fuzz binary can be built

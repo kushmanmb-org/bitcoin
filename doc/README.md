@@ -65,6 +65,7 @@ The Bitcoin repo's [root README](/README.md) contains relevant information on th
 - [Dnsseed Policy](dnsseed-policy.md)
 - [Benchmarking](benchmarking.md)
 - [Internal Design Docs](design/)
+  - [Proof-of-Work](design/proof-of-work.md)
 
 ### Resources
 * Discuss on the [BitcoinTalk](https://bitcointalk.org/) forums, in the [Development & Technical Discussion board](https://bitcointalk.org/index.php?board=6.0).

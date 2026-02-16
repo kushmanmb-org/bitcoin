@@ -6,6 +6,8 @@
 #ifndef BITCOIN_POW_H
 #define BITCOIN_POW_H
 
+// For implementation details and design documentation, see doc/design/proof-of-work.md
+
 #include <consensus/params.h>
 
 #include <cstdint>
