@@ -34,7 +34,7 @@ import { createCDPEmbeddedWalletConnector } from "./walletConnectors";
 
 const cdpConnector = createCDPEmbeddedWalletConnector({
   appName: "Bitcoin OnChain App",
-  preference: "embedded",
+  preference: "smartWalletOnly",
 });
 ```
 
@@ -44,11 +44,11 @@ const cdpConnector = createCDPEmbeddedWalletConnector({
 interface CDPEmbeddedWalletConfig {
   appName: string;                    // Required: App name shown in wallet
   appLogoUrl?: string;                // Optional: App logo URL
-  preference?: 'embedded' | 'eoaOnly' | 'smartWalletOnly' | 'all';
+  preference?: 'eoaOnly' | 'smartWalletOnly' | 'all';  // Wallet preference
   chainId?: number;                   // Optional: Specific chain ID
   enableSmartWallet?: boolean;        // Optional: Enable smart wallet
   rpcUrl?: string;                    // Optional: Custom RPC URL
-  version?: 3 | 4;                    // Optional: SDK version (default: 4)
+  version?: '3' | '4';                // Optional: SDK version (default: '4')
 }
 ```
 
@@ -62,7 +62,7 @@ const customConnector = createCDPEmbeddedWalletConnector({
   appLogoUrl: "https://example.com/logo.png",
   preference: "smartWalletOnly",
   enableSmartWallet: true,
-  version: 4,
+  version: "4",
 });
 ```
 

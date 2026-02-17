@@ -27,10 +27,13 @@ export interface CDPEmbeddedWalletConfig {
   appLogoUrl?: string;
   
   /**
-   * Whether to prefer embedded wallet over extension
-   * @default true
+   * Wallet connection preference
+   * - 'eoaOnly': Use EOA (Externally Owned Account) only
+   * - 'smartWalletOnly': Use smart wallet only
+   * - 'all': Show all available wallet options
+   * @default 'all'
    */
-  preference?: 'embedded' | 'eoaOnly' | 'smartWalletOnly' | 'all';
+  preference?: 'eoaOnly' | 'smartWalletOnly' | 'all';
   
   /**
    * Chain ID to connect to
@@ -50,9 +53,9 @@ export interface CDPEmbeddedWalletConfig {
   
   /**
    * Version of the wallet SDK to use
-   * @default 4
+   * @default "4"
    */
-  version?: 3 | 4;
+  version?: '3' | '4';
 }
 
 /**
@@ -70,7 +73,7 @@ export interface CDPEmbeddedWalletConfig {
  * const connector = createCDPEmbeddedWalletConnector({
  *   appName: 'Bitcoin Core App',
  *   appLogoUrl: 'https://example.com/logo.png',
- *   preference: 'embedded',
+ *   preference: 'smartWalletOnly',
  *   enableSmartWallet: true,
  * });
  * 
@@ -87,11 +90,11 @@ export function createCDPEmbeddedWalletConnector(
   const {
     appName,
     appLogoUrl,
-    preference = 'embedded',
+    preference = 'all',
     chainId,
     enableSmartWallet = false,
     rpcUrl,
-    version = 4,
+    version = '4',
   } = config;
 
   // Validate required configuration
@@ -131,9 +134,9 @@ export function createDefaultCDPConnector(): CreateConnectorFn {
   return createCDPEmbeddedWalletConnector({
     appName: 'Bitcoin Core - OnChain App',
     appLogoUrl: '/bitcoin-logo.png',
-    preference: 'embedded',
-    enableSmartWallet: false,
-    version: 4,
+    preference: 'smartWalletOnly',
+    enableSmartWallet: true,
+    version: '4',
   });
 }
 

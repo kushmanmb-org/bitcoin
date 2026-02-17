@@ -12,9 +12,9 @@ import "@coinbase/onchainkit/styles.css";
 const cdpConnector = createCDPEmbeddedWalletConnector({
   appName: process.env.NEXT_PUBLIC_PROJECT_NAME || "Bitcoin OnChain App",
   appLogoUrl: "/bitcoin-logo.png",
-  preference: "embedded",
-  enableSmartWallet: false,
-  version: 4,
+  preference: "smartWalletOnly",
+  enableSmartWallet: true,
+  version: "4",
 });
 
 const wagmiConfig = createConfig({
