@@ -9,6 +9,9 @@
 
 export LC_ALL=C
 
+# Expected repository owners (add more if needed)
+ALLOWED_OWNERS=("kushmanmb-org" "kushmanmb")
+
 # Check if curl is available
 if ! command -v curl >/dev/null 2>&1; then
     echo "Error: curl is not installed. Please install curl to run this check."
@@ -43,11 +46,19 @@ if [ -z "$REPO_OWNER" ] || [ "$REPO_OWNER" = "null" ]; then
 fi
 
 # Verify the repository owner
-if [ "$REPO_OWNER" = "kushmanmb-org" ] || [ "$REPO_OWNER" = "kushmanmb" ]; then
+OWNER_VALID=false
+for allowed_owner in "${ALLOWED_OWNERS[@]}"; do
+    if [ "$REPO_OWNER" = "$allowed_owner" ]; then
+        OWNER_VALID=true
+        break
+    fi
+done
+
+if [ "$OWNER_VALID" = true ]; then
     echo "✓ Repository owner is correct: $REPO_OWNER"
     exit 0
 else
     echo "✗ Repository owner is incorrect: $REPO_OWNER"
-    echo "  Expected: kushmanmb-org or kushmanmb"
+    echo "  Expected one of: ${ALLOWED_OWNERS[*]}"
     exit 1
 fi
