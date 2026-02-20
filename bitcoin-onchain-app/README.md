@@ -1,5 +1,12 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-onchain`](https://www.npmjs.com/package/create-onchain).
 
+## Features
+
+- **WETH Interactions**: Deposit, withdraw, and transfer WETH tokens
+- **Task Completion**: Track your progress with getting started tasks
+- **Wallet Integration**: Connect your wallet using OnchainKit
+- **ENS Support**: Transfer to ENS addresses like yaketh.eth
+
 
 ## Getting Started
 
@@ -33,6 +40,8 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 
 ## Learn More
+
+To learn more about the task completion feature, see [TASK_FEATURE.md](./TASK_FEATURE.md).
 
 To learn more about OnchainKit, see our [documentation](https://docs.base.org/onchainkit).
 
