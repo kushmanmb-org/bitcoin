@@ -34,10 +34,11 @@ fi
 # Extract owner/repo from the remote URL
 # Handles both HTTPS (https://github.com/owner/repo.git) and SSH (git@github.com:owner/repo.git) formats
 # Also handles www subdomain and trailing slashes
-REPO_PATH=$(echo "$GIT_REMOTE" | sed -E 's#^(https://(www\.)?github\.com/|git@github\.com:)##' | sed 's#/##' | sed 's/\.git$//')
+REPO_PATH=$(echo "$GIT_REMOTE" | sed -E 's#^(https://(www\.)?github\.com/|git@github\.com:)##' | sed 's#/$##' | sed 's/\.git$//')
 
 # Validate that REPO_PATH matches expected pattern (owner/repo)
-if ! echo "$REPO_PATH" | grep -qE '^[a-zA-Z0-9_-]+/[a-zA-Z0-9_-]+$'; then
+# GitHub usernames and repo names must start with alphanumeric or underscore, not hyphen
+if ! echo "$REPO_PATH" | grep -qE '^[a-zA-Z0-9_][a-zA-Z0-9_-]*/[a-zA-Z0-9_][a-zA-Z0-9_-]*$'; then
     echo "Error: Invalid repository path format: $REPO_PATH"
     echo "Expected format: owner/repo"
     exit 1
