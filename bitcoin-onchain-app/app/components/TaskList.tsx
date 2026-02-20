@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import styles from "./TaskList.module.css";
 
 export interface Task {
@@ -18,6 +18,7 @@ const initialTasks: Task[] = [
 export function TaskList() {
   const [tasks, setTasks] = useState<Task[]>(initialTasks);
   const [newTaskTitle, setNewTaskTitle] = useState("");
+  const nextIdRef = useRef(initialTasks.length + 1);
 
   const toggleTask = (id: number) => {
     setTasks((prevTasks) =>
@@ -32,11 +33,12 @@ export function TaskList() {
     if (!newTaskTitle.trim()) return;
 
     const newTask: Task = {
-      id: Math.max(0, ...tasks.map((t) => t.id)) + 1,
+      id: nextIdRef.current,
       title: newTaskTitle.trim(),
       completed: false,
     };
 
+    nextIdRef.current += 1;
     setTasks([...tasks, newTask]);
     setNewTaskTitle("");
   };
@@ -89,7 +91,7 @@ export function TaskList() {
             <button
               onClick={() => deleteTask(task.id)}
               className={styles.deleteButton}
-              aria-label="Delete task"
+              aria-label={`Delete task: ${task.title}`}
             >
               ×
             </button>
