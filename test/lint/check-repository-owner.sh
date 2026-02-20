@@ -33,15 +33,42 @@ fi
 
 # Extract owner/repo from the remote URL
 # Handles both HTTPS (https://github.com/owner/repo.git) and SSH (git@github.com:owner/repo.git) formats
-REPO_PATH=$(echo "$GIT_REMOTE" | sed -E 's#^(https://github\.com/|git@github\.com:)##' | sed 's/\.git$//')
+# Also handles www subdomain and trailing slashes
+REPO_PATH=$(echo "$GIT_REMOTE" | sed -E 's#^(https://(www\.)?github\.com/|git@github\.com:)##' | sed 's#/##' | sed 's/\.git$//')
 
-# Get the repository owner from GitHub API
-REPO_OWNER=$(curl -s "https://api.github.com/repos/${REPO_PATH}" | jq -r '.owner.login')
+# Validate that REPO_PATH matches expected pattern (owner/repo)
+if ! echo "$REPO_PATH" | grep -qE '^[a-zA-Z0-9_-]+/[a-zA-Z0-9_-]+$'; then
+    echo "Error: Invalid repository path format: $REPO_PATH"
+    echo "Expected format: owner/repo"
+    exit 1
+fi
 
-# Check if curl was successful
+# Get the repository owner from GitHub API with HTTP status code
+HTTP_RESPONSE=$(curl -s -w "\n%{http_code}" "https://api.github.com/repos/${REPO_PATH}")
+HTTP_CODE=$(echo "$HTTP_RESPONSE" | tail -n1)
+RESPONSE_BODY=$(echo "$HTTP_RESPONSE" | sed '$d')
+
+REPO_OWNER=$(echo "$RESPONSE_BODY" | jq -r '.owner.login')
+
+# Check if curl was successful and provide specific error messages
+if [ "$HTTP_CODE" != "200" ]; then
+    echo "Error: Failed to retrieve repository owner from GitHub API (HTTP $HTTP_CODE)."
+    case "$HTTP_CODE" in
+        403)
+            echo "This is likely due to API rate limiting. Try again later or use authentication."
+            ;;
+        404)
+            echo "Repository not found. Check that the repository exists and is accessible."
+            ;;
+        *)
+            echo "This could be due to network issues or other API problems."
+            ;;
+    esac
+    exit 1
+fi
+
 if [ -z "$REPO_OWNER" ] || [ "$REPO_OWNER" = "null" ]; then
-    echo "Error: Failed to retrieve repository owner from GitHub API."
-    echo "This could be due to network issues or API rate limiting."
+    echo "Error: Could not extract repository owner from API response."
     exit 1
 fi
 
