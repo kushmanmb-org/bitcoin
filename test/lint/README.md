@@ -69,6 +69,17 @@ check-doc.py
 ============
 Check for missing documentation of command line options.
 
+check-repository-owner.sh
+=========================
+Verifies that the GitHub repository owner is correct. This script checks that the repository
+owner is either "kushmanmb-org" or "kushmanmb" by querying the GitHub API.
+
+```
+Usage: test/lint/check-repository-owner.sh
+```
+
+Requires `curl` and `jq` to be installed.
+
 commit-script-check.sh
 ======================
 Verification of [scripted diffs](/doc/developer-notes.md#scripted-diffs).
