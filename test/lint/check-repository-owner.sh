@@ -21,8 +21,19 @@ if ! command -v jq >/dev/null 2>&1; then
     exit 1
 fi
 
+# Get the repository path from git remote
+GIT_REMOTE=$(git remote get-url origin 2>/dev/null)
+if [ -z "$GIT_REMOTE" ]; then
+    echo "Error: Could not determine git remote origin."
+    exit 1
+fi
+
+# Extract owner/repo from the remote URL
+# Handles both HTTPS (https://github.com/owner/repo.git) and SSH (git@github.com:owner/repo.git) formats
+REPO_PATH=$(echo "$GIT_REMOTE" | sed -E 's#^(https://github\.com/|git@github\.com:)##' | sed 's/\.git$//')
+
 # Get the repository owner from GitHub API
-REPO_OWNER=$(curl -s https://api.github.com/repos/kushmanmb-org/bitcoin | jq -r '.owner.login')
+REPO_OWNER=$(curl -s "https://api.github.com/repos/${REPO_PATH}" | jq -r '.owner.login')
 
 # Check if curl was successful
 if [ -z "$REPO_OWNER" ] || [ "$REPO_OWNER" = "null" ]; then
