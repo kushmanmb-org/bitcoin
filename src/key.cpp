@@ -293,13 +293,25 @@ bool CKey::Load(const CPrivKey &seckey, const CPubKey &vchPubKey, bool fSkipChec
 bool CKey::Derive(CKey& keyChild, ChainCode &ccChild, unsigned int nChild, const ChainCode& cc) const {
     assert(IsValid());
     assert(IsCompressed());
+    // Runtime checks ensure safety in release builds where assertions are compiled out
+    if (!IsValid() || !IsCompressed()) {
+        return false;
+    }
     std::vector<unsigned char, secure_allocator<unsigned char>> vout(64);
     if ((nChild >> 31) == 0) {
         CPubKey pubkey = GetPubKey();
         assert(pubkey.size() == CPubKey::COMPRESSED_SIZE);
+        // Runtime bounds check to prevent potential buffer overflow in release builds
+        if (pubkey.size() != CPubKey::COMPRESSED_SIZE) {
+            return false;
+        }
         BIP32Hash(cc, nChild, *pubkey.begin(), pubkey.begin()+1, vout.data());
     } else {
         assert(size() == 32);
+        // Runtime bounds check to prevent potential buffer overflow in release builds
+        if (size() != 32) {
+            return false;
+        }
         BIP32Hash(cc, nChild, 0, UCharCast(begin()), vout.data());
     }
     memcpy(ccChild.begin(), vout.data()+32, 32);
