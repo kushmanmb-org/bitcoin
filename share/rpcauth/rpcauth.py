@@ -38,7 +38,7 @@ def main():
     password_hmac = password_to_hmac(salt, args.password)
 
     if args.json:
-        odict={'username':args.username, 'password':args.password, 'rpcauth':f'{args.username}:{salt}${password_hmac}'}
+        odict={'username':args.username, 'rpcauth':f'{args.username}:{salt}${password_hmac}'}
         print(json.dumps(odict))
     else:
         print('String to be appended to bitcoin.conf:')
