@@ -17,6 +17,7 @@ This document serves as the central index for all ownership, policy, and governa
 | [CONTRIBUTING.md](CONTRIBUTING.md) | Contribution guidelines | ✅ Active |
 | [SECURITY.md](SECURITY.md) | Security policies | ✅ Active |
 | [ATTESTATION_VERIFICATION.md](ATTESTATION_VERIFICATION.md) | Build artifact attestation and verification | ✅ Active |
+| [SSH_KEY_SETUP.md](SSH_KEY_SETUP.md) | Secure ed25519 SSH key generation and GitHub upload guide | ✅ Active |
 
 ---
 
