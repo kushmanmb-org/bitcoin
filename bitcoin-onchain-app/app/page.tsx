@@ -3,6 +3,7 @@ import Image from "next/image";
 import styles from "./page.module.css";
 import { Wallet } from "@coinbase/onchainkit/wallet";
 import { WETHInteraction } from "./components/WETHInteraction";
+import { TaskList } from "./components/TaskList";
 
 export default function Home() {
   return (
@@ -20,6 +21,8 @@ export default function Home() {
           height={200}
         />
         <h1 className={styles.title}>OnchainKit</h1>
+
+        <TaskList />
 
         <WETHInteraction />
 
