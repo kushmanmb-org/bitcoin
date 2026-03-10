@@ -16,27 +16,27 @@
 using util::ContainsNoNUL;
 using util::TrimString;
 
-std::string FormatMoney(const CAmount n)
+std::string FormatMoney(const CAmount amount)
 {
     // Note: not using straight sprintf here because we do NOT want
     // localized number formatting.
     static_assert(COIN > 1);
-    int64_t quotient = n / COIN;
-    int64_t remainder = n % COIN;
-    if (n < 0) {
+    int64_t quotient = amount / COIN;
+    int64_t remainder = amount % COIN;
+    if (amount < 0) {
         quotient = -quotient;
         remainder = -remainder;
     }
     std::string str = strprintf("%d.%08d", quotient, remainder);
 
     // Right-trim excess zeros before the decimal point:
-    int nTrim = 0;
+    int trailing_zeros_count = 0;
     for (int i = str.size()-1; (str[i] == '0' && IsDigit(str[i-2])); --i)
-        ++nTrim;
-    if (nTrim)
-        str.erase(str.size()-nTrim, nTrim);
+        ++trailing_zeros_count;
+    if (trailing_zeros_count)
+        str.erase(str.size()-trailing_zeros_count, trailing_zeros_count);
 
-    if (n < 0)
+    if (amount < 0)
         str.insert(uint32_t{0}, 1, '-');
     return str;
 }
@@ -53,36 +53,36 @@ std::optional<CAmount> ParseMoney(const std::string& money_string)
     }
 
     std::string strWhole;
-    int64_t nUnits = 0;
-    const char* p = str.c_str();
-    for (; *p; p++)
+    int64_t fractional_units = 0;
+    const char* current_char = str.c_str();
+    for (; *current_char; current_char++)
     {
-        if (*p == '.')
+        if (*current_char == '.')
         {
-            p++;
-            int64_t nMult = COIN / 10;
-            while (IsDigit(*p) && (nMult > 0))
+            current_char++;
+            int64_t decimal_multiplier = COIN / 10;
+            while (IsDigit(*current_char) && (decimal_multiplier > 0))
             {
-                nUnits += nMult * (*p++ - '0');
-                nMult /= 10;
+                fractional_units += decimal_multiplier * (*current_char++ - '0');
+                decimal_multiplier /= 10;
             }
             break;
         }
-        if (IsSpace(*p))
+        if (IsSpace(*current_char))
             return std::nullopt;
-        if (!IsDigit(*p))
+        if (!IsDigit(*current_char))
             return std::nullopt;
-        strWhole.insert(strWhole.end(), *p);
+        strWhole.insert(strWhole.end(), *current_char);
     }
-    if (*p) {
+    if (*current_char) {
         return std::nullopt;
     }
     if (strWhole.size() > 10) // guard against 63 bit overflow
         return std::nullopt;
-    if (nUnits < 0 || nUnits > COIN)
+    if (fractional_units < 0 || fractional_units > COIN)
         return std::nullopt;
-    int64_t nWhole = LocaleIndependentAtoi<int64_t>(strWhole);
-    CAmount value = nWhole * COIN + nUnits;
+    int64_t whole_part_value = LocaleIndependentAtoi<int64_t>(strWhole);
+    CAmount value = whole_part_value * COIN + fractional_units;
 
     if (!MoneyRange(value)) {
         return std::nullopt;
