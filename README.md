@@ -1,6 +1,15 @@
 Bitcoin Core integration/staging tree
 =====================================
 
+**Repository Owner**: kushmanmb.eth (Ethereum Name Service)  
+**Creator**: kushmanmb  
+**ENS Identities**:
+- Primary: kushmanmb.eth (Ethereum Mainnet)
+- Base Network: Kushmanmb.base.eth
+- Additional: yaketh.eth
+
+---
+
 https://bitcoincore.org
 
 For an immediately usable, binary version of the Bitcoin Core software, see
@@ -46,8 +55,22 @@ All build artifacts (bitcoind, bitcoin-cli, bitcoin-tx) are cryptographically si
 
 ## License
 
-Bitcoin Core is released under the terms of the MIT license. See [COPYING](COPYING) for more
-information or see https://opensource.org/license/MIT.
+**PROPRIETARY LICENSE - EXPLICIT PERMISSION REQUIRED**
+
+This repository is **NOT** open source. All rights are reserved by kushmanmb (kushmanmb.eth).
+
+**Explicit written permission from kushmanmb is required** for any use, including but not limited to:
+- Using the software
+- Copying or modifying the code
+- Distributing the software
+- Creating derivative works
+
+See [COPYING](COPYING) for complete license terms and permission request procedures.
+
+**Contact for Permission:**
+- GitHub: https://github.com/kushmanmb
+- GitHub Issues: https://github.com/kushmanmb-org/bitcoin/issues
+- ENS: kushmanmb.eth
 
 Development Process
 -------------------

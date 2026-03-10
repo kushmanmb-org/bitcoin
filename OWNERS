@@ -1,0 +1,111 @@
+# Repository Ownership and Creator Status
+
+## Official Announcement
+
+This document officially announces the ownership and creator status of the **kushmanmb-org/bitcoin** repository.
+
+### Repository Owner
+
+**Owner**: kushmanmb.eth  
+**Organization**: kushmanmb-org  
+**GitHub**: [@kushmanmb](https://github.com/kushmanmb)
+
+### Creator
+
+**Creator**: kushmanmb  
+**Date Created**: 2024  
+**Purpose**: Bitcoin Core integration, development, and security research
+
+### ENS (Ethereum Name Service) Identities
+
+The repository owner maintains the following verified ENS identities:
+
+- **Primary ENS**: kushmanmb.eth (Ethereum Mainnet)
+- **Base Network ENS**: Kushmanmb.base.eth
+- **Additional ENS**: yaketh.eth
+
+### Verification
+
+This ownership status can be verified through:
+
+1. **GitHub Organization**: https://github.com/kushmanmb-org
+2. **Repository Settings**: Repository is owned by kushmanmb-org organization
+3. **Commit History**: Initial commits and ongoing maintenance by kushmanmb
+4. **ENS Records**: On-chain verification available through ENS resolver
+5. **Ownership Announcements**: Timestamped announcements in `data/ownership/`
+
+### Contact
+
+For ownership verification queries or official business:
+
+- **GitHub Issues**: https://github.com/kushmanmb-org/bitcoin/issues
+- **Email**: Available through GitHub profile
+- **ENS**: Messages can be sent to kushmanmb.eth through ENS-enabled wallets
+
+### Roles and Responsibilities
+
+#### Owner (kushmanmb)
+- Final authority on repository direction and policies
+- Manages access control and permissions
+- Maintains security and compliance standards
+- Reviews and approves major changes
+
+#### Creator (kushmanmb)
+- Original creator and architect of this fork/implementation
+- Responsible for initial setup and configuration
+- Ongoing development and maintenance
+- Integration of security features and workflows
+
+### Delegation and Contributors
+
+While kushmanmb is the owner and creator, the repository welcomes contributions from the community. All contributions are subject to review and approval by the owner or designated maintainers.
+
+#### Contribution Guidelines
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed contribution guidelines.
+
+### Legal and Licensing
+
+This repository is released under the MIT License. See [COPYING](COPYING) for full license text.
+
+**Copyright**: © 2024-2026 kushmanmb and contributors  
+**Based on**: Bitcoin Core (© 2009-2026 The Bitcoin Core developers)
+
+### Security and Responsible Disclosure
+
+For security vulnerabilities or sensitive issues:
+
+- Review [SECURITY.md](SECURITY.md) for security policies
+- Follow responsible disclosure practices
+- Do not publicly disclose security issues before resolution
+
+### Automated Ownership Announcements
+
+This repository includes automated ownership announcement workflows that generate timestamped records:
+
+- **Workflow**: `.github/workflows/bitcoin-ownership-announcement.yml`
+- **Announcements**: `data/ownership/`
+- **Frequency**: Weekly (Monday 00:00 UTC) and on-demand
+
+### Disclaimer
+
+This ownership announcement is for organizational and administrative purposes. It does not:
+
+- Constitute financial advice or investment guidance
+- Guarantee control of any cryptocurrency or blockchain assets
+- Create any legal obligations beyond standard repository management
+- Imply endorsement of any particular cryptocurrency or blockchain project
+
+### Updates
+
+This OWNERS file is authoritative as of the last commit date. Any updates or changes to ownership status will be reflected in repository commits and may trigger automated announcement workflows.
+
+---
+
+**Last Updated**: 2026-02-15  
+**Document Version**: 1.0  
+**Status**: Active
+
+---
+
+*This document is part of the official repository documentation and is maintained by the repository owner.*
