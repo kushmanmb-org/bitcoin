@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import './App.css'
+import WalletData from './WalletData'
 
 function App() {
   const [wasmLoaded, setWasmLoaded] = useState(false)
@@ -121,6 +122,8 @@ function App() {
             <li>Secure HTTPS-only deployment recommended</li>
           </ul>
         </section>
+
+        <WalletData />
       </main>
     </div>
   )
