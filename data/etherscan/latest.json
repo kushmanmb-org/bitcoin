@@ -1,0 +1,11 @@
+{
+  "status": "0",
+  "message": "No data yet - configure ETHERSCAN_API_KEY secret to enable automated data fetching",
+  "result": null,
+  "timestamp": "2026-03-15T00:00:00Z",
+  "ens_name": "kushmanmb.eth",
+  "resolved_address": "",
+  "endpoint": "account",
+  "chain_id": "1",
+  "network": "Ethereum"
+}
