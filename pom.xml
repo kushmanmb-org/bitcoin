@@ -7,7 +7,7 @@
 
     <groupId>org.kushmanmb</groupId>
     <artifactId>bitcoin</artifactId>
-    <version>1.0.0</version>
+    <version>29.0.0</version>
     <packaging>pom</packaging>
 
     <name>Bitcoin Core</name>
