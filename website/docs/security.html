@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Security practices for Kushmanmb.org Bitcoin development">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'; connect-src 'self'; frame-ancestors 'none';">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="X-Frame-Options" content="DENY">
+    <title>Security Practices - Kushmanmb.org</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        .doc-container {
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: white;
+        }
+        .doc-container h1 {
+            color: var(--primary-color);
+            margin-bottom: 2rem;
+        }
+        .doc-container h2 {
+            color: var(--dark-bg);
+            margin: 2rem 0 1rem;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 0.5rem;
+        }
+        .doc-container ul {
+            margin-left: 2rem;
+            line-height: 1.8;
+        }
+        .doc-container code {
+            background: #f5f5f5;
+            padding: 0.2rem 0.4rem;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+        .security-badge {
+            display: inline-block;
+            background: #4caf50;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            margin: 0.5rem;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="container">
+                <div class="logo">
+                    <h1>Kushmanmb.org</h1>
+                </div>
+                <ul class="nav-menu">
+                    <li><a href="../index.html">Home</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="security.html">Security</a></li>
+                    <li><a href="documentation.html">Documentation</a></li>
+                    <li><a href="https://github.com/kushmanmb-org/bitcoin" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <main class="doc-container">
+        <h1>Security Practices</h1>
+        
+        <div class="security-badges">
+            <span class="security-badge">🔒 CodeQL Scanning</span>
+            <span class="security-badge">🛡️ Secret Detection</span>
+            <span class="security-badge">✓ Automated Testing</span>
+            <span class="security-badge">🔐 Secure CI/CD</span>
+        </div>
+
+        <h2>Overview</h2>
+        <p>Security is our top priority at Kushmanmb.org. We implement comprehensive security practices throughout our development lifecycle.</p>
+
+        <h2>Automated Security Scanning</h2>
+        <ul>
+            <li><strong>CodeQL Analysis:</strong> Automated code scanning for vulnerabilities in C++, Python, Rust, and GitHub Actions</li>
+            <li><strong>Secret Scanning:</strong> Prevents accidental exposure of credentials and API keys</li>
+            <li><strong>Dependency Scanning:</strong> Regular audits of dependencies for known vulnerabilities</li>
+            <li><strong>OWASP Dependency Check:</strong> Continuous monitoring for vulnerable dependencies</li>
+        </ul>
+
+        <h2>Secure Development Practices</h2>
+        <ul>
+            <li><strong>Code Review:</strong> All changes require review before merging</li>
+            <li><strong>Branch Protection:</strong> Protected branches with required status checks</li>
+            <li><strong>Signed Commits:</strong> GPG signing recommended for all commits</li>
+            <li><strong>Multi-Factor Authentication:</strong> Required for all contributors</li>
+        </ul>
+
+        <h2>Credential Management</h2>
+        <ul>
+            <li><strong>No Hardcoded Secrets:</strong> All credentials stored securely outside the repository</li>
+            <li><strong>Environment Variables:</strong> Use environment variables for sensitive configuration</li>
+            <li><strong>Token Rotation:</strong> Regular rotation of access tokens (90-day policy)</li>
+            <li><strong>Least Privilege:</strong> Minimal permissions for all access tokens</li>
+        </ul>
+
+        <h2>CI/CD Security</h2>
+        <ul>
+            <li><strong>Self-Hosted Runners:</strong> Enhanced security with controlled execution environment</li>
+            <li><strong>Encrypted Secrets:</strong> GitHub Secrets for sensitive workflow data</li>
+            <li><strong>Workflow Permissions:</strong> Minimal required permissions for each workflow</li>
+            <li><strong>Artifact Security:</strong> Secure storage and handling of build artifacts</li>
+        </ul>
+
+        <h2>Data Protection</h2>
+        <ul>
+            <li><strong>Comprehensive .gitignore:</strong> Prevents accidental commits of sensitive files</li>
+            <li><strong>Private Keys:</strong> Never committed to repository</li>
+            <li><strong>Wallet Files:</strong> Excluded from version control</li>
+            <li><strong>API Keys:</strong> Stored in secure vaults, never in code</li>
+        </ul>
+
+        <h2>Incident Response</h2>
+        <p>If you discover a security vulnerability:</p>
+        <ol>
+            <li>Do not create a public issue</li>
+            <li>Email security details to our security team</li>
+            <li>Allow time for assessment and remediation</li>
+            <li>Coordinate disclosure timing</li>
+        </ol>
+
+        <h2>Additional Resources</h2>
+        <ul>
+            <li><a href="https://github.com/kushmanmb-org/bitcoin/blob/master/SECURITY_PRACTICES.md">Full Security Practices Document</a></li>
+            <li><a href="https://github.com/kushmanmb-org/bitcoin/blob/master/SECURITY.md">Security Policy</a></li>
+            <li><a href="https://github.com/kushmanmb-org/bitcoin/wiki/Security-Practices">Security Wiki</a></li>
+        </ul>
+
+        <h2>Compliance</h2>
+        <p>Our security practices align with:</p>
+        <ul>
+            <li>OWASP Top 10 Security Risks</li>
+            <li>CIS Benchmarks for secure development</li>
+            <li>GitHub Security Best Practices</li>
+            <li>Bitcoin Core Security Standards</li>
+        </ul>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-bottom">
+                <p>&copy; 2026 Kushmanmb.org. Released under the MIT License.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
+         http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.kushmanmb</groupId>
+    <artifactId>bitcoin</artifactId>
+    <version>1.0.0</version>
+    <packaging>pom</packaging>
+
+    <name>Bitcoin Core</name>
+    <description>Bitcoin Core integration/staging tree</description>
+    <url>https://github.com/kushmanmb-org/bitcoin</url>
+
+    <licenses>
+        <license>
+            <name>MIT License</name>
+            <url>https://opensource.org/license/MIT</url>
+        </license>
+    </licenses>
+
+    <scm>
+        <connection>scm:git:git://github.com/kushmanmb-org/bitcoin.git</connection>
+        <developerConnection>scm:git:ssh://github.com:kushmanmb-org/bitcoin.git</developerConnection>
+        <url>https://github.com/kushmanmb-org/bitcoin/tree/master</url>
+    </scm>
+
+    <distributionManagement>
+        <repository>
+            <id>github</id>
+            <name>GitHub kushmanmb-org Apache Maven Packages</name>
+            <url>https://maven.pkg.github.com/kushmanmb-org/bitcoin</url>
+        </repository>
+        <snapshotRepository>
+            <id>github</id>
+            <name>GitHub kushmanmb-org Apache Maven Packages</name>
+            <url>https://maven.pkg.github.com/kushmanmb-org/bitcoin</url>
+        </snapshotRepository>
+    </distributionManagement>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
+    </properties>
+
+</project>

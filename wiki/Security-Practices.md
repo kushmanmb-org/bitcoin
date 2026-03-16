@@ -117,6 +117,49 @@ if (ValidateInput(user_input)) {
 - Use secure random number generation
 - Follow current best practices for key sizes and algorithms
 
+## 🔒 Workflow Security
+
+### Bitcoin Ownership Announcements
+
+The `bitcoin-ownership-announcement.yml` workflow follows these security practices:
+
+1. **No Secrets in Workflow**: Only public ENS names are stored
+2. **Automated Security Scanning**: Built-in verification to detect secrets
+3. **Public Data Only**: Announcements contain no private keys or credentials
+4. **Pattern Matching**: Scans for:
+   - Private keys (various formats)
+   - Seed phrases and mnemonics
+   - Passwords and API keys
+   - Bitcoin/Ethereum private key patterns
+
+### Workflow Best Practices
+
+When creating or modifying workflows:
+
+- Store secrets in GitHub Secrets, never in workflow files
+- Use `${{ secrets.SECRET_NAME }}` syntax for secret access
+- Never log or echo secret values
+- Add security scanning steps to verify outputs
+- Use minimal permissions (`permissions:` block)
+- Enable concurrency controls to prevent race conditions
+
+Example secure workflow pattern:
+
+```yaml
+permissions:
+  contents: write  # Only what's needed
+
+jobs:
+  secure-job:
+    steps:
+      - name: Use secret safely
+        env:
+          API_KEY: ${{ secrets.API_KEY }}
+        run: |
+          # Use API_KEY without echoing it
+          curl -H "Authorization: Bearer $API_KEY" api.example.com
+```
+
 ## 🔍 Security Reviews
 
 ### Pull Request Reviews
@@ -128,6 +171,8 @@ All code changes should be reviewed with security in mind:
 - Review authentication and authorization
 - Look for injection vulnerabilities
 - Check for race conditions
+- Scan workflows for hardcoded secrets
+- Verify workflow permissions are minimal
 
 ### Security Testing
 
@@ -135,6 +180,7 @@ All code changes should be reviewed with security in mind:
 - Perform fuzz testing for critical components
 - Test error handling and edge cases
 - Verify secure defaults
+- Validate workflow security configurations
 
 ## 📋 Incident Response
 

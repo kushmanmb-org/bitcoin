@@ -1,0 +1,10 @@
+# Rust files
+*.rs text diff=rust
+Cargo.toml text
+Cargo.lock text -diff
+
+# Shell scripts
+*.sh text eol=lf
+
+# Documentation
+*.md text
