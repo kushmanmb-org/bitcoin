@@ -23,6 +23,26 @@ interface, which can be optionally built.
 
 Further information about Bitcoin Core is available in the [doc folder](/doc).
 
+## Project Status & Roadmap
+
+**Latest stable release:** [v30.2](doc/release-notes/release-notes-30.2.md)  
+**Current development target:** v31.0 (in progress on `master`)
+
+- **[ROADMAP.md](ROADMAP.md)** - Development priorities, upcoming milestones, and release schedule
+- **[ANNOUNCEMENT.md](ANNOUNCEMENT.md)** - Project announcements and release news
+
+### Milestones
+
+| Milestone | Status |
+|-----------|--------|
+| v30.x maintenance | Active (v30.2 latest) |
+| v31.0 development | In progress |
+| v31.x maintenance | Planned |
+
+For the full release history and notes, see [`doc/release-notes/`](doc/release-notes/).
+
+---
+
 ## Repository Policies
 
 This repository operates under documented policies and governance:
