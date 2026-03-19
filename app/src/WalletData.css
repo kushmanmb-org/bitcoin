@@ -1,0 +1,144 @@
+.wallet-data-section {
+  background: #1a1a2e;
+  border: 1px solid #30363d;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.wallet-data-section h2 {
+  margin-top: 0;
+  color: #f7931a;
+  font-size: 1.4rem;
+}
+
+.rpc-config {
+  margin-bottom: 1rem;
+}
+
+.rpc-config h3 {
+  font-size: 1rem;
+  color: #adbac7;
+  margin-bottom: 0.75rem;
+}
+
+.config-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 0.75rem;
+}
+
+.wallet-data-section .input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.wallet-data-section .input-group label {
+  font-size: 0.85rem;
+  color: #adbac7;
+}
+
+.wallet-data-section .input-group input {
+  padding: 0.4rem 0.6rem;
+  background: #0d1117;
+  border: 1px solid #30363d;
+  border-radius: 4px;
+  color: #e6edf3;
+  font-size: 0.9rem;
+}
+
+.wallet-data-section .input-group input:focus {
+  outline: none;
+  border-color: #f7931a;
+}
+
+.fetch-button {
+  margin-top: 0.75rem;
+  padding: 0.5rem 1.25rem;
+  background: #f7931a;
+  color: #000;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.fetch-button:hover:not(:disabled) {
+  background: #e8820f;
+}
+
+.fetch-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.wallet-error {
+  color: #f85149;
+  margin-top: 0.75rem;
+  font-size: 0.9rem;
+}
+
+.wallet-info {
+  margin-top: 1.25rem;
+}
+
+.wallet-info h3 {
+  color: #e6edf3;
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+}
+
+.wallet-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.wallet-table th,
+.wallet-table td {
+  text-align: left;
+  padding: 0.4rem 0.75rem;
+  border-bottom: 1px solid #21262d;
+}
+
+.wallet-table th {
+  color: #8b949e;
+  font-weight: 500;
+  width: 40%;
+}
+
+.wallet-table td {
+  color: #e6edf3;
+}
+
+.wallet-addresses {
+  margin-top: 1rem;
+}
+
+.wallet-addresses h4 {
+  color: #adbac7;
+  font-size: 0.95rem;
+  margin-bottom: 0.4rem;
+}
+
+.wallet-addresses ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.wallet-address {
+  padding: 0.3rem 0;
+  border-bottom: 1px solid #21262d;
+}
+
+.wallet-address code {
+  font-size: 0.8rem;
+  color: #79c0ff;
+  word-break: break-all;
+}
