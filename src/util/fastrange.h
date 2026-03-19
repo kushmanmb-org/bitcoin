@@ -32,19 +32,19 @@ static inline uint64_t FastRange64(uint64_t x, uint64_t n)
     // least significant 32 bits and perform multiplication piece-wise.
     //
     // See: https://stackoverflow.com/a/26855440
-    const uint64_t x_hi = x >> 32;
-    const uint64_t x_lo = x & 0xFFFFFFFF;
-    const uint64_t n_hi = n >> 32;
-    const uint64_t n_lo = n & 0xFFFFFFFF;
+    const uint64_t x_high_bits = x >> 32;
+    const uint64_t x_low_bits = x & 0xFFFFFFFF;
+    const uint64_t n_high_bits = n >> 32;
+    const uint64_t n_low_bits = n & 0xFFFFFFFF;
 
-    const uint64_t ac = x_hi * n_hi;
-    const uint64_t ad = x_hi * n_lo;
-    const uint64_t bc = x_lo * n_hi;
-    const uint64_t bd = x_lo * n_lo;
+    const uint64_t high_high_product = x_high_bits * n_high_bits;
+    const uint64_t high_low_product = x_high_bits * n_low_bits;
+    const uint64_t low_high_product = x_low_bits * n_high_bits;
+    const uint64_t low_low_product = x_low_bits * n_low_bits;
 
-    const uint64_t mid34 = (bd >> 32) + (bc & 0xFFFFFFFF) + (ad & 0xFFFFFFFF);
-    const uint64_t upper64 = ac + (bc >> 32) + (ad >> 32) + (mid34 >> 32);
-    return upper64;
+    const uint64_t middle_bits = (low_low_product >> 32) + (low_high_product & 0xFFFFFFFF) + (high_low_product & 0xFFFFFFFF);
+    const uint64_t upper_64_bits = high_high_product + (low_high_product >> 32) + (high_low_product >> 32) + (middle_bits >> 32);
+    return upper_64_bits;
 #endif
 }
 
