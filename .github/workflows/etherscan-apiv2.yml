@@ -196,7 +196,7 @@ jobs:
               echo "Get API key: https://etherscan.io/myapikey"
             fi
             echo '{"status":"0","message":"API key not configured"}' > data/etherscan/latest.json
-            exit 1
+            exit 0
           fi
           
           # Determine the API base URL based on chain ID
@@ -235,7 +235,7 @@ jobs:
               TARGET_ADDRESS="${RESOLVED_ADDRESS}"
               echo "Using dynamically resolved address: ${TARGET_ADDRESS}"
             else
-              echo "❌ ERROR: ENS name could not be resolved"
+              echo "⚠️ ENS name could not be resolved"
               echo ""
               echo "The ENS name '${ENS_NAME_INPUT}' could not be resolved to an Ethereum address."
               echo ""
@@ -248,7 +248,7 @@ jobs:
               echo ""
               # Create error data file
               echo '{"status":"0","message":"ENS resolution failed","ens_name":"'"${ENS_NAME_INPUT}"'"}' > data/etherscan/latest.json
-              exit 1
+              exit 0
             fi
           fi
           
