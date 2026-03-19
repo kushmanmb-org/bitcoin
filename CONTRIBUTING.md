@@ -14,6 +14,13 @@ purposes. As such, there are repository maintainers who are responsible for
 merging pull requests, the [release cycle](/doc/release-process.md), and
 moderation.
 
+Project Roadmap & Milestones
+----------------------------
+
+For current development priorities, upcoming milestones, and the release schedule,
+see [`ROADMAP.md`](ROADMAP.md). For recent announcements and release news, see
+[`ANNOUNCEMENT.md`](ANNOUNCEMENT.md).
+
 Getting Started
 ---------------
 
