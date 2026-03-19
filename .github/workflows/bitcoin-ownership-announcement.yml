@@ -1,6 +1,20 @@
 # Copyright (c) 2026 The Bitcoin Core developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or https://opensource.org/license/mit.
+#
+# ═══════════════════════════════════════════════════════════════════
+# GLOBAL OWNERSHIP & CREATOR STATUS
+# ═══════════════════════════════════════════════════════════════════
+# Repository Owner: kushmanmb.eth (Ethereum Name Service)
+# Creator: kushmanmb
+# ENS Identifiers:
+#   - Primary: kushmanmb.eth (Ethereum Mainnet)
+#   - Base Network: Kushmanmb.base.eth
+#   - yaketh.eth
+# 
+# This workflow is part of the kushmanmb-org/bitcoin repository
+# and is maintained by the repository owner and authorized contributors.
+# ═══════════════════════════════════════════════════════════════════
 
 name: Bitcoin Ownership Announcement
 
@@ -38,7 +52,8 @@ concurrency:
 jobs:
   announce-ownership:
     name: 'Announce Bitcoin Ownership'
-    runs-on: ubuntu-latest
+    # Using self-hosted runner when available for kushmanmb.eth repository
+    runs-on: ${{ vars.USE_SELF_HOSTED == 'true' && 'self-hosted' || 'ubuntu-latest' }}
 
     steps:
       - name: Checkout repository
@@ -164,6 +179,10 @@ jobs:
           echo "✓ Index created"
 
       - name: Commit and push announcements
+        env:
+          ANNOUNCEMENT_TYPE: ${{ github.event.inputs.announcement_type || 'ownership' }}
+          RUN_ID: ${{ github.run_id }}
+          REF_NAME: ${{ github.ref_name }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
@@ -173,28 +192,26 @@ jobs:
           if git diff --staged --quiet; then
             echo "No changes to commit"
           else
-            announcement_type="${{ github.event.inputs.announcement_type || 'ownership' }}"
-            run_id="${{ github.run_id }}"
-            
             git commit -m "chore: bitcoin ownership announcement [automated]
 
             - Announced at: ${WORKFLOW_RUN_TIME}
-            - Type: ${announcement_type}
+            - Type: ${ANNOUNCEMENT_TYPE}
             - ENS: Kushmanmb.base.eth, kushmanmb.eth
-            - Workflow run: ${run_id}
+            - Workflow run: ${RUN_ID}
 
             This commit contains a timestamped announcement of Bitcoin
             ownership associated with the specified ENS names.
             No private keys or sensitive data are included."
 
-            git push origin ${{ github.ref_name }}
+            git push origin "${REF_NAME}"
             echo "✓ Announcement committed and pushed"
           fi
 
       - name: Create workflow summary
         if: always()
+        env:
+          ANNOUNCEMENT_TYPE: ${{ github.event.inputs.announcement_type || 'ownership' }}
         run: |
-          announcement_type="${{ github.event.inputs.announcement_type || 'ownership' }}"
           summary="${GITHUB_STEP_SUMMARY}"
           
           echo "## Bitcoin Ownership Announcement Summary" >> "${summary}"
@@ -203,7 +220,7 @@ jobs:
           echo "" >> "${summary}"
           echo "### Details" >> "${summary}"
           echo "- **Timestamp**: ${WORKFLOW_RUN_TIME}" >> "${summary}"
-          echo "- **Type**: ${announcement_type}" >> "${summary}"
+          echo "- **Type**: ${ANNOUNCEMENT_TYPE}" >> "${summary}"
           echo "- **ENS Names**:" >> "${summary}"
           echo "  - Kushmanmb.base.eth" >> "${summary}"
           echo "  - kushmanmb.eth" >> "${summary}"
@@ -232,7 +249,8 @@ jobs:
 
   verify-no-secrets:
     name: 'Verify No Secrets in Announcement'
-    runs-on: ubuntu-latest
+    # Using self-hosted runner when available for kushmanmb.eth repository
+    runs-on: ${{ vars.USE_SELF_HOSTED == 'true' && 'self-hosted' || 'ubuntu-latest' }}
     needs: announce-ownership
 
     steps:
@@ -299,7 +317,8 @@ jobs:
 
   create-summary:
     name: 'Create Summary Issue'
-    runs-on: ubuntu-latest
+    # Using self-hosted runner when available for kushmanmb.eth repository
+    runs-on: ${{ vars.USE_SELF_HOSTED == 'true' && 'self-hosted' || 'ubuntu-latest' }}
     needs: [announce-ownership, verify-no-secrets]
     if: github.event_name == 'workflow_dispatch'
 

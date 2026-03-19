@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Documentation for Kushmanmb.org Bitcoin development">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'; connect-src 'self'; frame-ancestors 'none';">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="X-Frame-Options" content="DENY">
+    <title>Documentation - Kushmanmb.org</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        .doc-container {
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: white;
+        }
+        .doc-container h1 {
+            color: var(--primary-color);
+            margin-bottom: 2rem;
+        }
+        .doc-container h2 {
+            color: var(--dark-bg);
+            margin: 2rem 0 1rem;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 0.5rem;
+        }
+        .doc-container ul {
+            margin-left: 2rem;
+            line-height: 1.8;
+        }
+        .doc-container pre {
+            background: #1a1a1a;
+            color: #fff;
+            padding: 1rem;
+            border-radius: 5px;
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+        .doc-container code {
+            font-family: 'Courier New', monospace;
+        }
+        .doc-link {
+            display: block;
+            padding: 1rem;
+            margin: 0.5rem 0;
+            background: #f5f5f5;
+            border-left: 4px solid var(--primary-color);
+            text-decoration: none;
+            color: var(--text-color);
+            transition: var(--transition);
+        }
+        .doc-link:hover {
+            background: #e8e8e8;
+            transform: translateX(5px);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="container">
+                <div class="logo">
+                    <h1>Kushmanmb.org</h1>
+                </div>
+                <ul class="nav-menu">
+                    <li><a href="../index.html">Home</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="security.html">Security</a></li>
+                    <li><a href="documentation.html">Documentation</a></li>
+                    <li><a href="https://github.com/kushmanmb-org/bitcoin" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <main class="doc-container">
+        <h1>Documentation</h1>
+        
+        <h2>Getting Started</h2>
+        <p>Welcome to the Kushmanmb.org Bitcoin Core development documentation. This guide will help you set up your development environment and start contributing.</p>
+
+        <h3>Prerequisites</h3>
+        <ul>
+            <li>Git version control</li>
+            <li>CMake build system (3.16+)</li>
+            <li>C++ compiler with C++17 support</li>
+            <li>Python 3.6+ for testing</li>
+        </ul>
+
+        <h2>Quick Start</h2>
+        
+        <h3>1. Clone the Repository</h3>
+        <pre><code>git clone https://github.com/kushmanmb-org/bitcoin.git
+cd bitcoin</code></pre>
+
+        <h3>2. Build the Project</h3>
+        <pre><code>cmake -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build
+cmake --build build --target install</code></pre>
+
+        <h3>3. Run Tests</h3>
+        <pre><code>cd build
+ctest</code></pre>
+
+        <h2>Development Workflow</h2>
+        
+        <h3>Branch Strategy</h3>
+        <ul>
+            <li><code>master</code> - Main development branch</li>
+            <li><code>feature/*</code> - Feature development branches</li>
+            <li><code>fix/*</code> - Bug fix branches</li>
+            <li><code>release/*</code> - Release preparation branches</li>
+        </ul>
+
+        <h3>Creating a Pull Request</h3>
+        <ol>
+            <li>Fork the repository</li>
+            <li>Create a feature branch: <code>git checkout -b feature/my-feature</code></li>
+            <li>Make your changes</li>
+            <li>Run tests: <code>ctest</code></li>
+            <li>Commit with descriptive messages</li>
+            <li>Push to your fork</li>
+            <li>Open a pull request</li>
+        </ol>
+
+        <h2>Security Considerations</h2>
+        <ul>
+            <li>Never commit sensitive data (see <a href="security.html">Security Practices</a>)</li>
+            <li>Review <code>SECURITY_PRACTICES.md</code> before contributing</li>
+            <li>Use environment variables for credentials</li>
+            <li>Enable 2FA on your GitHub account</li>
+        </ul>
+
+        <h2>CI/CD Pipeline</h2>
+        <p>Our continuous integration pipeline includes:</p>
+        <ul>
+            <li>Automated builds on multiple platforms</li>
+            <li>Unit and integration tests</li>
+            <li>CodeQL security scanning</li>
+            <li>Dependency vulnerability checks</li>
+            <li>Code style linting</li>
+        </ul>
+
+        <h2>Key Documentation Links</h2>
+        
+        <a href="https://github.com/kushmanmb-org/bitcoin/blob/master/README.md" class="doc-link">
+            <strong>README</strong> - Project overview and basic information
+        </a>
+        
+        <a href="https://github.com/kushmanmb-org/bitcoin/blob/master/CONTRIBUTING.md" class="doc-link">
+            <strong>CONTRIBUTING</strong> - Contribution guidelines
+        </a>
+        
+        <a href="https://github.com/kushmanmb-org/bitcoin/blob/master/SECURITY_PRACTICES.md" class="doc-link">
+            <strong>SECURITY_PRACTICES</strong> - Detailed security guidelines
+        </a>
+        
+        <a href="https://github.com/kushmanmb-org/bitcoin/wiki" class="doc-link">
+            <strong>Wiki</strong> - Extended documentation and guides
+        </a>
+        
+        <a href="https://github.com/kushmanmb-org/bitcoin/blob/master/doc/" class="doc-link">
+            <strong>Technical Docs</strong> - Detailed technical documentation
+        </a>
+
+        <h2>Build Documentation</h2>
+        <ul>
+            <li><a href="https://github.com/kushmanmb-org/bitcoin/blob/master/doc/build-unix.md">Unix Build Guide</a></li>
+            <li><a href="https://github.com/kushmanmb-org/bitcoin/blob/master/doc/build-osx.md">macOS Build Guide</a></li>
+            <li><a href="https://github.com/kushmanmb-org/bitcoin/blob/master/doc/build-windows.md">Windows Build Guide</a></li>
+        </ul>
+
+        <h2>API Documentation</h2>
+        <ul>
+            <li><a href="https://github.com/kushmanmb-org/bitcoin/blob/master/doc/REST-interface.md">REST API</a></li>
+            <li><a href="https://github.com/kushmanmb-org/bitcoin/blob/master/doc/JSON-RPC-interface.md">JSON-RPC API</a></li>
+        </ul>
+
+        <h2>Testing</h2>
+        <ul>
+            <li><a href="https://github.com/kushmanmb-org/bitcoin/tree/master/src/test">Unit Tests</a></li>
+            <li><a href="https://github.com/kushmanmb-org/bitcoin/tree/master/test/functional">Functional Tests</a></li>
+            <li><a href="https://github.com/kushmanmb-org/bitcoin/blob/master/doc/benchmarking.md">Benchmarking</a></li>
+        </ul>
+
+        <h2>Need Help?</h2>
+        <ul>
+            <li>Open an <a href="https://github.com/kushmanmb-org/bitcoin/issues">issue</a> on GitHub</li>
+            <li>Check the <a href="https://github.com/kushmanmb-org/bitcoin/wiki">wiki</a> for guides</li>
+            <li>Review <a href="https://github.com/kushmanmb-org/bitcoin/pulls">existing pull requests</a></li>
+        </ul>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-bottom">
+                <p>&copy; 2026 Kushmanmb.org. Released under the MIT License.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../js/main.js"></script>
+</body>
+</html>

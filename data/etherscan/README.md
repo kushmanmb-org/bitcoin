@@ -1,70 +1,178 @@
-# Etherscan API Data
+# Etherscan API Data for kushmanmb.eth
 
-This directory contains data fetched from Etherscan's API by the automated GitHub Actions workflow.
+This directory contains data fetched from the Etherscan API related to the kushmanmb.eth ENS domain.
 
-## Overview
+## Contents
 
-The Etherscan API integration workflow automatically fetches blockchain data from Etherscan and commits it to this repository. This enables:
+- `latest.json` - Most recent API query result
+- `data-YYYY-MM-DD-HH-MM-SS.json` - Historical archived data with timestamps
+- `ens-resolution.json` - ENS name resolution data
 
-- Historical tracking of blockchain data
-- Automated data collection
-- Integration with CI/CD pipelines
+## Data Structure
 
-## Workflow Configuration
+### latest.json
 
-The workflow is configured in `.github/workflows/etherscan-apiv2.yml` and includes:
+```json
+{
+  "status": "1",
+  "message": "OK",
+  "result": "...",
+  "timestamp": "2026-02-14T14:59:00Z",
+  "ens_name": "kushmanmb.eth",
+  "endpoint": "account"
+}
+```
 
-- **Write Permissions**: The workflow has `contents: write` permission to commit data back to the repository
-- **Schedule**: Runs daily at 00:00 UTC (can be adjusted)
-- **Manual Trigger**: Can be manually triggered via workflow_dispatch
-- **API Key**: Requires `ETHERSCAN_API_KEY` secret to be configured
+### Fields
 
-## Setup Instructions
+- **status**: API response status (1 = success, 0 = failure)
+- **message**: Response message or error description
+- **result**: Actual data from Etherscan (varies by endpoint)
+- **timestamp**: When the data was fetched (ISO 8601 UTC)
+- **ens_name**: The ENS name queried
+- **endpoint**: Which API endpoint was used
 
-1. **Get an API Key**:
-   - Sign up at [Etherscan.io](https://etherscan.io/)
-   - Generate an API key from [My API Keys](https://etherscan.io/myapikey)
+## Automated Updates
 
-2. **Configure Repository Secret**:
-   - Go to repository Settings → Secrets and variables → Actions
-   - Add a new repository secret named `ETHERSCAN_API_KEY`
-   - Paste your Etherscan API key as the value
-   - **Important**: Never commit API keys to the repository
+This data is automatically updated by the GitHub Actions workflow:
+- **Workflow**: `.github/workflows/etherscan-apiv2.yml`
+- **Schedule**: Daily at 00:00 UTC
+- **Trigger**: Can also be manually triggered
 
-3. **Customize API Endpoints** (Optional):
-   - Edit `.github/workflows/etherscan-apiv2.yml` to adjust:
-     - API endpoints and actions based on your needs
-     - **Important**: Replace placeholder addresses/hashes with actual values:
-       - Account endpoint: Replace `0x0000...` with actual Ethereum address
-       - Transaction endpoint: Replace `0x0000...` with actual transaction hash
-       - Contract endpoint: Replace `0x0000...` with actual contract address
-     - Schedule frequency (daily by default)
+## Privacy and Security
 
-4. **Run the Workflow**:
-   - Navigate to Actions tab
-   - Select "Etherscan API v2 Integration" workflow
-   - Click "Run workflow"
+### What's Safe to Commit
 
-## Files
+✅ Public blockchain data (balances, transactions, etc.)
+✅ ENS resolution results (publicly available)
+✅ API response metadata
 
-- `latest.json` - Most recent data fetch
-- `data-YYYY-MM-DD-HH-MM-SS.json` - Historical data snapshots
+### What Should NEVER Be Committed
 
-## Permissions
+❌ API keys or tokens
+❌ Private keys
+❌ Sensitive personal information
 
-The workflow requires the following GitHub Actions permission:
-- `contents: write` - To commit data files to the repository
+All sensitive data is managed via GitHub Secrets, not stored in this repository.
 
-## API Documentation
+## Querying the Data
 
-For more information about Etherscan's API v2, visit:
-- [Etherscan API Documentation](https://docs.etherscan.io/)
+### In GitHub
 
-## Notes
+Navigate to this directory in the repository to view files directly.
 
-- Data is automatically committed with descriptive commit messages
-- Historical data files are retained with timestamps
-- Workflow artifacts are available for 30 days after each run
-- Failed runs will not commit partial/invalid data
-- **Security**: API keys are stored as GitHub secrets and handled securely
-- The workflow uses placeholder API endpoints - customize for your use case
+### Via Raw URL
+
+```bash
+# Get latest data
+curl https://raw.githubusercontent.com/kushmanmb-org/bitcoin/master/data/etherscan/latest.json
+
+# Get specific archived data
+curl https://raw.githubusercontent.com/kushmanmb-org/bitcoin/master/data/etherscan/data-2026-02-14-00-00-00.json
+```
+
+### Via GitHub API
+
+```bash
+# Using GitHub API with authentication
+curl -H "Authorization: token YOUR_GITHUB_TOKEN" \
+  https://api.github.com/repos/kushmanmb-org/bitcoin/contents/data/etherscan/latest.json
+```
+
+## Using the Data
+
+### Parse with jq
+
+```bash
+# Get ENS name
+cat latest.json | jq -r '.ens_name'
+
+# Get timestamp
+cat latest.json | jq -r '.timestamp'
+
+# Get result data
+cat latest.json | jq '.result'
+```
+
+### In Python
+
+```python
+import json
+
+with open('latest.json', 'r') as f:
+    data = json.load(f)
+    
+print(f"ENS Name: {data['ens_name']}")
+print(f"Timestamp: {data['timestamp']}")
+print(f"Result: {data['result']}")
+```
+
+### In JavaScript/Node.js
+
+```javascript
+const fs = require('fs');
+
+const data = JSON.parse(fs.readFileSync('latest.json', 'utf8'));
+
+console.log(`ENS Name: ${data.ens_name}`);
+console.log(`Timestamp: ${data.timestamp}`);
+console.log(`Result: ${data.result}`);
+```
+
+## Historical Data
+
+Archived data files follow the naming pattern:
+```
+data-YYYY-MM-DD-HH-MM-SS.json
+```
+
+These files are kept for historical reference and trend analysis.
+
+### Retention Policy
+
+- Keep last 30 days of daily snapshots
+- Monthly archives for historical reference
+- Older data may be cleaned up to save space
+
+## Troubleshooting
+
+### Missing Files
+
+If `latest.json` is missing, the workflow may not have run yet:
+1. Check Actions tab for workflow runs
+2. Manually trigger the workflow if needed
+3. Verify `ETHERSCAN_API_KEY` secret is configured
+
+### Invalid Data
+
+If data appears invalid:
+1. Check workflow logs for errors
+2. Verify Etherscan API is accessible
+3. Check API key validity and rate limits
+
+### Stale Data
+
+If data is outdated:
+1. Check scheduled workflow is enabled
+2. Manually trigger workflow to update immediately
+3. Verify workflow has write permissions to repository
+
+## Related Documentation
+
+- [QUICKSTART_KUSHMANMB_ETH.md](../../QUICKSTART_KUSHMANMB_ETH.md) - Quick start guide
+- [ENS_CONFIGURATION.md](../../ENS_CONFIGURATION.md) - Complete ENS configuration
+- [.github/workflows/etherscan-apiv2.yml](../../.github/workflows/etherscan-apiv2.yml) - Workflow definition
+
+## Support
+
+For issues with this data:
+1. Check workflow runs in Actions tab
+2. Review Etherscan API documentation: https://docs.etherscan.io/
+3. Open an issue in this repository
+
+---
+
+**Last Updated**: 2026-02-14  
+**Data Source**: Etherscan API (https://etherscan.io/)  
+**ENS Domain**: kushmanmb.eth
+

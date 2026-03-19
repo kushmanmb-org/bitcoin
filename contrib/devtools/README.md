@@ -110,3 +110,225 @@ Example usage:
 
     cd .../src
     ../contrib/devtools/circular-dependencies.py {*,*/*,*/*/*}.{h,cpp}
+
+fetch-erc20-events.js
+=====================
+
+A Node.js script to fetch ERC20 token transfer events from the Etherscan API. This script queries the Etherscan API for ERC20 token transfers associated with a specific Ethereum address and displays detailed information about each transaction.
+
+**Requirements:**
+- Node.js (v12 or higher)
+- Etherscan API key (get one at https://etherscan.io/myapikey)
+
+**Usage:**
+
+```bash
+ETHERSCAN_API_KEY=your_api_key node contrib/devtools/fetch-erc20-events.js <ethereum_address>
+```
+
+**Example:**
+
+```bash
+ETHERSCAN_API_KEY=ABC123DEF456 node contrib/devtools/fetch-erc20-events.js 0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0
+```
+
+**Output:**
+
+For each ERC20 token transfer event, the script displays:
+- Transaction Hash
+- Block Number
+- Sender Address (From)
+- Recipient Address (To)
+- Token Value (formatted with proper decimals)
+- Token Symbol
+- Token Name
+- Timestamp
+
+**Error Handling:**
+
+The script handles various error conditions:
+- Missing or invalid API key
+- Missing or invalid Ethereum address
+- HTTP request failures
+- API errors (rate limits, invalid responses)
+- Empty results (no token transfers found)
+
+**Testing:**
+
+A test script is provided to verify the formatting functions:
+
+```bash
+node contrib/devtools/test-erc20-events.js
+```
+
+fetch-etherscan-eth-call.js
+============================
+
+A Node.js script to make `eth_call` requests to Ethereum smart contracts via the Etherscan API v2 proxy endpoint. This tool allows you to query smart contract functions without sending transactions.
+
+**Requirements:**
+- Node.js (v12 or higher)
+- Etherscan API key (get one at https://etherscan.io/myapikey)
+
+**Usage:**
+
+```bash
+ETHERSCAN_API_KEY=your_api_key node contrib/devtools/fetch-etherscan-eth-call.js --to <contract_address> --data <call_data>
+```
+
+**Example - Query balanceOf(address) function:**
+
+```bash
+ETHERSCAN_API_KEY=ABC123 node contrib/devtools/fetch-etherscan-eth-call.js \
+  --to 0xAEEF46DB4855E25702F8237E8f403FddcaF931C0 \
+  --data 0x70a08231000000000000000000000000e16359506c028e51f16be38986ec5746251e9724
+```
+
+**Example - Using environment variables:**
+
+```bash
+export ETHERSCAN_API_KEY=ABC123
+export TO_ADDRESS=0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48
+export CALL_DATA=0x313ce567  # decimals()
+node contrib/devtools/fetch-etherscan-eth-call.js
+```
+
+**Options:**
+
+- `--to <address>`: Contract address to call (required)
+- `--data <hex>`: Hex-encoded call data (required, with or without 0x prefix)
+- `--tag <tag>`: Block parameter (default: latest)
+- `--help, -h`: Show help message
+
+**Environment Variables:**
+
+- `ETHERSCAN_API_KEY`: Your Etherscan API key (required)
+- `TO_ADDRESS`: Contract address to call
+- `CALL_DATA`: Hex-encoded call data
+- `TAG`: Block parameter (default: latest)
+
+**Output:**
+
+The script displays:
+- Raw hex result from the contract call
+- Parsed result for common functions (balanceOf, totalSupply, decimals, etc.)
+- Full JSON API response
+
+**Common Function Signatures:**
+
+- `0x70a08231`: balanceOf(address) - Get token balance
+- `0x18160ddd`: totalSupply() - Get total token supply
+- `0x313ce567`: decimals() - Get token decimals
+- `0x95d89b41`: symbol() - Get token symbol
+- `0x06fdde03`: name() - Get token name
+
+**Testing:**
+
+A test suite is provided to verify functionality:
+
+```bash
+node contrib/devtools/test-etherscan-eth-call.js
+```
+
+**Demo:**
+
+A demo script demonstrates various usage examples:
+
+```bash
+export ETHERSCAN_API_KEY=your_api_key
+./contrib/devtools/demo-etherscan-eth-call.sh
+```
+
+fetch-withdrawal-credentials.js
+================================
+
+A Node.js script to query and decode Ethereum 2.0 validator withdrawal credentials. This tool helps verify where validator withdrawals and rewards will be sent.
+
+**Requirements:**
+- Node.js (v12 or higher)
+- Optional: Beacon Chain API access (default: beaconcha.in)
+
+**Usage:**
+
+```bash
+# Query validator by index
+node contrib/devtools/fetch-withdrawal-credentials.js --index 12345
+
+# Query validator by public key
+node contrib/devtools/fetch-withdrawal-credentials.js --pubkey 0x123abc...
+
+# Decode withdrawal credentials directly (offline)
+node contrib/devtools/fetch-withdrawal-credentials.js --decode 0x010000000000000000000000e16359506c028e51f16be38986ec5746251e9724
+```
+
+**Withdrawal Credentials Types:**
+
+- **Type 0x01**: Execution address credentials - can receive withdrawals
+  - Format: 0x01 + 11 zero bytes + 20-byte Ethereum address
+  - Ready for withdrawals post-Shapella upgrade
+  
+- **Type 0x00**: BLS credentials - legacy format
+  - Requires upgrade to 0x01 via BLSToExecutionChange message
+  - Cannot receive withdrawals until upgraded
+
+**Options:**
+
+- `--index <number>`: Query validator by index
+- `--pubkey <hex>`: Query validator by public key (48 bytes)
+- `--api <url>`: Beacon Chain API endpoint (default: beaconcha.in)
+- `--decode <hex>`: Decode withdrawal credentials hex directly (32 bytes)
+- `--help, -h`: Show help message
+
+**Environment Variables:**
+
+- `BEACON_API_URL`: Beacon Chain API endpoint
+- `VALIDATOR_INDEX`: Validator index to query
+- `VALIDATOR_PUBKEY`: Validator public key
+
+**Output:**
+
+The script displays:
+- Validator information (if queried from API)
+- Withdrawal credentials type (0x00 or 0x01)
+- Execution address (for 0x01 type)
+- Withdrawal capability status
+- Format validation results
+
+**Testing:**
+
+A comprehensive test suite is provided:
+
+```bash
+node contrib/devtools/test-withdrawal-credentials.js
+```
+
+**Demo:**
+
+A demo script demonstrates the tool's capabilities:
+
+```bash
+./contrib/devtools/demo-withdrawal-credentials.sh
+```
+
+**Documentation:**
+
+For detailed information, see [WITHDRAWAL_CREDENTIALS_README.md](WITHDRAWAL_CREDENTIALS_README.md).
+
+**CBSC Verification:**
+
+CBSC (Credentials Beacon Signature Check) is the comprehensive verification process for the withdrawal credentials tooling. To verify all components are working correctly:
+
+```bash
+bash contrib/devtools/verify-cbsc.sh
+```
+
+This script runs 25+ verification tests covering:
+- Environment and file checks
+- Test suite execution  
+- Credential format validation (0x00 and 0x01 types)
+- Address extraction and validation
+- Error handling
+- Documentation completeness
+
+For detailed CBSC verification information, see [CBSC_VERIFICATION.md](CBSC_VERIFICATION.md).
+

@@ -9,6 +9,7 @@
 *.der
 id_rsa
 id_dsa
+id_ed25519
 *.pub
 
 # Environment files
@@ -33,9 +34,15 @@ auth.json
 *.sqlite
 *.sqlite3
 
-# Wallet files
+# Wallet files (SQLite and legacy BDB formats)
+# Critical: These contain private keys and transaction history
 wallet.dat
+wallet.dat-journal
 *.wallet
+*.wallet-journal
+database/
+db.log
+*.wallet.bak
 
 # Logs
 *.log
@@ -47,21 +54,34 @@ apikeys/
 tokens/
 *.token
 
-# Backup files
+# Backup files (may contain sensitive data)
 *.backup
 *.bak
 *.swp
 *.swo
 *~
+# Encrypted backups (still contain sensitive data)
+*.backup.gpg
+*.bak.gpg
+*.backup.enc
+*.bak.enc
+*.backup.aes
+*.backup.zip
+*.wallet.zip
 
 # Personal notes
 notes.txt
 TODO.txt
 *.personal
 
-# Test data with sensitive info
+# Test data with potentially sensitive information
 testnet_wallet.dat
+testnet3_wallet.dat
+testnet4_wallet.dat
 regtest_wallet.dat
+signet_wallet.dat
+test_wallet.dat
+*.test.dat
 
 # Build artifacts (may contain paths or sensitive info)
 build/
@@ -84,29 +104,78 @@ tmp/
 temp/
 *.tmp
 
-# Bitcoin-specific sensitive files
+# Bitcoin Core specific sensitive files
+# Reference: doc/files.md for complete file descriptions
 *.dat.bak
 *.dat.old
 debug.log
 fee_estimates.dat
 peers.dat
 banlist.dat
+banlist.json
 anchors.dat
+mempool.dat
 
-# Cryptocurrency private keys and seeds
+# Bitcoin Core configuration files
+bitcoin.conf
+bitcoin.conf.*
+settings.json
+settings.json.bak
+guisettings.ini.bak
+
+# RPC authentication and session files
+.cookie
+.rpcauth
+rpcauth.txt
+rpcauth.json
+
+# Process and lock files
+bitcoind.pid
+bitcoin-qt.pid
+.lock
+.walletlock
+
+# Tor and I2P private keys (anonymity network identities)
+onion_v3_private_key
+onion_private_key
+i2p_private_key
+
+# Hardware wallet and external signer communication
+*.sock
+*.socket
+.trezor*
+.ledger*
+hwi/
+signer/
+
+# Cryptocurrency private keys and seed phrases
+# CRITICAL: Never commit seed phrases or private keys!
 *.mnemonic
 *.seed
+*.words
 *_seed.txt
 *_mnemonic.txt
+*_words.txt
+seed.txt
+mnemonic.txt
 private_keys/
 seeds/
 mnemonics/
+recovery_phrase.txt
+backup_phrase.txt
 
 # Bitcoin Core data directories (if accidentally added)
-/blocks/
-/chainstate/
-/.bitcoin/
-~/.bitcoin/
+# These contain blockchain data and should not be in source control
+blocks/
+chainstate/
+indexes/
+.bitcoin/
+wallets/
+# Network-specific data directories
+testnet3/
+testnet4/
+signet/
+regtest/
 
 # Ethereum and ENS related (if any local config)
 *.keystore
@@ -128,6 +197,8 @@ yarn-debug.log*
 yarn-error.log*
 package-lock.json
 yarn.lock
+# Exception: allow yarn.lock in onchain project for dependency consistency
+!bitcoin-onchain-app/yarn.lock
 
 # Python virtual environments (if any Python tooling)
 venv/
@@ -181,3 +252,291 @@ security-scan-results/
 .local/
 *.local.yml
 *.secret.yml
+
+# Maven and GitHub Packages security
+settings.xml
+settings-security.xml
+.m2/settings.xml
+.m2/settings-security.xml
+**/target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+
+# GitHub Packages authentication
+.github-packages-token
+github-packages.token
+GITHUB_TOKEN
+GITHUB_TOKEN.txt
+.npmrc
+.yarnrc.yml
+
+# Maven server credentials
+maven-credentials.xml
+maven-settings-local.xml
+
+# Website build and deployment artifacts
+website-build/
+website/dist/
+website/.cache/
+website/node_modules/
+
+# Website deployment credentials
+.deploy-key
+.ssh-deploy-key
+deploy-config.json
+.deployment-secrets
+
+# Website local development
+.env.website
+website/.env
+website/.env.local
+website/.env.production
+website-config.local.json
+
+# SSL/TLS certificates for local development
+website/ssl/
+*.csr
+*.ca-bundle
+
+# Web server logs
+access.log
+error.log
+website/logs/
+
+# Backup files from deployment
+website-backup-*/
+deployment-backup-*/
+
+# FTP/SFTP credentials
+.ftpconfig
+.sftpconfig
+.deploy-credentials
+
+# CDN and hosting configuration
+.netlify/
+.vercel/
+.cloudflare/
+
+# Website analytics and tracking (if any)
+analytics-config.json
+tracking-ids.json
+
+# Website A/B testing configuration
+ab-test-config.json
+
+# Local web server configuration
+.htaccess.local
+nginx.conf.local
+apache.conf.local
+
+# CMake build artifacts
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+CTestTestfile.cmake
+_deps/
+Testing/
+compile_commands.json
+
+# JetBrains IDEs
+*.iml
+*.ipr
+*.iws
+.idea/**/workspace.xml
+.idea/**/tasks.xml
+.idea/**/usage.statistics.xml
+.idea/**/dictionaries
+.idea/**/shelf
+
+# Visual Studio Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+
+# Vim
+[._]*.s[a-v][a-z]
+[._]*.sw[a-p]
+[._]s[a-rt-v][a-z]
+[._]ss[a-gi-z]
+[._]sw[a-p]
+Session.vim
+Sessionx.vim
+
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+.\#*
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# GitHub Codespaces
+.devcontainer/local/
+
+# GitHub Actions Self-Hosted Runners
+# Runner working directories and cache
+_work/
+_actions/
+_temp/
+_update/
+_diag/
+_runner/
+.runner
+.credentials
+.credentials_rsaparams
+
+# Runner logs and diagnostics
+_diag/Worker_*.log
+_diag/Runner_*.log
+*.runner.log
+
+# Runner environment and configuration
+.env.runner
+.runner.env
+runner-config.json
+.runner-config
+runner.json
+
+# Self-hosted runner specific data
+# CRITICAL: Runner credentials and tokens
+runner-registration-token.txt
+runner-auth-token.txt
+.runner-token
+RUNNER_TOKEN
+RUNNER_CFG_PAT
+.github-runner-token
+
+# Runner work directories (may contain sensitive build artifacts)
+_runner_work/
+runner-work/
+actions-runner-work/
+actions-runner/_work/
+
+# Runner cache and temporary files
+runner-cache/
+.runner-cache/
+_runner_cache/
+_runner_temp/
+
+# Platform-specific runner files
+# Linux runners
+/etc/systemd/system/actions.runner.*.service
+/etc/systemd/system/github-runner.service
+
+# Windows runners
+runsvc.exe
+run.cmd
+config.cmd
+actions-runner.exe
+
+# macOS runners
+svc.sh
+runsvc.sh
+
+# Runner diagnostic and telemetry data
+diagnostic-logs/
+runner-diagnostic-logs/
+telemetry/
+
+# Self-hosted runner updates and patches
+actions-runner-*.tar.gz
+actions-runner-*.zip
+runner-update/
+_update_backup/
+
+# Externals and dependencies (runner specific)
+externals/
+_externals/
+
+# Runner state and locks
+.runner.state
+.runner.lock
+runner.lock
+
+# Cloud provider metadata (if runner is in cloud)
+# AWS
+.aws/
+aws-credentials.json
+# Azure
+.azure/
+azure-credentials.json
+# GCP
+.gcloud/
+gcp-credentials.json
+service-account-key.json
+
+# Kubernetes runner configurations
+kube-config
+.kubeconfig
+k8s-runner-config.yaml
+
+# Container orchestration for runners
+docker-compose.runner.yml
+.docker-runner/
+podman-runner/
+
+# Runner monitoring and metrics
+prometheus-runner.yml
+grafana-runner.json
+runner-metrics/
+metrics-export/
+
+# Self-hosted runner networking
+# VPN configurations used by runners
+runner-vpn.conf
+.runner-vpn/
+openvpn-runner/
+wireguard-runner/
+
+# SSH keys for runner access (in addition to general SSH keys)
+runner_id_rsa
+runner_id_ed25519
+.ssh/runner_*
+runner-ssh-keys/
+
+# Webhook secrets for self-hosted runners
+webhook-secret.txt
+runner-webhook.secret
+.github-webhook-secret
+
+# Runner proxy configurations
+.runner-proxy
+runner-proxy.conf
+squid-runner.conf
+
+# Performance and profiling data from runner
+runner-perf/
+runner-profile/
+*.runner.prof
+
+# Self-hosted runner backups
+runner-backup/
+runner-backup-*/
+.runner-backup.tar.gz
+
+# Custom runner scripts (may contain credentials)
+custom-runner-setup.sh
+runner-provisioning.sh
+.runner-init
+runner-bootstrap.*
