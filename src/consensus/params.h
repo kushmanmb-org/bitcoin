@@ -85,6 +85,14 @@ struct Params {
     uint256 hashGenesisBlock;
     int nSubsidyHalvingInterval;
     /**
+     * Block height at which the hard fork activates.
+     * After this height the maximum block weight doubles from MAX_BLOCK_WEIGHT
+     * to 2 * MAX_BLOCK_WEIGHT, allowing larger blocks and increasing network
+     * throughput.  This is a backward-incompatible (hard-fork) change.
+     * Use std::numeric_limits<int>::max() to disable the hard fork.
+     */
+    int nHardForkHeight;
+    /**
      * Hashes of blocks that
      * - are known to be consensus valid, and
      * - buried in the chain, and
