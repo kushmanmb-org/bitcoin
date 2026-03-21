@@ -34,6 +34,7 @@ For the release schedule and detailed release notes, see the [`doc/release-notes
   - Build system modernisation (CMake-based build, continued cleanup)
   - Performance: IBD speed, UTXO cache, and database tuning
   - Developer tooling and test infrastructure improvements
+  - **Hard fork (block weight doubling)**: At block height 1,050,000 the maximum block weight is raised from 4,000,000 to 8,000,000 weight units, doubling effective throughput while preserving the SegWit weight accounting model. This is a backward-incompatible consensus change; all full nodes must upgrade before the activation height to remain on the canonical chain.
 
 ### v31.x Maintenance (Planned)
 - **Goal:** Stable maintenance releases following v31.0

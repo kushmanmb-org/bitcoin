@@ -9,10 +9,14 @@
 #include <cstdint>
 #include <cstdlib>
 
-/** The maximum allowed size for a serialized block, in bytes (only for buffer size limits) */
-static const unsigned int MAX_BLOCK_SERIALIZED_SIZE = 4000000;
+/** The maximum allowed size for a serialized block, in bytes (only for buffer size limits).
+ *  This must be large enough to accommodate post-hard-fork blocks. */
+static const unsigned int MAX_BLOCK_SERIALIZED_SIZE = 8000000;
 /** The maximum allowed weight for a block, see BIP 141 (network rule) */
 static const unsigned int MAX_BLOCK_WEIGHT = 4000000;
+/** The maximum allowed weight for a block after the hard fork activation height (network rule).
+ *  Explicitly set to 8,000,000 (double the pre-fork MAX_BLOCK_WEIGHT of 4,000,000). */
+static const unsigned int MAX_HARD_FORK_BLOCK_WEIGHT = 8000000;
 /** The maximum allowed number of signature check operations in a block (network rule) */
 static const int64_t MAX_BLOCK_SIGOPS_COST = 80000;
 /** Coinbase transaction outputs can only be spent after this number of new blocks (network rule) */

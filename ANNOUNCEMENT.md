@@ -29,6 +29,35 @@ for approximately mid-2026). Key areas of work include:
 - Silent payments (BIP 352) wallet support progress
 - CMake build system modernisation
 - Descriptor wallet improvements
+- **Hard fork (block weight doubling)** at mainnet block height **1,050,000**
+
+### Hard Fork: Block Weight Limit Doubled at Height 1,050,000
+
+This release includes a **hard fork** that doubles the maximum block weight from
+4,000,000 to 8,000,000 weight units, activating at block height **1,050,000** on
+mainnet (approximately 2027).
+
+**What changes:**
+- The consensus-enforced block weight limit is raised from
+  4,000,000 to 8,000,000 weight units at the activation height.
+- Miners may produce blocks up to 8,000,000 weight units post-activation by setting
+  `-blockmaxweight=8000000` in their node configuration.
+- All other consensus rules (SegWit weight accounting, sigop limits, coinbase
+  maturity, proof-of-work, etc.) remain unchanged.
+
+**Activation heights:**
+
+| Network  | Activation height      |
+|----------|------------------------|
+| Mainnet  | 1,050,000              |
+| Testnet  | 3,000,000              |
+| Testnet4 | 1 (genesis)            |
+| Signet   | 1 (genesis)            |
+| Regtest  | Inactive by default    |
+
+**⚠️ Node operators must upgrade before block 1,050,000 to remain on the
+canonical chain. Nodes running software older than v31.0 will not accept blocks
+produced under the new weight limit and will fork off the main chain.**
 
 Contributors and reviewers are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) and
 [ROADMAP.md](ROADMAP.md) for details.

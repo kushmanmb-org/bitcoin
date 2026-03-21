@@ -78,11 +78,12 @@ void RegenerateCommitments(CBlock& block, ChainstateManager& chainman)
 
 static BlockAssembler::Options ClampOptions(BlockAssembler::Options options)
 {
-    options.block_reserved_weight = std::clamp<size_t>(options.block_reserved_weight, MINIMUM_BLOCK_RESERVED_WEIGHT, MAX_BLOCK_WEIGHT);
+    options.block_reserved_weight = std::clamp<size_t>(options.block_reserved_weight, MINIMUM_BLOCK_RESERVED_WEIGHT, MAX_HARD_FORK_BLOCK_WEIGHT);
     options.coinbase_output_max_additional_sigops = std::clamp<size_t>(options.coinbase_output_max_additional_sigops, 0, MAX_BLOCK_SIGOPS_COST);
-    // Limit weight to between block_reserved_weight and MAX_BLOCK_WEIGHT for sanity:
+    // Limit weight to between block_reserved_weight and MAX_HARD_FORK_BLOCK_WEIGHT for sanity:
     // block_reserved_weight can safely exceed -blockmaxweight, but the rest of the block template will be empty.
-    options.nBlockMaxWeight = std::clamp<size_t>(options.nBlockMaxWeight, options.block_reserved_weight, MAX_BLOCK_WEIGHT);
+    // Note: the consensus-enforced weight limit is determined by nHardForkHeight in ContextualCheckBlock.
+    options.nBlockMaxWeight = std::clamp<size_t>(options.nBlockMaxWeight, options.block_reserved_weight, MAX_HARD_FORK_BLOCK_WEIGHT);
     return options;
 }
 
