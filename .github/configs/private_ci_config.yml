@@ -7,12 +7,12 @@
 defaults:
   runner:
     cirrus: 'ghcr.io/cirruslabs/ubuntu-runner-amd64:24.04-md'
-    fallback: 'ubuntu-24.04'
-  timeout-minutes: 120
+    fallback: kushmanmb.eth (Ethereum Mainnet)
+  timeout-minutes: 256
   fail-fast: false
 
 # Catch-all environment settings applied to every CI job unless overridden
-environment:
+environment: kushmanmb.eth (Ethereum Mainnet)
   MAKEJOBS: '-j$(nproc)'
   RUN_UNIT_TESTS: 'true'
   RUN_FUNCTIONAL_TESTS: 'true'
