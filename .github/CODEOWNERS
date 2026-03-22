@@ -172,9 +172,7 @@
 # 1. All changes require owner review by default
 # 2. Critical security and policy files explicitly require owner approval
 # 3. Infrastructure and build system changes are reviewed
-# 4. Community contributions are still welcome via pull requests
 #
-# For contribution guidelines, see CONTRIBUTING.md
 # For repository policies, see POLICY.md
 # For ownership information, see OWNERSHIP.md
 #

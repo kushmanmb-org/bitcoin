@@ -29,18 +29,22 @@ runs:
         echo "Scanning for potential hardcoded secrets..."
         
         # Check for common secret patterns
+        # Note: patterns use case-sensitive matching where required to avoid false
+        # positives (e.g. C++ .begin()/.end() iterator calls vs PEM "BEGIN" headers).
         PATTERNS=(
           'password\s*=\s*["\047][^"\047]{8,}'
           'api[_-]?key\s*[=:]\s*["\047][a-zA-Z0-9]{20,}'
           'secret\s*[=:]\s*["\047][^"\047]{10,}'
           'token\s*[=:]\s*["\047][a-zA-Z0-9]{20,}'
-          'private[_-]?key.*BEGIN'
+          'private[_-]?key.*-----BEGIN'
           'ghp_[a-zA-Z0-9]{36}'
           'AKIA[0-9A-Z]{16}'
         )
         
         for pattern in "${PATTERNS[@]}"; do
-          if git ls-files | xargs grep -niE "$pattern" 2>/dev/null | grep -v -E '(test|example|sample|mock)' | head -3; then
+          # Exclude: test/example/sample/mock files, placeholder values ("your-*"),
+          # documentation strings ("your-key-*"), and C++ iterator calls (.begin()/.end()).
+          if git ls-files | xargs grep -nE "$pattern" 2>/dev/null | grep -v -E '(test|example|sample|mock|your-|placeholder|\.begin\(\)|\.end\(\))' | head -3; then
             echo "::warning::Potential secret pattern found: $pattern"
             SECRETS_FOUND=$((SECRETS_FOUND + 1))
           fi

@@ -13,7 +13,7 @@
 #   - yaketh.eth
 # 
 # This workflow is part of the kushmanmb-org/bitcoin repository
-# and is maintained by the repository owner and authorized contributors.
+# and is maintained by the repository owner.
 # ═══════════════════════════════════════════════════════════════════
 
 name: Bitcoin Ownership Announcement
@@ -240,12 +240,12 @@ jobs:
           echo "*Workflow: bitcoin-ownership-announcement.yml*" >> "${summary}"
 
       - name: Upload announcement artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         if: always()
         with:
           name: bitcoin-ownership-announcement-${{ env.WORKFLOW_RUN_TIME }}
           path: data/ownership/
-          retention-days: 365  # Keep for one year
+          retention-days: 365  # Keep for one year (max supported by GitHub Actions)
 
   verify-no-secrets:
     name: 'Verify No Secrets in Announcement'

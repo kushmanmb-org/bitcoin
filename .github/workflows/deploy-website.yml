@@ -13,7 +13,7 @@
 #   - yaketh.eth
 # 
 # This workflow is part of the kushmanmb-org/bitcoin repository
-# and is maintained by the repository owner and authorized contributors.
+# and is maintained by the repository owner.
 # ═══════════════════════════════════════════════════════════════════
 #
 # Website Deployment Workflow with Self-Hosted Runners
@@ -74,7 +74,7 @@ jobs:
     runs-on: ${{ vars.USE_SELF_HOSTED == 'true' && 'self-hosted' || 'ubuntu-latest' }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           persist-credentials: false
 
@@ -127,14 +127,14 @@ jobs:
     runs-on: ${{ vars.USE_SELF_HOSTED == 'true' && 'self-hosted' || 'ubuntu-latest' }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           persist-credentials: false
 
       - name: Setup Node.js (for HTML validation)
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
 
       - name: Install HTML validator
         run: npm install -g html-validate
@@ -172,11 +172,11 @@ jobs:
           EOF
 
       - name: Upload build artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: website-build
           path: ${{ env.BUILD_DIR }}
-          retention-days: 7
+          retention-days: 14
 
   # Deploy to GitHub Pages
   deploy-pages:
@@ -190,7 +190,7 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Download build artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v6
         with:
           name: website-build
           path: ./website-build
@@ -216,7 +216,7 @@ jobs:
       url: https://kushmanmb.org
     steps:
       - name: Download build artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v6
         with:
           name: website-build
           path: ./website-build

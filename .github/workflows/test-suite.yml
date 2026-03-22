@@ -8,7 +8,7 @@
 #   - Base Network: Kushmanmb.base.eth
 # 
 # This workflow is part of the kushmanmb-org/bitcoin repository
-# and is maintained by the repository owner and authorized contributors.
+# and is maintained by the repository owner.
 # ═══════════════════════════════════════════════════════════════════
 
 name: Test Suite - Self-Hosted
@@ -42,7 +42,7 @@ concurrency:
 
 env:
   PYTHON_VERSION: '3.11'
-  NODE_VERSION: '20'
+  NODE_VERSION: '22'
 
 permissions:
   contents: read
@@ -57,7 +57,7 @@ jobs:
       test-matrix: ${{ steps.setup.outputs.test-matrix }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Determine test matrix
         id: setup
@@ -106,7 +106,7 @@ jobs:
               fi
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup secure environment
         uses: ./.github/actions/setup-secure-environment
@@ -139,13 +139,13 @@ jobs:
 
       - name: Upload test results
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: ${{ matrix.name }}-results
           path: |
             build/test-results/
             test-results/
-          retention-days: 7
+          retention-days: 14
           if-no-files-found: ignore
 
   lint-tests:
@@ -155,7 +155,7 @@ jobs:
       contents: read
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
@@ -214,12 +214,12 @@ jobs:
     name: Functional Tests
     runs-on: ${{ vars.USE_SELF_HOSTED == 'true' && 'self-hosted' || 'ubuntu-latest' }}
     if: hashFiles('test/functional') != ''
-    timeout-minutes: 120
+    timeout-minutes: 240
     permissions:
       contents: read
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup secure environment
         uses: ./.github/actions/setup-secure-environment
@@ -239,19 +239,19 @@ jobs:
       - name: Run functional tests
         run: |
           if [ -f "test/functional/test_runner.py" ]; then
-            python3 test/functional/test_runner.py --jobs=4
+            python3 test/functional/test_runner.py --jobs=8
           else
             echo "No functional test runner found"
           fi
 
       - name: Upload functional test results
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: functional-test-results
           path: |
             test/functional/*.log
-          retention-days: 7
+          retention-days: 14
           if-no-files-found: ignore
 
   test-summary:

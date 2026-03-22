@@ -13,7 +13,7 @@
 #   - yaketh.eth
 # 
 # This workflow is part of the kushmanmb-org/bitcoin repository
-# and is maintained by the repository owner and authorized contributors.
+# and is maintained by the repository owner.
 # ═══════════════════════════════════════════════════════════════════
 
 name: Wiki Management
@@ -267,11 +267,11 @@ jobs:
       
       - name: Upload wiki artifacts
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: wiki-validation-report
           path: /tmp/wiki-index.md
-          retention-days: 7
+          retention-days: 14
 
   check-security:
     name: 'Security Check'

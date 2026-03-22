@@ -8,7 +8,7 @@
 #   - Base Network: Kushmanmb.base.eth
 # 
 # This workflow is part of the kushmanmb-org/bitcoin repository
-# and is maintained by the repository owner and authorized contributors.
+# and is maintained by the repository owner.
 # ═══════════════════════════════════════════════════════════════════
 
 name: Runner Health Check

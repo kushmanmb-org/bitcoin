@@ -8,7 +8,7 @@
 #   - Base Network: Kushmanmb.base.eth
 # 
 # This workflow is part of the kushmanmb-org/bitcoin repository
-# and is maintained by the repository owner and authorized contributors.
+# and is maintained by the repository owner.
 # ═══════════════════════════════════════════════════════════════════
 
 name: Automated Validators
@@ -42,7 +42,7 @@ jobs:
     runs-on: ${{ vars.USE_SELF_HOSTED == 'true' && 'self-hosted' || 'ubuntu-latest' }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
@@ -60,12 +60,12 @@ jobs:
 
       - name: Upload quality report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: code-quality-report
           path: |
             format-report.txt
-          retention-days: 30
+          retention-days: 60
           if-no-files-found: ignore
 
   validate-security:
@@ -75,7 +75,7 @@ jobs:
       contents: read
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
@@ -100,12 +100,12 @@ jobs:
 
       - name: Upload security report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: security-validation-report
           path: |
             npm-audit.txt
-          retention-days: 30
+          retention-days: 60
           if-no-files-found: ignore
 
   validate-dependencies:
@@ -115,13 +115,13 @@ jobs:
       contents: read
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup Node.js
         if: hashFiles('package.json') != ''
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
           cache: 'npm'
 
       - name: Setup Python
@@ -148,7 +148,7 @@ jobs:
 
       - name: Upload dependency reports
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: dependency-reports
           path: |
@@ -156,7 +156,7 @@ jobs:
             safety-report.json
             maven-deps.txt
             maven-updates.txt
-          retention-days: 30
+          retention-days: 60
           if-no-files-found: ignore
 
   validate-commits:
@@ -167,7 +167,7 @@ jobs:
       contents: read
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
