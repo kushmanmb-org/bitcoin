@@ -1,0 +1,50 @@
+# Copyright (c) 2023-present The Bitcoin Core developers
+# Distributed under the MIT software license, see the accompanying
+# file COPYING or https://opensource.org/license/mit.
+#
+# TruffleHog Secret Scanning Workflow
+# This workflow uses TruffleHog to scan for secrets and sensitive data
+# in the repository code to prevent credential leaks and security issues.
+#
+# Security Features:
+# - Scans all pull requests for secrets before merge
+# - Scans push events to detect secrets in commits
+# - No external API key required
+# - Integrates with GitHub Security tab via SARIF output
+
+name: TruffleHog Secret Scanning
+
+on:
+  push:
+    branches:
+      - master
+      - main
+      - '**'
+  pull_request:
+    branches:
+      - '**'
+
+concurrency:
+  group: ${{ github.event_name != 'pull_request' && github.run_id || github.ref }}-trufflehog
+  cancel-in-progress: true
+
+jobs:
+  trufflehog:
+    name: TruffleHog scan
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: TruffleHog scan
+        uses: trufflesecurity/trufflehog@v3.88.27
+        with:
+          path: ./
+          base: ${{ github.event.repository.default_branch }}
+          head: HEAD
+          extra_args: --only-verified
