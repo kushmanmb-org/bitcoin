@@ -1,0 +1,71 @@
+# Private CI Configuration - Catch-All Settings
+# This file provides private catch-all configuration for all CI jobs in the
+# ci-matrix. These defaults are applied when a more specific configuration
+# does not define a particular setting.
+
+# Default runner configuration catch-all
+defaults:
+  runner:
+    cirrus: 'ghcr.io/cirruslabs/ubuntu-runner-amd64:24.04-md'
+    fallback: 'ubuntu-24.04'
+  timeout-minutes: 120
+  fail-fast: false
+
+# Catch-all environment settings applied to every CI job unless overridden
+environment:
+  MAKEJOBS: '-j$(nproc)'
+  RUN_UNIT_TESTS: 'true'
+  RUN_FUNCTIONAL_TESTS: 'true'
+  RUN_FUZZ_TESTS: 'false'
+  RUN_TIDY: 'false'
+  BOOST_TEST_RANDOM: '1'
+  CCACHE_MAXSIZE: '500M'
+  CCACHE_COMPRESS: '1'
+  TEST_RUNNER_TIMEOUT_FACTOR: '40'
+  GOAL: 'install'
+
+# Private catch-all for all local CI jobs
+# Each entry maps a job name to its environment file and settings.
+# Jobs not listed here fall back to the defaults above.
+local_jobs:
+  - name: 'iwyu'
+    file-env: './ci/test/00_setup_env_native_iwyu.sh'
+  - name: '32 bit ARM'
+    file-env: './ci/test/00_setup_env_arm.sh'
+    cirrus-runner: 'ubuntu-24.04-arm'
+    fallback-runner: 'ubuntu-24.04-arm'
+    provider: 'gha'
+  - name: 'ASan + LSan + UBSan + integer'
+    file-env: './ci/test/00_setup_env_native_asan.sh'
+  - name: 'macOS-cross to arm64'
+    file-env: './ci/test/00_setup_env_mac_cross.sh'
+  - name: 'macOS-cross to x86_64'
+    file-env: './ci/test/00_setup_env_mac_cross_intel.sh'
+  - name: 'No wallet'
+    file-env: './ci/test/00_setup_env_native_nowallet.sh'
+  - name: 'i686, no IPC'
+    file-env: './ci/test/00_setup_env_i686_no_ipc.sh'
+  - name: 'fuzzer,address,undefined,integer'
+    file-env: './ci/test/00_setup_env_native_fuzz.sh'
+    timeout-minutes: 240
+  - name: 'Valgrind, fuzz'
+    file-env: './ci/test/00_setup_env_native_fuzz_with_valgrind.sh'
+    timeout-minutes: 240
+  - name: 'previous releases'
+    file-env: './ci/test/00_setup_env_native_previous_releases.sh'
+  - name: 'Alpine (musl)'
+    file-env: './ci/test/00_setup_env_native_alpine_musl.sh'
+  - name: 'tidy'
+    file-env: './ci/test/00_setup_env_native_tidy.sh'
+  - name: 'TSan'
+    file-env: './ci/test/00_setup_env_native_tsan.sh'
+  - name: 'MSan, fuzz'
+    file-env: './ci/test/00_setup_env_native_fuzz_with_msan.sh'
+    timeout-minutes: 150
+  - name: 'MSan'
+    file-env: './ci/test/00_setup_env_native_msan.sh'
+    cirrus-runner: 'ghcr.io/cirruslabs/ubuntu-runner-amd64:24.04-lg'
+  - name: 'Valgrind'
+    file-env: './ci/test/00_setup_env_native_valgrind.sh'
+  - name: 's390x'
+    file-env: './ci/test/00_setup_env_s390x.sh'
