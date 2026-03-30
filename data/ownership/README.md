@@ -10,6 +10,7 @@ associated with ENS (Ethereum Name Service) identifiers.
 
 ## Recent Announcements
 
+- [announcement-2026-03-30.md](announcement-2026-03-30.md)
 - [announcement-2026-03-23.md](announcement-2026-03-23.md)
 - [announcement-2026-03-16.md](announcement-2026-03-16.md)
 - [announcement-2026-03-09.md](announcement-2026-03-09.md)
@@ -18,4 +19,4 @@ associated with ENS (Ethereum Name Service) identifiers.
 - [announcement-2026-02-13.md](announcement-2026-02-13.md)
 
 ---
-Last updated: 2026-03-23 02:34:19 UTC
+Last updated: 2026-03-30 02:46:44 UTC
